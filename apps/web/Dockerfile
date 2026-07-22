@@ -4,7 +4,7 @@ ENV NPM_CONFIG_UPDATE_NOTIFIER=false \
     NPM_CONFIG_FUND=false \
     NPM_CONFIG_AUDIT=false
 COPY package.json package-lock.json ./
-RUN npm ci --no-audit --no-fund --maxsockets 1
+RUN npm ci --no-audit --no-fund --omit=optional
 
 FROM node:22-alpine AS builder
 WORKDIR /app
