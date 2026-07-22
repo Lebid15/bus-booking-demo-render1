@@ -1,0 +1,10 @@
+Warning: enum naming encountered a non-optimally resolvable collision for fields named "status". The same name has been used for multiple choice sets in multiple components. The collision was resolved with "StatusA3eEnum". add an entry to ENUM_NAME_OVERRIDES to fix the naming.
+Warning: enum naming encountered a non-optimally resolvable collision for fields named "status". The same name has been used for multiple choice sets in multiple components. The collision was resolved with "Status3d9Enum". add an entry to ENUM_NAME_OVERRIDES to fix the naming.
+Warning: enum naming encountered a non-optimally resolvable collision for fields named "status". The same name has been used for multiple choice sets in multiple components. The collision was resolved with "StatusD91Enum". add an entry to ENUM_NAME_OVERRIDES to fix the naming.
+Warning: enum naming encountered a non-optimally resolvable collision for fields named "status". The same name has been used for multiple choice sets in multiple components. The collision was resolved with "Status06bEnum". add an entry to ENUM_NAME_OVERRIDES to fix the naming.
+Warning: enum naming encountered a non-optimally resolvable collision for fields named "status". The same name has been used for multiple choice sets in multiple components. The collision was resolved with "Status861Enum". add an entry to ENUM_NAME_OVERRIDES to fix the naming.
+
+Schema generation summary:
+Warnings: 5 (5 unique)
+Errors:   0 (0 unique)
+

@@ -1,0 +1,5 @@
+import Link from "next/link";
+import { AppShell } from "@/components/app-shell";
+
+const policies = [["customer_terms", "شروط استخدام الزبون"], ["privacy", "سياسة الخصوصية"], ["booking_payment", "الحجز والدفع"], ["cancellation_refund", "الإلغاء والاسترداد"], ["boarding_no_show", "الصعود وعدم الحضور"], ["baggage", "الأمتعة"], ["seat_allocation", "توزيع المقاعد"], ["support_disputes", "الدعم والنزاعات"], ["cookies", "ملفات الارتباط"]];
+export default function PoliciesPage() { return <AppShell title="مركز السياسات" eyebrow="الموقع العام"><section className="status-banner status-success"><strong>نسخ معلنة وقابلة للتتبع</strong><span>تظهر للحجز السياسة النافذة بلغتها وإصدارها، ولا يغيّر الإصدار الجديد حقوق حجز سابق.</span></section><section className="module-grid">{policies.map(([code,title]) => <article className="module-card" key={code}><span className="module-state">{code}</span><h2>{title}</h2><p>عرض الإصدار النافذ ومحتواه الكامل وبصمته.</p><div className="card-footer"><Link href={`/policies/${code}`}>عرض السياسة</Link></div></article>)}</section></AppShell>; }

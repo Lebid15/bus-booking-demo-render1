@@ -1,0 +1,45 @@
+
+> bus-booking-web@0.1.0 lint
+> eslint . --max-warnings=0
+
+
+> bus-booking-web@0.1.0 typecheck
+> tsc --noEmit
+
+
+> bus-booking-web@0.1.0 build
+> next build
+
+▲ Next.js 16.2.10 (Turbopack)
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 5.1s
+  Running TypeScript ...
+  Finished TypeScript in 2.1s ...
+  Collecting page data using 14 workers ...
+  Generating static pages using 14 workers (0/12) ...
+  Generating static pages using 14 workers (3/12) 
+  Generating static pages using 14 workers (6/12) 
+  Generating static pages using 14 workers (9/12) 
+✓ Generating static pages using 14 workers (12/12) in 644ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ƒ /
+├ ○ /_not-found
+├ ƒ /login
+├ ƒ /office
+├ ƒ /office/fleet
+├ ƒ /office/trips
+├ ƒ /office/verification
+├ ƒ /platform
+├ ƒ /platform/catalog
+├ ƒ /platform/policies
+├ ƒ /search
+└ ƒ /trips/[tripId]/seats
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+found 0 vulnerabilities

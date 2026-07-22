@@ -1,0 +1,12 @@
+
+> bus-booking-web@0.1.0 test:ux-contract
+> node scripts/ux-contract-test.mjs
+
+PASS: RTL Arabic root
+PASS: Skip link
+PASS: Keyboard seat navigation
+PASS: Booking draft persistence
+PASS: Policy summaries before confirmation
+PASS: Reduced motion
+PASS: 44px touch targets
+7/7 UX contract checks passed

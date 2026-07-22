@@ -1,0 +1,656 @@
+{
+  "version": "3.0",
+  "accounts": [
+    {
+      "code": "1000_BANK",
+      "type": "asset",
+      "description_ar": "رصيد المنصة لدى البنك/المحفظة"
+    },
+    {
+      "code": "1010_PSP_RECEIVABLE",
+      "type": "asset",
+      "description_ar": "مبالغ مستحقة من مزود الدفع"
+    },
+    {
+      "code": "1020_OFFICE_COMMISSION_RECEIVABLE",
+      "type": "asset",
+      "description_ar": "عمولات مستحقة على مكاتب استلمت المال مباشرة"
+    },
+    {
+      "code": "1030_OTHER_RECEIVABLE",
+      "type": "asset",
+      "description_ar": "ذمم أخرى موثقة"
+    },
+    {
+      "code": "2000_CUSTOMER_FUNDS",
+      "type": "liability",
+      "description_ar": "أموال زبائن محتجزة قبل استحقاق الخدمة"
+    },
+    {
+      "code": "2010_OFFICE_PAYABLE",
+      "type": "liability",
+      "description_ar": "صافي مستحق للمكتب"
+    },
+    {
+      "code": "2020_REFUND_PAYABLE",
+      "type": "liability",
+      "description_ar": "استردادات معتمدة قيد التنفيذ"
+    },
+    {
+      "code": "2030_RESERVE_HELD",
+      "type": "liability",
+      "description_ar": "احتياطي محجوز من مستحقات المكتب"
+    },
+    {
+      "code": "1040_CHARGEBACK_RECEIVABLE",
+      "type": "asset",
+      "description_ar": "مبلغ سحبه المزود مؤقتًا وقيد المطالبة/الدفاع"
+    },
+    {
+      "code": "2050_PROVIDER_FEES_PAYABLE",
+      "type": "liability",
+      "description_ar": "رسوم مزود لم تسحب بعد"
+    },
+    {
+      "code": "4000_COMMISSION_REVENUE",
+      "type": "revenue",
+      "description_ar": "عمولة المنصة المكتسبة"
+    },
+    {
+      "code": "4010_SUBSCRIPTION_REVENUE",
+      "type": "revenue",
+      "description_ar": "إيراد اشتراك المكتب"
+    },
+    {
+      "code": "4090_COMMISSION_REVERSAL",
+      "type": "contra",
+      "description_ar": "عكس/تخفيض إيراد عمولة"
+    },
+    {
+      "code": "5000_PAYMENT_PROVIDER_FEES",
+      "type": "expense",
+      "description_ar": "رسوم بوابة الدفع"
+    },
+    {
+      "code": "5010_CUSTOMER_COMPENSATION",
+      "type": "expense",
+      "description_ar": "تعويض تتحمله المنصة"
+    },
+    {
+      "code": "5020_FRAUD_LOSS",
+      "type": "expense",
+      "description_ar": "خسارة احتيال معتمدة"
+    },
+    {
+      "code": "5030_BAD_DEBT",
+      "type": "expense",
+      "description_ar": "ذمة مكتب غير قابلة للتحصيل"
+    }
+  ],
+  "events": [
+    {
+      "code": "ELECTRONIC_PAYMENT_CAPTURED",
+      "when": "تأكيد مزود الدفع قبض المبلغ من الزبون",
+      "source": "payment_transaction",
+      "preconditions": [
+        "event id فريد",
+        "amount/currency مطابقان للنية",
+        "الحجز غير مسترد بالكامل"
+      ],
+      "postings": [
+        [
+          "D",
+          "1010_PSP_RECEIVABLE",
+          "gross_amount"
+        ],
+        [
+          "C",
+          "2000_CUSTOMER_FUNDS",
+          "gross_amount"
+        ]
+      ],
+      "effects": [
+        "booking.paid_amount += gross",
+        "payment_intent=succeeded"
+      ],
+      "reversal": "ELECTRONIC_PAYMENT_REVERSED"
+    },
+    {
+      "code": "PSP_FEE_RECOGNIZED",
+      "when": "استلام كشف/حدث رسوم المزود",
+      "source": "provider_fee_event",
+      "preconditions": [
+        "fee>=0",
+        "مرجع مزود فريد"
+      ],
+      "postings": [
+        [
+          "D",
+          "5000_PAYMENT_PROVIDER_FEES",
+          "fee_amount"
+        ],
+        [
+          "C",
+          "1010_PSP_RECEIVABLE",
+          "fee_amount"
+        ]
+      ],
+      "effects": [
+        "ربط الرسوم بالحركة"
+      ],
+      "reversal": "PSP_FEE_REVERSED"
+    },
+    {
+      "code": "PSP_FUNDS_SETTLED",
+      "when": "تحويل المزود صافي الأموال إلى حساب المنصة",
+      "source": "provider_settlement",
+      "preconditions": [
+        "مطابقة batch",
+        "لا فرق غير مفسر"
+      ],
+      "postings": [
+        [
+          "D",
+          "1000_BANK",
+          "settled_amount"
+        ],
+        [
+          "C",
+          "1010_PSP_RECEIVABLE",
+          "settled_amount"
+        ]
+      ],
+      "effects": [
+        "إغلاق batch أو تسجيل فرق للمصالحة"
+      ],
+      "reversal": "PSP_SETTLEMENT_REVERSED"
+    },
+    {
+      "code": "SERVICE_COMPLETED_ELECTRONIC",
+      "when": "الحجز مؤهل ماليًا بعد اكتمال الرحلة/No-show حسب السياسة",
+      "source": "booking_completion",
+      "preconditions": [
+        "commission snapshot ثابت",
+        "لا refund pending على المبلغ نفسه"
+      ],
+      "postings": [
+        [
+          "D",
+          "2000_CUSTOMER_FUNDS",
+          "recognized_gross"
+        ],
+        [
+          "C",
+          "2010_OFFICE_PAYABLE",
+          "office_net"
+        ],
+        [
+          "C",
+          "4000_COMMISSION_REVENUE",
+          "commission_amount"
+        ]
+      ],
+      "formula": "recognized_gross = office_net + commission_amount",
+      "effects": [
+        "commission=earned",
+        "booking eligible for settlement"
+      ],
+      "reversal": "SERVICE_RECOGNITION_REVERSED"
+    },
+    {
+      "code": "COMMISSION_EARNED_DIRECT",
+      "when": "اكتمال خدمة حجز دُفع مباشرة للمكتب",
+      "source": "booking_completion",
+      "preconditions": [
+        "الدفع المباشر verified",
+        "commission snapshot ثابت"
+      ],
+      "postings": [
+        [
+          "D",
+          "1020_OFFICE_COMMISSION_RECEIVABLE",
+          "commission_amount"
+        ],
+        [
+          "C",
+          "4000_COMMISSION_REVENUE",
+          "commission_amount"
+        ]
+      ],
+      "effects": [
+        "commission=earned",
+        "إدراجها في المقاصة/فاتورة المكتب"
+      ],
+      "reversal": "COMMISSION_REVERSED_DIRECT"
+    },
+    {
+      "code": "DIRECT_COMMISSION_NETTED",
+      "when": "خصم عمولة مستحقة على المكتب من مستحقاته الإلكترونية",
+      "source": "settlement_item",
+      "preconditions": [
+        "نفس المكتب والعملة",
+        "receivable متاح"
+      ],
+      "postings": [
+        [
+          "D",
+          "2010_OFFICE_PAYABLE",
+          "netted_amount"
+        ],
+        [
+          "C",
+          "1020_OFFICE_COMMISSION_RECEIVABLE",
+          "netted_amount"
+        ]
+      ],
+      "effects": [
+        "إضافة عنصر مقاصة للتسوية"
+      ],
+      "reversal": "DIRECT_COMMISSION_NETTING_REVERSED"
+    },
+    {
+      "code": "OFFICE_COMMISSION_PAID",
+      "when": "سداد المكتب عمولة مباشرة للمنصة",
+      "source": "office_payment",
+      "preconditions": [
+        "مرجع قبض مثبت"
+      ],
+      "postings": [
+        [
+          "D",
+          "1000_BANK",
+          "amount"
+        ],
+        [
+          "C",
+          "1020_OFFICE_COMMISSION_RECEIVABLE",
+          "amount"
+        ]
+      ],
+      "effects": [
+        "خفض ذمة المكتب"
+      ],
+      "reversal": "OFFICE_COMMISSION_PAYMENT_REVERSED"
+    },
+    {
+      "code": "REFUND_APPROVED_PRE_SERVICE",
+      "when": "اعتماد استرداد قبل استحقاق الإيراد",
+      "source": "refund",
+      "preconditions": [
+        "المبلغ ضمن CUSTOMER_FUNDS",
+        "لا chargeback مزدوج"
+      ],
+      "postings": [
+        [
+          "D",
+          "2000_CUSTOMER_FUNDS",
+          "refund_amount"
+        ],
+        [
+          "C",
+          "2020_REFUND_PAYABLE",
+          "refund_amount"
+        ]
+      ],
+      "effects": [
+        "حجز المبلغ للاسترداد"
+      ],
+      "reversal": "REFUND_APPROVAL_CANCELLED"
+    },
+    {
+      "code": "REFUND_EXECUTED",
+      "when": "تأكيد خروج الاسترداد إلى وسيلة الدفع الأصلية",
+      "source": "refund_transaction",
+      "preconditions": [
+        "refund approved",
+        "provider reference فريد"
+      ],
+      "postings": [
+        [
+          "D",
+          "2020_REFUND_PAYABLE",
+          "refund_amount"
+        ],
+        [
+          "C",
+          "1000_BANK_OR_PSP",
+          "refund_amount"
+        ]
+      ],
+      "account_resolution": "استخدم 1010 إن خصم المزود قبل التسوية، وإلا 1000",
+      "effects": [
+        "refund=succeeded",
+        "booking.refunded_amount += amount"
+      ],
+      "reversal": "REFUND_EXECUTION_REVERSED"
+    },
+    {
+      "code": "REFUND_AFTER_RECOGNITION_ELECTRONIC",
+      "when": "استرداد بعد اكتساب عمولة ومبلغ مكتب",
+      "source": "refund_approval",
+      "preconditions": [
+        "تحديد من يتحمل الجزء وفق policy/causality"
+      ],
+      "postings": [
+        [
+          "D",
+          "2010_OFFICE_PAYABLE",
+          "office_share"
+        ],
+        [
+          "D",
+          "4090_COMMISSION_REVERSAL",
+          "platform_share"
+        ],
+        [
+          "C",
+          "2020_REFUND_PAYABLE",
+          "refund_amount"
+        ]
+      ],
+      "formula": "refund_amount = office_share + platform_share",
+      "effects": [
+        "commission adjusted",
+        "تخفيض صافي المكتب"
+      ],
+      "reversal": "POST_RECOGNITION_REFUND_CANCELLED"
+    },
+    {
+      "code": "REFUND_AFTER_RECOGNITION_DIRECT",
+      "when": "إلغاء/استرداد حجز كان المال عند المكتب",
+      "source": "refund_approval",
+      "preconditions": [
+        "المكتب مسؤول عن رد العميل أو إثبات التنفيذ"
+      ],
+      "postings": [
+        [
+          "D",
+          "4090_COMMISSION_REVERSAL",
+          "commission_reversal"
+        ],
+        [
+          "C",
+          "1020_OFFICE_COMMISSION_RECEIVABLE",
+          "commission_reversal"
+        ]
+      ],
+      "effects": [
+        "تخفيض عمولة المكتب؛ الاسترداد نفسه خارج حساب المنصة ويثبت تشغيليًا"
+      ],
+      "reversal": "DIRECT_REFUND_REVERSAL_CANCELLED"
+    },
+    {
+      "code": "RESERVE_WITHHELD",
+      "when": "حجز احتياطي مخاطر من مستحق مكتب",
+      "source": "reserve_rule",
+      "preconditions": [
+        "حد معتمد",
+        "المبلغ <= office payable"
+      ],
+      "postings": [
+        [
+          "D",
+          "2010_OFFICE_PAYABLE",
+          "reserve_amount"
+        ],
+        [
+          "C",
+          "2030_RESERVE_HELD",
+          "reserve_amount"
+        ]
+      ],
+      "effects": [
+        "settlement reserve item"
+      ],
+      "reversal": "RESERVE_RELEASED"
+    },
+    {
+      "code": "RESERVE_RELEASED",
+      "when": "انتهاء سبب الاحتياطي",
+      "source": "reserve_release",
+      "preconditions": [
+        "لا نزاع/تعرض قائم"
+      ],
+      "postings": [
+        [
+          "D",
+          "2030_RESERVE_HELD",
+          "reserve_amount"
+        ],
+        [
+          "C",
+          "2010_OFFICE_PAYABLE",
+          "reserve_amount"
+        ]
+      ],
+      "effects": [
+        "إتاحة المبلغ للتسوية"
+      ],
+      "reversal": "RESERVE_REWITHHELD"
+    },
+    {
+      "code": "OFFICE_PAYOUT_SENT",
+      "when": "إثبات دفع التسوية للمكتب",
+      "source": "settlement_payment",
+      "preconditions": [
+        "settlement approved",
+        "payout account active",
+        "مرجع فريد"
+      ],
+      "postings": [
+        [
+          "D",
+          "2010_OFFICE_PAYABLE",
+          "payout_amount"
+        ],
+        [
+          "C",
+          "1000_BANK",
+          "payout_amount"
+        ]
+      ],
+      "effects": [
+        "settlement=paid",
+        "commissions=paid"
+      ],
+      "reversal": "OFFICE_PAYOUT_REVERSED"
+    },
+    {
+      "code": "CHARGEBACK_OPENED",
+      "when": "إشعار اعتراض بنكي",
+      "source": "chargeback",
+      "preconditions": [
+        "provider case فريد"
+      ],
+      "postings": [
+        [
+          "D",
+          "1040_CHARGEBACK_RECEIVABLE",
+          "disputed_amount"
+        ],
+        [
+          "C",
+          "1010_PSP_RECEIVABLE_OR_BANK",
+          "disputed_amount"
+        ]
+      ],
+      "account_resolution": "بحسب وقت سحب المزود للمبلغ",
+      "effects": [
+        "تجميد المبلغ المتأثر فقط"
+      ],
+      "reversal": "CHARGEBACK_WON"
+    },
+    {
+      "code": "CHARGEBACK_WON",
+      "when": "إغلاق الاعتراض لصالح المنصة",
+      "source": "chargeback_decision",
+      "preconditions": [
+        "case status won"
+      ],
+      "postings": [
+        [
+          "D",
+          "1010_PSP_RECEIVABLE_OR_BANK",
+          "recovered_amount"
+        ],
+        [
+          "C",
+          "1040_CHARGEBACK_RECEIVABLE",
+          "recovered_amount"
+        ]
+      ],
+      "effects": [
+        "رفع التجميد"
+      ],
+      "reversal": null
+    },
+    {
+      "code": "CHARGEBACK_LOST_OFFICE_LIABLE",
+      "when": "خسارة اعتراض والمسؤولية على المكتب",
+      "source": "chargeback_decision",
+      "preconditions": [
+        "سبب المسؤولية موثق"
+      ],
+      "postings": [
+        [
+          "D",
+          "2010_OFFICE_PAYABLE_OR_1030",
+          "loss_amount"
+        ],
+        [
+          "C",
+          "1040_CHARGEBACK_RECEIVABLE",
+          "loss_amount"
+        ]
+      ],
+      "account_resolution": "يخفض payable؛ وإن لم يكف ينشئ other receivable",
+      "effects": [
+        "negative balance hierarchy"
+      ],
+      "reversal": "CHARGEBACK_DECISION_REVERSED"
+    },
+    {
+      "code": "CHARGEBACK_LOST_PLATFORM_LIABLE",
+      "when": "خسارة اعتراض بسبب فشل المنصة",
+      "source": "chargeback_decision",
+      "preconditions": [
+        "قرار مسؤولية موثق"
+      ],
+      "postings": [
+        [
+          "D",
+          "5020_FRAUD_LOSS",
+          "loss_amount"
+        ],
+        [
+          "C",
+          "1040_CHARGEBACK_RECEIVABLE",
+          "loss_amount"
+        ]
+      ],
+      "effects": [
+        "تسجيل خسارة منصة"
+      ],
+      "reversal": "CHARGEBACK_DECISION_REVERSED"
+    },
+    {
+      "code": "CUSTOMER_COMPENSATION_APPROVED",
+      "when": "تعويض إضافي يتحمله طرف محدد",
+      "source": "dispute_decision",
+      "preconditions": [
+        "ليس استرداد سعر التذكرة نفسه",
+        "اعتماد حسب الحد"
+      ],
+      "postings": [
+        [
+          "D",
+          "5010_CUSTOMER_COMPENSATION_OR_OFFICE_PAYABLE",
+          "amount"
+        ],
+        [
+          "C",
+          "2020_REFUND_PAYABLE",
+          "amount"
+        ]
+      ],
+      "account_resolution": "منصة=5010؛ مكتب=خفض 2010 أو زيادة 1030",
+      "effects": [
+        "إنشاء payout/refund task"
+      ],
+      "reversal": "COMPENSATION_CANCELLED"
+    },
+    {
+      "code": "SUBSCRIPTION_INVOICED",
+      "when": "استحقاق اشتراك مكتب",
+      "source": "subscription_invoice",
+      "preconditions": [
+        "خطة/فترة snapshot"
+      ],
+      "postings": [
+        [
+          "D",
+          "1030_OTHER_RECEIVABLE",
+          "amount"
+        ],
+        [
+          "C",
+          "4010_SUBSCRIPTION_REVENUE",
+          "amount"
+        ]
+      ],
+      "effects": [
+        "invoice open"
+      ],
+      "reversal": "SUBSCRIPTION_CREDIT_NOTE"
+    },
+    {
+      "code": "SUBSCRIPTION_PAID",
+      "when": "قبض اشتراك المكتب",
+      "source": "subscription_payment",
+      "preconditions": [
+        "مرجع فريد"
+      ],
+      "postings": [
+        [
+          "D",
+          "1000_BANK",
+          "amount"
+        ],
+        [
+          "C",
+          "1030_OTHER_RECEIVABLE",
+          "amount"
+        ]
+      ],
+      "effects": [
+        "invoice paid"
+      ],
+      "reversal": "SUBSCRIPTION_PAYMENT_REVERSED"
+    },
+    {
+      "code": "BAD_DEBT_WRITE_OFF",
+      "when": "اعتماد شطب ذمة مكتب بعد إجراءات التحصيل",
+      "source": "writeoff",
+      "preconditions": [
+        "اعتماد مزدوج",
+        "office terminated/collection exhausted"
+      ],
+      "postings": [
+        [
+          "D",
+          "5030_BAD_DEBT",
+          "amount"
+        ],
+        [
+          "C",
+          "1020_OR_1030_RECEIVABLE",
+          "amount"
+        ]
+      ],
+      "effects": [
+        "لا حذف للسجل"
+      ],
+      "reversal": "BAD_DEBT_RECOVERY"
+    }
+  ]
+}

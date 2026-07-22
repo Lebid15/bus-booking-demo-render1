@@ -1,0 +1,86 @@
+[
+  {
+    "code": "customer_terms",
+    "title": "شروط استخدام الزبون",
+    "file": "09_POLICIES_LEGAL/CUSTOMER_TERMS_OF_USE_AR.md",
+    "audience": "customer",
+    "consent_point": "booking/account creation"
+  },
+  {
+    "code": "office_terms",
+    "title": "شروط المكتب والناقل",
+    "file": "09_POLICIES_LEGAL/OFFICE_AND_CARRIER_TERMS_AR.md",
+    "audience": "office",
+    "consent_point": "office activation"
+  },
+  {
+    "code": "privacy",
+    "title": "سياسة الخصوصية",
+    "file": "09_POLICIES_LEGAL/PRIVACY_POLICY_AR.md",
+    "audience": "all",
+    "consent_point": "account/booking/office activation"
+  },
+  {
+    "code": "booking_payment",
+    "title": "الحجز والدفع",
+    "file": "09_POLICIES_LEGAL/BOOKING_AND_PAYMENT_POLICY_AR.md",
+    "audience": "customer,office",
+    "consent_point": "booking confirmation"
+  },
+  {
+    "code": "cancellation_refund",
+    "title": "الإلغاء والاسترداد",
+    "file": "09_POLICIES_LEGAL/CANCELLATION_REFUND_POLICY_AR.md",
+    "audience": "customer,office",
+    "consent_point": "booking confirmation/cancellation"
+  },
+  {
+    "code": "boarding_no_show",
+    "title": "الصعود وعدم الحضور",
+    "file": "09_POLICIES_LEGAL/BOARDING_AND_NO_SHOW_POLICY_AR.md",
+    "audience": "customer,office",
+    "consent_point": "ticket/trip"
+  },
+  {
+    "code": "baggage",
+    "title": "الأمتعة",
+    "file": "09_POLICIES_LEGAL/BAGGAGE_AND_PROHIBITED_ITEMS_POLICY_AR.md",
+    "audience": "customer,office",
+    "consent_point": "trip details"
+  },
+  {
+    "code": "seat_allocation",
+    "title": "توزيع المقاعد",
+    "file": "09_POLICIES_LEGAL/SEAT_ALLOCATION_POLICY_AR.md",
+    "audience": "customer,office",
+    "consent_point": "seat selection"
+  },
+  {
+    "code": "support_disputes",
+    "title": "الدعم والنزاعات",
+    "file": "09_POLICIES_LEGAL/SUPPORT_COMPLAINTS_DISPUTES_POLICY_AR.md",
+    "audience": "all",
+    "consent_point": "support case"
+  },
+  {
+    "code": "commission_settlement",
+    "title": "العمولات والتسويات",
+    "file": "09_POLICIES_LEGAL/COMMISSION_SETTLEMENT_POLICY_AR.md",
+    "audience": "office",
+    "consent_point": "contract/settlement"
+  },
+  {
+    "code": "violations",
+    "title": "المخالفات والتعليق",
+    "file": "09_POLICIES_LEGAL/OFFICE_VIOLATIONS_SUSPENSION_POLICY_AR.md",
+    "audience": "office",
+    "consent_point": "office activation"
+  },
+  {
+    "code": "cookies",
+    "title": "ملفات الارتباط",
+    "file": "09_POLICIES_LEGAL/COOKIE_POLICY_AR.md",
+    "audience": "public",
+    "consent_point": "first visit/settings"
+  }
+]

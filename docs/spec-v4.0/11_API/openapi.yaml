@@ -1,0 +1,5735 @@
+openapi: 3.1.0
+info:
+  title: Bus Booking Platform API
+  version: 3.0.0
+  description: Normative phase-1 API contract. All money is decimal strings; all mutations require Idempotency-Key where marked
+    by domain rules.
+servers:
+- url: https://api.example.invalid
+  description: placeholder
+tags:
+- name: Public
+- name: Booking
+- name: Payments
+- name: Auth
+- name: Customer
+- name: Privacy
+- name: Office
+- name: Office Trips
+- name: Office Booking
+- name: Office Payments
+- name: Office Finance
+- name: Boarding
+- name: Support
+- name: Platform
+- name: Platform Compliance
+- name: Platform Support
+- name: Platform Finance
+- name: Platform Policies
+- name: Webhooks
+paths:
+  /v1/public/locations:
+    get:
+      summary: قائمة نقاط الانطلاق والوصول
+      tags:
+      - Public
+      operationId: listLocations
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Location'
+      parameters:
+      - name: query
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: type
+        in: query
+        required: false
+        schema:
+          type: string
+  /v1/public/trips/search:
+    get:
+      summary: البحث عن الرحلات
+      tags:
+      - Public
+      operationId: searchTrips
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TripSummary'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      parameters:
+      - name: origin_id
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: destination_id
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: date
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: passengers
+        in: query
+        required: false
+        schema:
+          type: string
+  /v1/public/trips/{trip_id}:
+    get:
+      summary: تفاصيل الرحلة والسياسات
+      tags:
+      - Public
+      operationId: getTrip
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TripSummary'
+        '404':
+          description: RESOURCE_NOT_FOUND
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '409':
+          description: TRIP_NOT_BOOKABLE
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      parameters:
+      - name: trip_id
+        in: path
+        required: true
+        schema:
+          type: string
+  /v1/public/trips/{trip_id}/seats:
+    get:
+      summary: خريطة المقاعد المتاحة
+      tags:
+      - Public
+      operationId: getSeatMap
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeatMap'
+        '404':
+          description: RESOURCE_NOT_FOUND
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '409':
+          description: TRIP_NOT_BOOKABLE
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      parameters:
+      - name: trip_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: session_token
+        in: query
+        required: false
+        schema:
+          type: string
+  /v1/public/trips/{trip_id}/seat-holds:
+    post:
+      summary: إنشاء حجز مؤقت للمقاعد
+      tags:
+      - Booking
+      operationId: createSeatHold
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeatHold'
+        '409':
+          description: SEAT_NOT_AVAILABLE / SEAT_GENDER_CONFLICT / PRICE_CHANGED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SeatHoldRequest'
+      parameters:
+      - name: trip_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/public/seat-holds/{hold_token}/release:
+    post:
+      summary: تحرير الحجز المؤقت
+      tags:
+      - Booking
+      operationId: releaseSeatHold
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  released:
+                    type: boolean
+        '403':
+          description: SEAT_HOLD_NOT_OWNED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      parameters:
+      - name: hold_token
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/public/bookings:
+    post:
+      summary: إنشاء الحجز النهائي
+      tags:
+      - Booking
+      operationId: createBooking
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+        '409':
+          description: SEAT_HOLD_EXPIRED / SEAT_NOT_AVAILABLE / SEAT_GENDER_CONFLICT / PRICE_CHANGED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '428':
+          description: POLICY_ACCEPTANCE_REQUIRED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '400':
+          description: IDEMPOTENCY_KEY_REQUIRED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBookingRequest'
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/public/bookings/lookup:
+    post:
+      summary: استرجاع حجز كضيف
+      tags:
+      - Booking
+      operationId: lookupBooking
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+        '404':
+          description: RESOURCE_NOT_FOUND
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - pnr
+              - contact_verifier
+              properties:
+                pnr:
+                  type: string
+                contact_verifier:
+                  type: string
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/public/bookings/{pnr}:
+    get:
+      summary: عرض الحجز عبر رمز الإدارة
+      tags:
+      - Booking
+      operationId: getGuestBooking
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+        '404':
+          description: RESOURCE_NOT_FOUND
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '401':
+          description: AUTH_REQUIRED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      parameters:
+      - name: pnr
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: manage_token
+        in: query
+        required: true
+        schema:
+          type: string
+  /v1/public/bookings/{pnr}/cancellation-quote:
+    get:
+      summary: حساب الإلغاء قبل التنفيذ
+      tags:
+      - Booking
+      operationId: getCancellationQuote
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CancellationQuote'
+        '409':
+          description: CANCELLATION_NOT_ALLOWED / PASSENGER_ALREADY_BOARDED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      parameters:
+      - name: pnr
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: manage_token
+        in: query
+        required: true
+        schema:
+          type: string
+  /v1/public/bookings/{pnr}/cancel:
+    post:
+      summary: طلب إلغاء الحجز
+      tags:
+      - Booking
+      operationId: cancelGuestBooking
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+        '409':
+          description: CANCELLATION_NOT_ALLOWED / PASSENGER_ALREADY_BOARDED / VERSION_CONFLICT
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - quote_token
+              properties:
+                quote_token:
+                  type: string
+                reason_code:
+                  type: string
+      parameters:
+      - name: pnr
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: manage_token
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/public/bookings/{pnr}/payments:
+    post:
+      summary: بدء عملية دفع
+      tags:
+      - Payments
+      operationId: createPaymentIntent
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentIntent'
+        '409':
+          description: PAYMENT_ALREADY_SUCCEEDED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '503':
+          description: PAYMENT_PROVIDER_UNAVAILABLE
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '400':
+          description: IDEMPOTENCY_KEY_REQUIRED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - method_type
+              properties:
+                method_type:
+                  type: string
+                return_url:
+                  type:
+                  - string
+                  - 'null'
+                  format: uri
+      parameters:
+      - name: pnr
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: manage_token
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/public/payment-intents/{intent_id}/manual-transfer:
+    post:
+      summary: رفع بيانات تحويل يدوي
+      tags:
+      - Payments
+      operationId: submitManualTransfer
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentIntent'
+        '409':
+          description: MANUAL_TRANSFER_DUPLICATE / PAYMENT_STATE_CONFLICT
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ManualTransferRequest'
+      parameters:
+      - name: intent_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/public/bookings/{pnr}/support-cases:
+    post:
+      summary: فتح حالة دعم للحجز
+      tags:
+      - Support
+      operationId: openGuestSupportCase
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportCase'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - category
+              - priority
+              - message
+              properties:
+                category:
+                  type: string
+                priority:
+                  type: string
+                message:
+                  type: string
+                attachments:
+                  type: array
+                  items:
+                    type: string
+      parameters:
+      - name: pnr
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: manage_token
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/auth/login:
+    post:
+      summary: تسجيل الدخول
+      tags:
+      - Auth
+      operationId: login
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                  refresh_token:
+                    type: string
+                  mfa_required:
+                    type: boolean
+        '401':
+          description: AUTH_INVALID_CREDENTIALS
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '403':
+          description: AUTH_MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - identifier
+              - password
+              properties:
+                identifier:
+                  type: string
+                password:
+                  type: string
+  /v1/auth/mfa/verify:
+    post:
+      summary: إكمال MFA
+      tags:
+      - Auth
+      operationId: verifyMfa
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                  refresh_token:
+                    type: string
+        '403':
+          description: AUTH_MFA_INVALID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - challenge_id
+              - code
+              properties:
+                challenge_id:
+                  type: string
+                code:
+                  type: string
+  /v1/me/bookings:
+    get:
+      summary: حجوزاتي
+      tags:
+      - Customer
+      operationId: listMyBookings
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Booking'
+        '401':
+          description: AUTH_REQUIRED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          type: string
+  /v1/me/bookings/{booking_id}:
+    get:
+      summary: تفاصيل حجز الحساب
+      tags:
+      - Customer
+      operationId: getMyBooking
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+        '404':
+          description: RESOURCE_NOT_FOUND
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: booking_id
+        in: path
+        required: true
+        schema:
+          type: string
+  /v1/me/sessions:
+    get:
+      summary: الجلسات والأجهزة
+      tags:
+      - Customer
+      operationId: listSessions
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: true
+      security:
+      - bearerAuth: []
+  /v1/me/data-export:
+    post:
+      summary: طلب تصدير البيانات
+      tags:
+      - Privacy
+      operationId: requestDataExport
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                  status:
+                    type: string
+        '409':
+          description: LEGAL_HOLD_ACTIVE
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/me/delete-account:
+    post:
+      summary: طلب حذف الحساب
+      tags:
+      - Privacy
+      operationId: requestAccountDeletion
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+        '403':
+          description: AUTH_MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '409':
+          description: LEGAL_HOLD_ACTIVE
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - confirmation
+              properties:
+                confirmation:
+                  type: string
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/office/context:
+    get:
+      summary: سياق المكتب والصلاحيات
+      tags:
+      - Office
+      operationId: getOfficeContext
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  office:
+                    $ref: '#/components/schemas/Office'
+                  permissions:
+                    type: array
+                    items:
+                      type: string
+                  configuration:
+                    type: object
+                    additionalProperties: true
+        '403':
+          description: TENANT_ACCESS_DENIED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+  /v1/office/trips:
+    get:
+      summary: قائمة رحلات المكتب
+      tags:
+      - Office Trips
+      operationId: listOfficeTrips
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OfficeTrip'
+        '403':
+          description: PERMISSION_DENIED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: date_from
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: date_to
+        in: query
+        required: false
+        schema:
+          type: string
+    post:
+      summary: إنشاء رحلة
+      tags:
+      - Office Trips
+      operationId: createOfficeTrip
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OfficeTrip'
+        '403':
+          description: PERMISSION_DENIED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '422':
+          description: TRIP_NOT_READY / VERIFICATION_INCOMPLETE
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TripInput'
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/office/trips/{trip_id}:
+    get:
+      summary: تفاصيل رحلة المكتب
+      tags:
+      - Office Trips
+      operationId: getOfficeTrip
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OfficeTrip'
+        '404':
+          description: RESOURCE_NOT_FOUND
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '403':
+          description: TENANT_ACCESS_DENIED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: trip_id
+        in: path
+        required: true
+        schema:
+          type: string
+    patch:
+      summary: تعديل رحلة مسموح
+      tags:
+      - Office Trips
+      operationId: updateOfficeTrip
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OfficeTrip'
+        '409':
+          description: VERSION_CONFLICT / STATE_TRANSITION_NOT_ALLOWED / PRICE_CHANGED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                scheduled_departure_at:
+                  type: string
+                  format: date-time
+                base_price:
+                  type: string
+                vehicle_id:
+                  type: string
+                version:
+                  type: integer
+      parameters:
+      - name: trip_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/office/trips/{trip_id}/commands:
+    post:
+      summary: تنفيذ انتقال حالة الرحلة
+      tags:
+      - Office Trips
+      operationId: commandOfficeTrip
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OfficeTrip'
+        '409':
+          description: STATE_TRANSITION_NOT_ALLOWED / TRIP_DEPARTURE_BLOCKED / URGENT_CASE_OPEN
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '422':
+          description: TRIP_CANCEL_REASON_REQUIRED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - command
+              properties:
+                command:
+                  type: string
+                  enum:
+                  - schedule
+                  - publish
+                  - open_booking
+                  - open_boarding
+                  - close_boarding
+                  - depart
+                  - arrive
+                  - complete
+                  - cancel
+                reason_code:
+                  type:
+                  - string
+                  - 'null'
+                version:
+                  type: integer
+      parameters:
+      - name: trip_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/office/trips/{trip_id}/seat-map:
+    get:
+      summary: خريطة المقاعد الحية للمكتب
+      tags:
+      - Office Trips
+      operationId: getOfficeSeatMap
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeatMap'
+        '404':
+          description: RESOURCE_NOT_FOUND
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: trip_id
+        in: path
+        required: true
+        schema:
+          type: string
+  /v1/office/trips/{trip_id}/bookings:
+    get:
+      summary: حجوزات الرحلة
+      tags:
+      - Office Booking
+      operationId: listTripBookings
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Booking'
+        '403':
+          description: PERMISSION_DENIED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: trip_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+    post:
+      summary: إنشاء حجز من المكتب
+      tags:
+      - Office Booking
+      operationId: createOfficeBooking
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+        '409':
+          description: SEAT_NOT_AVAILABLE / SEAT_GENDER_CONFLICT
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '403':
+          description: PAYMENT_APPROVAL_REQUIRED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBookingRequest'
+      parameters:
+      - name: trip_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/office/bookings/{booking_id}:
+    get:
+      summary: تفاصيل حجز المكتب
+      tags:
+      - Office Booking
+      operationId: getOfficeBooking
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+        '403':
+          description: TENANT_ACCESS_DENIED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '404':
+          description: RESOURCE_NOT_FOUND
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: booking_id
+        in: path
+        required: true
+        schema:
+          type: string
+  /v1/office/bookings/{booking_id}/payments/cash:
+    post:
+      summary: تسجيل دفع في المكتب
+      tags:
+      - Office Payments
+      operationId: recordOfficeCash
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentIntent'
+        '403':
+          description: PAYMENT_APPROVAL_REQUIRED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '409':
+          description: PAYMENT_ALREADY_SUCCEEDED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '400':
+          description: IDEMPOTENCY_KEY_REQUIRED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - amount
+              - receipt_number
+              properties:
+                amount:
+                  type: string
+                receipt_number:
+                  type: string
+                occurred_at:
+                  type: string
+                  format: date-time
+      parameters:
+      - name: booking_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/office/manual-payments/{submission_id}/verify:
+    post:
+      summary: التحقق من تحويل يدوي
+      tags:
+      - Office Payments
+      operationId: verifyManualPayment
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentIntent'
+        '422':
+          description: MANUAL_TRANSFER_NOT_FOUND / PAYMENT_REJECTION_REASON_REQUIRED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '403':
+          description: DUAL_APPROVAL_REQUIRED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - decision
+              properties:
+                decision:
+                  type: string
+                  enum:
+                  - verify
+                  - reject
+                reason:
+                  type:
+                  - string
+                  - 'null'
+      parameters:
+      - name: submission_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/office/trips/{trip_id}/boarding:
+    post:
+      summary: تنفيذ أمر صعود
+      tags:
+      - Boarding
+      operationId: boardingCommand
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  passenger_id:
+                    type: string
+                  boarding_status:
+                    type: string
+                  ticket_status:
+                    type: string
+        '409':
+          description: TICKET_INVALID / TICKET_ALREADY_USED / BOARDING_NOT_OPEN / NO_SHOW_NOT_ALLOWED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '402':
+          description: PAYMENT_REQUIRED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BoardingCommand'
+      parameters:
+      - name: trip_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/office/trips/{trip_id}/manifest:
+    get:
+      summary: قائمة ركاب الرحلة
+      tags:
+      - Boarding
+      operationId: getManifest
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '404':
+          description: RESOURCE_NOT_FOUND
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: trip_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: version
+        in: query
+        required: false
+        schema:
+          type: string
+  /v1/office/trips/{trip_id}/offline-package:
+    post:
+      summary: توليد حزمة صعود دون اتصال
+      tags:
+      - Boarding
+      operationId: createOfflinePackage
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  download_url:
+                    type: string
+                    format: uri
+                  expires_at:
+                    type: string
+                    format: date-time
+                  package_hash:
+                    type: string
+        '403':
+          description: AUTH_MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '409':
+          description: BOARDING_NOT_OPEN
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: trip_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/office/trips/{trip_id}/offline-sync:
+    post:
+      summary: مزامنة أحداث الصعود غير المتصلة
+      tags:
+      - Boarding
+      operationId: syncOfflineBoarding
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accepted:
+                    type: integer
+                  duplicates:
+                    type: integer
+                  conflicts:
+                    type: array
+                    items:
+                      type: object
+                      additionalProperties: true
+        '409':
+          description: OFFLINE_SYNC_CONFLICT / TICKET_ALREADY_USED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - events
+              - package_hash
+              properties:
+                package_hash:
+                  type: string
+                events:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/BoardingCommand'
+      parameters:
+      - name: trip_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/office/refunds:
+    get:
+      summary: طلبات الاسترداد
+      tags:
+      - Office Finance
+      operationId: listOfficeRefunds
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Refund'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+  /v1/office/refunds/{refund_id}/commands:
+    post:
+      summary: مراجعة/اعتماد الاسترداد
+      tags:
+      - Office Finance
+      operationId: commandRefund
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Refund'
+        '403':
+          description: DUAL_APPROVAL_REQUIRED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '409':
+          description: CHARGEBACK_OPEN
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '422':
+          description: REFUND_AMOUNT_EXCEEDS_AVAILABLE
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - command
+              properties:
+                command:
+                  type: string
+                  enum:
+                  - review
+                  - approve
+                  - reject
+                  - process
+                  - retry
+                approved_amount:
+                  type:
+                  - string
+                  - 'null'
+                reason:
+                  type:
+                  - string
+                  - 'null'
+      parameters:
+      - name: refund_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/office/settlements:
+    get:
+      summary: تسويات المكتب
+      tags:
+      - Office Finance
+      operationId: listOfficeSettlements
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Settlement'
+      security:
+      - bearerAuth: []
+  /v1/office/configuration:
+    get:
+      summary: إعدادات المكتب الفعالة
+      tags:
+      - Office
+      operationId: getOfficeConfiguration
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+      security:
+      - bearerAuth: []
+    patch:
+      summary: تعديل إعدادات المكتب
+      tags:
+      - Office
+      operationId: updateOfficeConfiguration
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '422':
+          description: CONFIGURATION_OUT_OF_RANGE
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '403':
+          description: AUTH_MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - changes
+              properties:
+                changes:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                    - key
+                    - value
+                    properties:
+                      key:
+                        type: string
+                      value: {}
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/office/support-cases:
+    get:
+      summary: صندوق حالات المكتب
+      tags:
+      - Support
+      operationId: listOfficeSupportCases
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SupportCase'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: priority
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+  /v1/platform/offices:
+    get:
+      summary: إدارة المكاتب
+      tags:
+      - Platform
+      operationId: listPlatformOffices
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Office'
+        '403':
+          description: PERMISSION_DENIED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+  /v1/platform/offices/{office_id}/verification/commands:
+    post:
+      summary: قرارات تحقق المكتب
+      tags:
+      - Platform Compliance
+      operationId: commandOfficeVerification
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '422':
+          description: VERIFICATION_INCOMPLETE / VERIFICATION_REASON_REQUIRED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '403':
+          description: DUAL_APPROVAL_REQUIRED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - command
+              properties:
+                command:
+                  type: string
+                reason:
+                  type:
+                  - string
+                  - 'null'
+                conditions:
+                  type:
+                  - object
+                  - 'null'
+                  additionalProperties: true
+      parameters:
+      - name: office_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/platform/offices/{office_id}/status:
+    post:
+      summary: تقييد أو تعليق المكتب
+      tags:
+      - Platform
+      operationId: changeOfficeStatus
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Office'
+        '403':
+          description: AUTH_MFA_REQUIRED / DUAL_APPROVAL_REQUIRED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - status
+              - reason
+              properties:
+                status:
+                  type: string
+                reason:
+                  type: string
+                effective_at:
+                  type: string
+                  format: date-time
+      parameters:
+      - name: office_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/platform/disputes:
+    get:
+      summary: قائمة النزاعات
+      tags:
+      - Platform Support
+      operationId: listDisputes
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: true
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: priority
+        in: query
+        required: false
+        schema:
+          type: string
+  /v1/platform/disputes/{dispute_id}/commands:
+    post:
+      summary: تنفيذ قرار نزاع
+      tags:
+      - Platform Support
+      operationId: commandDispute
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '422':
+          description: DISPUTE_EVIDENCE_REQUIRED / DISPUTE_DECISION_INCOMPLETE
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '403':
+          description: DUAL_REVIEW_REQUIRED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - command
+              properties:
+                command:
+                  type: string
+                decision_code:
+                  type:
+                  - string
+                  - 'null'
+                summary:
+                  type:
+                  - string
+                  - 'null'
+                financial_effect:
+                  type:
+                  - object
+                  - 'null'
+                  additionalProperties: true
+      parameters:
+      - name: dispute_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/platform/settlements:
+    get:
+      summary: جميع التسويات
+      tags:
+      - Platform Finance
+      operationId: listPlatformSettlements
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Settlement'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: office_id
+        in: query
+        required: false
+        schema:
+          type: string
+    post:
+      summary: إنشاء دورة تسوية
+      tags:
+      - Platform Finance
+      operationId: createSettlement
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Settlement'
+        '409':
+          description: SETTLEMENT_PERIOD_OPEN
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '500':
+          description: LEDGER_UNBALANCED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - office_id
+              - period_start
+              - period_end
+              - currency
+              properties:
+                office_id:
+                  type: string
+                period_start:
+                  type: string
+                  format: date
+                period_end:
+                  type: string
+                  format: date
+                currency:
+                  type: string
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/platform/settlements/{settlement_id}/commands:
+    post:
+      summary: انتقالات التسوية
+      tags:
+      - Platform Finance
+      operationId: commandSettlement
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Settlement'
+        '403':
+          description: DUAL_APPROVAL_REQUIRED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '409':
+          description: PAYOUT_ACCOUNT_INVALID / SETTLEMENT_FROZEN / SETTLEMENT_ITEMS_INVALID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - command
+              properties:
+                command:
+                  type: string
+                  enum:
+                  - calculate
+                  - submit_review
+                  - approve
+                  - process
+                  - mark_paid
+                  - retry
+                  - close
+                payment_reference:
+                  type:
+                  - string
+                  - 'null'
+      parameters:
+      - name: settlement_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/platform/policies:
+    get:
+      summary: إصدارات السياسات
+      tags:
+      - Platform Policies
+      operationId: listPolicies
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: true
+      security:
+      - bearerAuth: []
+    post:
+      summary: إنشاء إصدار سياسة
+      tags:
+      - Platform Policies
+      operationId: createPolicyVersion
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '403':
+          description: AUTH_MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - template_code
+              - language
+              - title
+              - content_markdown
+              - rules_json
+              - effective_from
+              properties:
+                template_code:
+                  type: string
+                office_id:
+                  type:
+                  - string
+                  - 'null'
+                language:
+                  type: string
+                title:
+                  type: string
+                content_markdown:
+                  type: string
+                rules_json:
+                  type: object
+                  additionalProperties: true
+                effective_from:
+                  type: string
+                  format: date-time
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/platform/configuration:
+    get:
+      summary: إعدادات المنصة
+      tags:
+      - Platform
+      operationId: getPlatformConfiguration
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+      security:
+      - bearerAuth: []
+    patch:
+      summary: تعديل إعدادات المنصة
+      tags:
+      - Platform
+      operationId: updatePlatformConfiguration
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '403':
+          description: AUTH_MFA_REQUIRED / DUAL_APPROVAL_REQUIRED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - changes
+              properties:
+                changes:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: true
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/webhooks/payments/{provider_code}:
+    post:
+      summary: Webhook مزود الدفع
+      tags:
+      - Webhooks
+      operationId: paymentWebhook
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  received:
+                    type: boolean
+        '400':
+          description: PAYMENT_WEBHOOK_INVALID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      parameters:
+      - name: provider_code
+        in: path
+        required: true
+        schema:
+          type: string
+  /v1/public/policies/{policy_code}:
+    get:
+      summary: عرض السياسة النافذة للزبون
+      tags:
+      - Public
+      operationId: getEffectivePublicPolicy
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicyVersion'
+        '404':
+          description: RESOURCE_NOT_FOUND
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      parameters:
+      - name: policy_code
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: office_id
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: language
+        in: query
+        required: false
+        schema:
+          type: string
+  /v1/files/upload-intents:
+    post:
+      summary: إنشاء رابط رفع خاص ومحدود
+      tags:
+      - Files
+      operationId: createUploadIntent
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  file_id:
+                    type: string
+                  upload_url:
+                    type: string
+                    format: uri
+                  expires_at:
+                    type: string
+                    format: date-time
+        '422':
+          description: FILE_TYPE_NOT_ALLOWED / VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - purpose
+              - filename
+              - mime_type
+              - size_bytes
+              properties:
+                purpose:
+                  type: string
+                filename:
+                  type: string
+                mime_type:
+                  type: string
+                size_bytes:
+                  type: integer
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/files/{file_id}/complete:
+    post:
+      summary: إكمال رفع ملف وبدء الفحص
+      tags:
+      - Files
+      operationId: completeUpload
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  file_id:
+                    type: string
+                  scan_status:
+                    type: string
+        '422':
+          description: FILE_MALWARE_DETECTED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '404':
+          description: RESOURCE_NOT_FOUND
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - sha256
+              properties:
+                sha256:
+                  type: string
+      parameters:
+      - name: file_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/office/branches:
+    get:
+      summary: قائمة فروع المكتب
+      tags:
+      - Office Administration
+      operationId: listOfficeBranches
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Branch'
+      security:
+      - bearerAuth: []
+    post:
+      summary: إنشاء فرع مكتب
+      tags:
+      - Office Administration
+      operationId: createOfficeBranch
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Branch'
+        '403':
+          description: PERMISSION_DENIED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              - location_id
+              properties:
+                name:
+                  type: string
+                location_id:
+                  type: string
+                phone:
+                  type:
+                  - string
+                  - 'null'
+                is_primary:
+                  type: boolean
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/office/branches/{branch_id}:
+    patch:
+      summary: تعديل فرع المكتب
+      tags:
+      - Office Administration
+      operationId: updateOfficeBranch
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Branch'
+        '409':
+          description: VERSION_CONFLICT
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '403':
+          description: PERMISSION_DENIED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                phone:
+                  type:
+                  - string
+                  - 'null'
+                status:
+                  type: string
+                version:
+                  type: integer
+      parameters:
+      - name: branch_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/office/staff:
+    get:
+      summary: موظفو المكتب وصلاحياتهم
+      tags:
+      - Office Administration
+      operationId: listOfficeStaff
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Membership'
+      security:
+      - bearerAuth: []
+    post:
+      summary: دعوة موظف إلى المكتب
+      tags:
+      - Office Administration
+      operationId: inviteOfficeStaff
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Membership'
+        '403':
+          description: PERMISSION_DENIED / AUTH_MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - identifier
+              - role_code
+              properties:
+                identifier:
+                  type: string
+                role_code:
+                  type: string
+                branch_id:
+                  type:
+                  - string
+                  - 'null'
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/office/staff/{membership_id}:
+    patch:
+      summary: تعديل دور أو حالة موظف
+      tags:
+      - Office Administration
+      operationId: updateOfficeStaff
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Membership'
+        '403':
+          description: PERMISSION_DENIED / AUTH_MFA_REQUIRED / DUAL_APPROVAL_REQUIRED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                role_code:
+                  type: string
+                branch_id:
+                  type:
+                  - string
+                  - 'null'
+                status:
+                  type: string
+      parameters:
+      - name: membership_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/office/seat-layouts:
+    get:
+      summary: مخططات مقاعد المكتب
+      tags:
+      - Fleet
+      operationId: listSeatLayouts
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SeatLayout'
+      security:
+      - bearerAuth: []
+    post:
+      summary: إنشاء مخطط مقاعد
+      tags:
+      - Fleet
+      operationId: createSeatLayout
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeatLayout'
+        '409':
+          description: SEAT_LAYOUT_MISMATCH
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SeatLayout'
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/office/seat-layouts/{layout_id}:
+    get:
+      summary: تفاصيل مخطط مقاعد
+      tags:
+      - Fleet
+      operationId: getSeatLayout
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeatLayout'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: layout_id
+        in: path
+        required: true
+        schema:
+          type: string
+    patch:
+      summary: إنشاء إصدار معدل من المخطط
+      tags:
+      - Fleet
+      operationId: versionSeatLayout
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeatLayout'
+        '409':
+          description: STATE_TRANSITION_NOT_ALLOWED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SeatLayout'
+      parameters:
+      - name: layout_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/office/vehicles:
+    get:
+      summary: قائمة البولمانات
+      tags:
+      - Fleet
+      operationId: listVehicles
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Vehicle'
+      security:
+      - bearerAuth: []
+    post:
+      summary: إضافة بولمان
+      tags:
+      - Fleet
+      operationId: createVehicle
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vehicle'
+        '422':
+          description: VALIDATION_ERROR / VERIFICATION_INCOMPLETE
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - plate_number
+              - seat_layout_id
+              properties:
+                plate_number:
+                  type: string
+                fleet_number:
+                  type:
+                  - string
+                  - 'null'
+                seat_layout_id:
+                  type: string
+                make_model:
+                  type:
+                  - string
+                  - 'null'
+                year:
+                  type:
+                  - integer
+                  - 'null'
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/office/vehicles/{vehicle_id}:
+    patch:
+      summary: تعديل حالة أو بيانات البولمان
+      tags:
+      - Fleet
+      operationId: updateVehicle
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vehicle'
+        '409':
+          description: STATE_TRANSITION_NOT_ALLOWED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '422':
+          description: VERIFICATION_INCOMPLETE
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                seat_layout_id:
+                  type: string
+                status:
+                  type: string
+                make_model:
+                  type:
+                  - string
+                  - 'null'
+                year:
+                  type:
+                  - integer
+                  - 'null'
+      parameters:
+      - name: vehicle_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/office/drivers:
+    get:
+      summary: قائمة السائقين
+      tags:
+      - Fleet
+      operationId: listDrivers
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Driver'
+      security:
+      - bearerAuth: []
+    post:
+      summary: إضافة سائق
+      tags:
+      - Fleet
+      operationId: createDriver
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Driver'
+        '422':
+          description: VALIDATION_ERROR / FILE_TYPE_NOT_ALLOWED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - full_name
+              - license_number
+              properties:
+                full_name:
+                  type: string
+                phone:
+                  type:
+                  - string
+                  - 'null'
+                license_number:
+                  type: string
+                license_expires_at:
+                  type:
+                  - string
+                  - 'null'
+                  format: date
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/office/drivers/{driver_id}:
+    patch:
+      summary: تعديل السائق
+      tags:
+      - Fleet
+      operationId: updateDriver
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Driver'
+        '422':
+          description: VERIFICATION_INCOMPLETE
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '409':
+          description: STATE_TRANSITION_NOT_ALLOWED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                phone:
+                  type:
+                  - string
+                  - 'null'
+                license_expires_at:
+                  type:
+                  - string
+                  - 'null'
+                  format: date
+                status:
+                  type: string
+      parameters:
+      - name: driver_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/office/support-cases/{case_id}/messages:
+    get:
+      summary: رسائل حالة الدعم للمكتب
+      tags:
+      - Support
+      operationId: listOfficeSupportMessages
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: true
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: case_id
+        in: path
+        required: true
+        schema:
+          type: string
+    post:
+      summary: الرد على حالة دعم
+      tags:
+      - Support
+      operationId: replyOfficeSupportCase
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '422':
+          description: DISPUTE_EVIDENCE_REQUIRED / FILE_MALWARE_DETECTED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - body
+              properties:
+                body:
+                  type: string
+                file_ids:
+                  type: array
+                  items:
+                    type: string
+      parameters:
+      - name: case_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/office/subscription:
+    get:
+      summary: اشتراك المكتب الحالي
+      tags:
+      - Subscriptions
+      operationId: getOfficeSubscription
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OfficeSubscription'
+        '404':
+          description: RESOURCE_NOT_FOUND
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+  /v1/office/subscription/change-request:
+    post:
+      summary: طلب تغيير باقة المكتب
+      tags:
+      - Subscriptions
+      operationId: requestSubscriptionChange
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                  status:
+                    type: string
+        '422':
+          description: CONFIGURATION_OUT_OF_RANGE
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '402':
+          description: PAYMENT_REQUIRED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - plan_id
+              properties:
+                plan_id:
+                  type: string
+                effective_mode:
+                  type: string
+                  enum:
+                  - immediate
+                  - next_period
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/office/reports/trips:
+    get:
+      summary: تقرير الرحلات
+      tags:
+      - Reports
+      operationId: getOfficeTripReport
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: date_from
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: date_to
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: route_id
+        in: query
+        required: false
+        schema:
+          type: string
+  /v1/office/reports/sales:
+    get:
+      summary: تقرير المبيعات والعمولات
+      tags:
+      - Reports
+      operationId: getOfficeSalesReport
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: date_from
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: date_to
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: branch_id
+        in: query
+        required: false
+        schema:
+          type: string
+  /v1/office/reports/passengers:
+    get:
+      summary: تقرير الركاب والصعود
+      tags:
+      - Reports
+      operationId: getOfficePassengerReport
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: date_from
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: date_to
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: trip_id
+        in: query
+        required: false
+        schema:
+          type: string
+  /v1/office/notifications:
+    get:
+      summary: إشعارات موظف المكتب
+      tags:
+      - Notifications
+      operationId: listOfficeNotifications
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: true
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          type: string
+  /v1/platform/locations:
+    get:
+      summary: إدارة المواقع والنقاط
+      tags:
+      - Platform Catalog
+      operationId: listPlatformLocations
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Location'
+      security:
+      - bearerAuth: []
+    post:
+      summary: إنشاء موقع أو نقطة
+      tags:
+      - Platform Catalog
+      operationId: createPlatformLocation
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '403':
+          description: PERMISSION_DENIED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - type
+              - name_ar
+              properties:
+                type:
+                  type: string
+                parent_id:
+                  type:
+                  - string
+                  - 'null'
+                name_ar:
+                  type: string
+                address:
+                  type:
+                  - string
+                  - 'null'
+                latitude:
+                  type:
+                  - number
+                  - 'null'
+                longitude:
+                  type:
+                  - number
+                  - 'null'
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/platform/locations/{location_id}:
+    patch:
+      summary: تعديل موقع أو نقطة
+      tags:
+      - Platform Catalog
+      operationId: updatePlatformLocation
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+        '409':
+          description: VERSION_CONFLICT
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '403':
+          description: PERMISSION_DENIED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      parameters:
+      - name: location_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/platform/routes:
+    get:
+      summary: إدارة الخطوط
+      tags:
+      - Platform Catalog
+      operationId: listPlatformRoutes
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: true
+      security:
+      - bearerAuth: []
+    post:
+      summary: إنشاء خط
+      tags:
+      - Platform Catalog
+      operationId: createPlatformRoute
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '409':
+          description: CONFLICT
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - origin_id
+              - destination_id
+              - name_ar
+              properties:
+                origin_id:
+                  type: string
+                destination_id:
+                  type: string
+                name_ar:
+                  type: string
+                stops:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: true
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/platform/routes/{route_id}:
+    patch:
+      summary: تعديل حالة أو نقاط الخط
+      tags:
+      - Platform Catalog
+      operationId: updatePlatformRoute
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '409':
+          description: VERSION_CONFLICT / CONFLICT
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      parameters:
+      - name: route_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/platform/subscription-plans:
+    get:
+      summary: قائمة باقات الاشتراك
+      tags:
+      - Platform Subscriptions
+      operationId: listSubscriptionPlans
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SubscriptionPlan'
+      security:
+      - bearerAuth: []
+    post:
+      summary: إنشاء باقة اشتراك
+      tags:
+      - Platform Subscriptions
+      operationId: createSubscriptionPlan
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionPlan'
+        '403':
+          description: AUTH_MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriptionPlan'
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/platform/subscription-plans/{plan_id}:
+    patch:
+      summary: إصدار/تعديل باقة اشتراك
+      tags:
+      - Platform Subscriptions
+      operationId: updateSubscriptionPlan
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionPlan'
+        '403':
+          description: AUTH_MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '409':
+          description: VERSION_CONFLICT
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      parameters:
+      - name: plan_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/platform/offices/{office_id}/subscription:
+    post:
+      summary: تفعيل أو تغيير اشتراك مكتب
+      tags:
+      - Platform Subscriptions
+      operationId: setOfficeSubscription
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OfficeSubscription'
+        '403':
+          description: DUAL_APPROVAL_REQUIRED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - plan_id
+              - period_start
+              - period_end
+              properties:
+                plan_id:
+                  type: string
+                period_start:
+                  type: string
+                  format: date-time
+                period_end:
+                  type: string
+                  format: date-time
+                status:
+                  type: string
+      parameters:
+      - name: office_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/platform/commission-profiles:
+    get:
+      summary: ملفات العمولات
+      tags:
+      - Platform Finance
+      operationId: listCommissionProfiles
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CommissionProfile'
+      security:
+      - bearerAuth: []
+    post:
+      summary: إنشاء ملف عمولة
+      tags:
+      - Platform Finance
+      operationId: createCommissionProfile
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommissionProfile'
+        '403':
+          description: AUTH_MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommissionProfile'
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/platform/commission-profiles/{profile_id}:
+    patch:
+      summary: إصدار تعديل ملف عمولة
+      tags:
+      - Platform Finance
+      operationId: updateCommissionProfile
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommissionProfile'
+        '403':
+          description: AUTH_MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '409':
+          description: VERSION_CONFLICT
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      parameters:
+      - name: profile_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/platform/refunds:
+    get:
+      summary: جميع طلبات الاسترداد
+      tags:
+      - Platform Finance
+      operationId: listPlatformRefunds
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Refund'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: office_id
+        in: query
+        required: false
+        schema:
+          type: string
+  /v1/platform/chargebacks:
+    get:
+      summary: اعتراضات مزود الدفع
+      tags:
+      - Platform Finance
+      operationId: listChargebacks
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: true
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+  /v1/platform/support-cases:
+    get:
+      summary: صندوق دعم المنصة
+      tags:
+      - Platform Support
+      operationId: listPlatformSupportCases
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SupportCase'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: priority
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: office_id
+        in: query
+        required: false
+        schema:
+          type: string
+  /v1/platform/support-cases/{case_id}/messages:
+    get:
+      summary: رسائل حالة دعم المنصة
+      tags:
+      - Platform Support
+      operationId: listPlatformSupportMessages
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: true
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: case_id
+        in: path
+        required: true
+        schema:
+          type: string
+    post:
+      summary: رد المنصة على حالة دعم
+      tags:
+      - Platform Support
+      operationId: replyPlatformSupportCase
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - body
+              properties:
+                body:
+                  type: string
+                visibility:
+                  type: string
+                file_ids:
+                  type: array
+                  items:
+                    type: string
+      parameters:
+      - name: case_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/platform/incidents:
+    get:
+      summary: حوادث الرحلات والنظام
+      tags:
+      - Platform Operations
+      operationId: listIncidents
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: true
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: severity
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+    post:
+      summary: فتح حادث
+      tags:
+      - Platform Operations
+      operationId: createIncident
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - severity
+              - type
+              - description
+              properties:
+                trip_id:
+                  type:
+                  - string
+                  - 'null'
+                severity:
+                  type: string
+                type:
+                  type: string
+                description:
+                  type: string
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/platform/violations:
+    get:
+      summary: مخالفات المكاتب
+      tags:
+      - Platform Compliance
+      operationId: listOfficeViolations
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: true
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: office_id
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: severity
+        in: query
+        required: false
+        schema:
+          type: string
+    post:
+      summary: تسجيل مخالفة مكتب
+      tags:
+      - Platform Compliance
+      operationId: createOfficeViolation
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '403':
+          description: DUAL_APPROVAL_REQUIRED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - office_id
+              - severity
+              - code
+              - description
+              properties:
+                office_id:
+                  type: string
+                booking_id:
+                  type:
+                  - string
+                  - 'null'
+                trip_id:
+                  type:
+                  - string
+                  - 'null'
+                severity:
+                  type: string
+                code:
+                  type: string
+                description:
+                  type: string
+                financial_penalty:
+                  type:
+                  - string
+                  - 'null'
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 120
+  /v1/platform/audit-logs:
+    get:
+      summary: البحث في سجل التدقيق
+      tags:
+      - Platform Security
+      operationId: searchAuditLogs
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AuditLog'
+        '403':
+          description: PERMISSION_DENIED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: actor_user_id
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: office_id
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: action
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: date_from
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: date_to
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          type: string
+  /v1/platform/risk-assessments:
+    get:
+      summary: مراجعات المخاطر
+      tags:
+      - Platform Security
+      operationId: listRiskAssessments
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: true
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: decision
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: subject_type
+        in: query
+        required: false
+        schema:
+          type: string
+  /v1/platform/reports/overview:
+    get:
+      summary: لوحة مؤشرات المنصة
+      tags:
+      - Platform Reports
+      operationId: getPlatformOverviewReport
+      responses:
+        '200':
+          description: نجاح
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: date_from
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: date_to
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: office_id
+        in: query
+        required: false
+        schema:
+          type: string
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Error:
+      type: object
+      required:
+      - code
+      - message
+      - request_id
+      - retryable
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        request_id:
+          type: string
+          format: uuid
+        retryable:
+          type: boolean
+        details:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+    Money:
+      type: object
+      required:
+      - amount
+      - currency
+      properties:
+        amount:
+          type: string
+          pattern: ^-?\d+(\.\d{1,2})?$
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+    PassengerInput:
+      type: object
+      required:
+      - full_name
+      - gender
+      - passenger_type
+      properties:
+        full_name:
+          type: string
+          minLength: 2
+          maxLength: 160
+        gender:
+          type: string
+          enum:
+          - male
+          - female
+        passenger_type:
+          type: string
+          enum:
+          - adult
+          - child
+          - infant
+        date_of_birth:
+          type:
+          - string
+          - 'null'
+          format: date
+        nationality_code:
+          type:
+          - string
+          - 'null'
+          minLength: 2
+          maxLength: 2
+        seat_id:
+          type: string
+          format: uuid
+    TripSummary:
+      type: object
+      required:
+      - id
+      - office
+      - origin
+      - destination
+      - departure_at
+      - currency
+      - from_price
+      - available_seats
+      properties:
+        id:
+          type: string
+        office:
+          type: object
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+        operator:
+          type: object
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+        origin:
+          $ref: '#/components/schemas/Location'
+        destination:
+          $ref: '#/components/schemas/Location'
+        departure_at:
+          type: string
+          format: date-time
+        arrival_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        currency:
+          type: string
+        from_price:
+          type: string
+        available_seats:
+          type: integer
+        payment_methods:
+          type: array
+          items:
+            type: string
+        cancellation_summary:
+          type: string
+    Location:
+      type: object
+      required:
+      - id
+      - name
+      - type
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+        address:
+          type:
+          - string
+          - 'null'
+    SeatMap:
+      type: object
+      required:
+      - trip_id
+      - layout_version
+      - seats
+      properties:
+        trip_id:
+          type: string
+        layout_version:
+          type: integer
+        expires_at:
+          type: string
+          format: date-time
+        seats:
+          type: array
+          items:
+            $ref: '#/components/schemas/SeatAvailability'
+    SeatAvailability:
+      type: object
+      required:
+      - id
+      - code
+      - row
+      - column
+      - status
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+        row:
+          type: integer
+        column:
+          type: integer
+        type:
+          type: string
+        status:
+          type: string
+          enum:
+          - available
+          - held_by_you
+          - unavailable
+          - policy_unavailable
+          - blocked
+        price:
+          type:
+          - string
+          - 'null'
+    SeatHoldRequest:
+      type: object
+      required:
+      - seat_ids
+      - passengers
+      properties:
+        seat_ids:
+          type: array
+          minItems: 1
+          items:
+            type: string
+            format: uuid
+        passengers:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/PassengerInput'
+        quote_version:
+          type: integer
+    SeatHold:
+      type: object
+      required:
+      - hold_token
+      - expires_at
+      - quote
+      properties:
+        hold_token:
+          type: string
+        expires_at:
+          type: string
+          format: date-time
+        quote:
+          $ref: '#/components/schemas/BookingQuote'
+    BookingQuote:
+      type: object
+      required:
+      - subtotal
+      - discount
+      - fees
+      - total
+      - policy_version_ids
+      - quote_version
+      properties:
+        subtotal:
+          $ref: '#/components/schemas/Money'
+        discount:
+          $ref: '#/components/schemas/Money'
+        fees:
+          $ref: '#/components/schemas/Money'
+        total:
+          $ref: '#/components/schemas/Money'
+        payment_deadline_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        policy_version_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        quote_version:
+          type: integer
+    CreateBookingRequest:
+      type: object
+      required:
+      - trip_id
+      - hold_token
+      - contact
+      - passengers
+      - payment_method
+      - accepted_policy_version_ids
+      properties:
+        trip_id:
+          type: string
+        hold_token:
+          type: string
+        contact:
+          $ref: '#/components/schemas/Contact'
+        passengers:
+          type: array
+          items:
+            $ref: '#/components/schemas/PassengerInput'
+        payment_method:
+          type: string
+          enum:
+          - office_cash
+          - manual_transfer
+          - electronic
+        accepted_policy_version_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        client_reference:
+          type:
+          - string
+          - 'null'
+          maxLength: 120
+    Contact:
+      type: object
+      required:
+      - name
+      - phone
+      properties:
+        name:
+          type: string
+          maxLength: 160
+        phone:
+          type: string
+          maxLength: 20
+        email:
+          type:
+          - string
+          - 'null'
+          format: email
+    Booking:
+      type: object
+      required:
+      - id
+      - pnr
+      - status
+      - payment_status
+      - trip
+      - passengers
+      - pricing
+      - created_at
+      properties:
+        id:
+          type: string
+        pnr:
+          type: string
+        status:
+          type: string
+        payment_status:
+          type: string
+        trip:
+          $ref: '#/components/schemas/TripSummary'
+        contact:
+          $ref: '#/components/schemas/Contact'
+        passengers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Passenger'
+        pricing:
+          $ref: '#/components/schemas/BookingQuote'
+        payment_deadline_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+        manage_actions:
+          type: array
+          items:
+            type: string
+    Passenger:
+      allOf:
+      - $ref: '#/components/schemas/PassengerInput'
+      - type: object
+        required:
+        - id
+        - boarding_status
+        properties:
+          id:
+            type: string
+            format: uuid
+          boarding_status:
+            type: string
+          ticket:
+            anyOf:
+            - $ref: '#/components/schemas/Ticket'
+            - type: 'null'
+    Ticket:
+      type: object
+      required:
+      - id
+      - version
+      - status
+      - qr_data
+      - seat_code
+      properties:
+        id:
+          type: string
+        version:
+          type: integer
+        status:
+          type: string
+        qr_data:
+          type: string
+          description: Signed opaque payload
+        seat_code:
+          type: string
+        pdf_url:
+          type:
+          - string
+          - 'null'
+          format: uri
+    PaymentIntent:
+      type: object
+      required:
+      - id
+      - method_type
+      - status
+      - amount
+      - currency
+      properties:
+        id:
+          type: string
+        method_type:
+          type: string
+        status:
+          type: string
+        amount:
+          type: string
+        currency:
+          type: string
+        provider_action:
+          type:
+          - object
+          - 'null'
+          additionalProperties: true
+        expires_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+    ManualTransferRequest:
+      type: object
+      required:
+      - transfer_reference
+      - transferred_at
+      - amount
+      properties:
+        transfer_reference:
+          type: string
+          maxLength: 160
+        transferred_at:
+          type: string
+          format: date-time
+        amount:
+          type: string
+        sender_reference:
+          type:
+          - string
+          - 'null'
+        proof_file_id:
+          type:
+          - string
+          - 'null'
+    CancellationQuote:
+      type: object
+      required:
+      - allowed
+      - refund_amount
+      - retained_amount
+      - reason
+      properties:
+        allowed:
+          type: boolean
+        refund_amount:
+          $ref: '#/components/schemas/Money'
+        retained_amount:
+          $ref: '#/components/schemas/Money'
+        reason:
+          type: string
+        expires_at:
+          type: string
+          format: date-time
+    Refund:
+      type: object
+      required:
+      - id
+      - status
+      - requested_amount
+      - currency
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+        requested_amount:
+          type: string
+        approved_amount:
+          type:
+          - string
+          - 'null'
+        currency:
+          type: string
+        reason_code:
+          type: string
+    SupportCase:
+      type: object
+      required:
+      - id
+      - priority
+      - category
+      - status
+      - opened_at
+      properties:
+        id:
+          type: string
+        priority:
+          type: string
+        category:
+          type: string
+        status:
+          type: string
+        booking_id:
+          type:
+          - string
+          - 'null'
+        trip_id:
+          type:
+          - string
+          - 'null'
+        sla_due_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        opened_at:
+          type: string
+          format: date-time
+    Office:
+      type: object
+      required:
+      - id
+      - name
+      - status
+      - timezone
+      - currency
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        status:
+          type: string
+        timezone:
+          type: string
+        currency:
+          type: string
+        support_phone:
+          type: string
+    TripInput:
+      type: object
+      required:
+      - route_id
+      - branch_id
+      - operator_id
+      - vehicle_id
+      - scheduled_departure_at
+      - currency
+      - base_price
+      properties:
+        route_id:
+          type: string
+        branch_id:
+          type: string
+        operator_id:
+          type: string
+        vehicle_id:
+          type: string
+        scheduled_departure_at:
+          type: string
+          format: date-time
+        scheduled_arrival_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        currency:
+          type: string
+        base_price:
+          type: string
+        policy_version_ids:
+          type: array
+          items:
+            type: string
+        payment_methods:
+          type: array
+          items:
+            type: string
+    OfficeTrip:
+      allOf:
+      - $ref: '#/components/schemas/TripSummary'
+      - type: object
+        properties:
+          status:
+            type: string
+          version:
+            type: integer
+          boarding_counts:
+            type: object
+            additionalProperties:
+              type: integer
+    BoardingCommand:
+      type: object
+      required:
+      - command
+      properties:
+        command:
+          type: string
+          enum:
+          - arrive
+          - verify
+          - board
+          - reverse
+          - deny
+          - no_show
+        ticket_qr:
+          type:
+          - string
+          - 'null'
+        passenger_id:
+          type:
+          - string
+          - 'null'
+        reason_code:
+          type:
+          - string
+          - 'null'
+        offline_event_id:
+          type:
+          - string
+          - 'null'
+    Settlement:
+      type: object
+      required:
+      - id
+      - office_id
+      - period_start
+      - period_end
+      - currency
+      - status
+      - net_amount
+      properties:
+        id:
+          type: string
+        office_id:
+          type: string
+        period_start:
+          type: string
+          format: date
+        period_end:
+          type: string
+          format: date
+        currency:
+          type: string
+        status:
+          type: string
+        gross_amount:
+          type: string
+        commission_amount:
+          type: string
+        refund_amount:
+          type: string
+        reserve_amount:
+          type: string
+        adjustment_amount:
+          type: string
+        net_amount:
+          type: string
+    Branch:
+      type: object
+      required:
+      - id
+      - name
+      - status
+      - location
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        status:
+          type: string
+        phone:
+          type:
+          - string
+          - 'null'
+        is_primary:
+          type: boolean
+        location:
+          $ref: '#/components/schemas/Location'
+    Membership:
+      type: object
+      required:
+      - id
+      - user
+      - role
+      - status
+      properties:
+        id:
+          type: string
+        user:
+          type: object
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+            phone:
+              type:
+              - string
+              - 'null'
+            email:
+              type:
+              - string
+              - 'null'
+        branch_id:
+          type:
+          - string
+          - 'null'
+        role:
+          type: string
+        status:
+          type: string
+    SeatLayout:
+      type: object
+      required:
+      - id
+      - name
+      - layout_type
+      - version
+      - status
+      - seats
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        layout_type:
+          type: string
+        version:
+          type: integer
+        status:
+          type: string
+        seats:
+          type: array
+          items:
+            type: object
+            required:
+            - code
+            - row
+            - column
+            - type
+            properties:
+              id:
+                type:
+                - string
+                - 'null'
+              code:
+                type: string
+              row:
+                type: integer
+              column:
+                type: integer
+              type:
+                type: string
+              sellable:
+                type: boolean
+        adjacencies:
+          type: array
+          items:
+            type: object
+            required:
+            - seat_a
+            - seat_b
+            - type
+            properties:
+              seat_a:
+                type: string
+              seat_b:
+                type: string
+              type:
+                type: string
+    Vehicle:
+      type: object
+      required:
+      - id
+      - plate_number
+      - seat_layout_id
+      - status
+      properties:
+        id:
+          type: string
+        plate_number:
+          type: string
+        fleet_number:
+          type:
+          - string
+          - 'null'
+        seat_layout_id:
+          type: string
+        status:
+          type: string
+        make_model:
+          type:
+          - string
+          - 'null'
+        year:
+          type:
+          - integer
+          - 'null'
+    Driver:
+      type: object
+      required:
+      - id
+      - full_name
+      - status
+      properties:
+        id:
+          type: string
+        full_name:
+          type: string
+        phone:
+          type:
+          - string
+          - 'null'
+        license_last4:
+          type:
+          - string
+          - 'null'
+        license_expires_at:
+          type:
+          - string
+          - 'null'
+          format: date
+        status:
+          type: string
+    PolicyVersion:
+      type: object
+      required:
+      - id
+      - template_code
+      - version
+      - language
+      - title
+      - effective_from
+      properties:
+        id:
+          type: string
+        template_code:
+          type: string
+        office_id:
+          type:
+          - string
+          - 'null'
+        version:
+          type: integer
+        language:
+          type: string
+        title:
+          type: string
+        content_markdown:
+          type: string
+        rules_json:
+          type: object
+          additionalProperties: true
+        effective_from:
+          type: string
+          format: date-time
+        effective_to:
+          type:
+          - string
+          - 'null'
+          format: date-time
+    SubscriptionPlan:
+      type: object
+      required:
+      - id
+      - code
+      - name
+      - billing_period
+      - price
+      - features
+      - limits
+      - status
+      properties:
+        id:
+          type: string
+        code:
+          type: string
+        name:
+          type: string
+        billing_period:
+          type: string
+        price:
+          $ref: '#/components/schemas/Money'
+        features:
+          type: object
+          additionalProperties: true
+        limits:
+          type: object
+          additionalProperties: true
+        status:
+          type: string
+    OfficeSubscription:
+      type: object
+      required:
+      - id
+      - plan
+      - status
+      - period_start
+      - period_end
+      properties:
+        id:
+          type: string
+        plan:
+          $ref: '#/components/schemas/SubscriptionPlan'
+        status:
+          type: string
+        period_start:
+          type: string
+          format: date-time
+        period_end:
+          type: string
+          format: date-time
+        auto_renew:
+          type: boolean
+        cancel_at_period_end:
+          type: boolean
+    CommissionProfile:
+      type: object
+      required:
+      - id
+      - code
+      - name
+      - calculation_type
+      - status
+      properties:
+        id:
+          type: string
+        code:
+          type: string
+        name:
+          type: string
+        calculation_type:
+          type: string
+        percentage_rate:
+          type: string
+        fixed_amount:
+          type: string
+        currency:
+          type:
+          - string
+          - 'null'
+        status:
+          type: string
+    AuditLog:
+      type: object
+      required:
+      - id
+      - occurred_at
+      - actor_type
+      - action
+      - object_type
+      properties:
+        id:
+          type: integer
+        occurred_at:
+          type: string
+          format: date-time
+        actor_type:
+          type: string
+        actor_user_id:
+          type:
+          - string
+          - 'null'
+        office_id:
+          type:
+          - string
+          - 'null'
+        action:
+          type: string
+        object_type:
+          type: string
+        object_id:
+          type:
+          - string
+          - 'null'
+        reason_code:
+          type:
+          - string
+          - 'null'
+        metadata:
+          type: object
+          additionalProperties: true

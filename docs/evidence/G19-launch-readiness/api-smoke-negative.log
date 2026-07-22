@@ -1,0 +1,2 @@
+smoke: FAIL /health/live returned HTTP 301
+negative_smoke_exit=1

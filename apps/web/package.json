@@ -1,0 +1,33 @@
+{
+  "name": "bus-booking-web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --hostname 0.0.0.0",
+    "build": "next build",
+    "start": "next start --hostname 0.0.0.0",
+    "lint": "eslint . --max-warnings=0",
+    "typecheck": "tsc --noEmit",
+    "test:ux-contract": "node scripts/ux-contract-test.mjs",
+    "test:ux-browser": "node scripts/ux-browser-test.mjs"
+  },
+  "dependencies": {
+    "next": "^16.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@sparticuz/chromium": "^147.0.0",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "axe-core": "^4.12.1",
+    "eslint": "^9.0.0",
+    "eslint-config-next": "^16.0.0",
+    "puppeteer-core": "^25.3.0",
+    "typescript": "^5.9.0"
+  },
+  "overrides": {
+    "postcss": "^8.5.10"
+  }
+}

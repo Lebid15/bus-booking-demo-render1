@@ -1,0 +1,17 @@
+[2026-07-21 22:21:53,365: INFO/MainProcess] beat: Starting...
+[2026-07-21 22:21:58,436: INFO/MainProcess] Scheduler: Sending due task process-received-payment-webhooks (payments.process_received_webhooks)
+[2026-07-21 22:21:58,445: INFO/MainProcess] Scheduler: Sending due task dispatch-notification-events (notifications.dispatch_outbox_events)
+[2026-07-21 22:21:58,447: INFO/MainProcess] Scheduler: Sending due task deliver-due-notifications (notifications.deliver_due_notifications)
+[2026-07-21 22:22:03,433: INFO/MainProcess] Scheduler: Sending due task process-received-payment-webhooks (payments.process_received_webhooks)
+[2026-07-21 22:22:03,445: INFO/MainProcess] Scheduler: Sending due task dispatch-notification-events (notifications.dispatch_outbox_events)
+[2026-07-21 22:22:03,447: INFO/MainProcess] Scheduler: Sending due task deliver-due-notifications (notifications.deliver_due_notifications)
+celery beat v5.6.3 (recovery) is starting.
+__    -    ... __   -        _
+LocalTime -> 2026-07-21 22:21:53
+Configuration ->
+    . broker -> redis://127.0.0.1:56379/1
+    . loader -> celery.loaders.app.AppLoader
+    . scheduler -> celery.beat.PersistentScheduler
+    . db -> /mnt/data/bus_booking_work/bus-booking-platform/docs/evidence/G19-launch-readiness/celerybeat-schedule
+    . logfile -> [stderr]@%INFO
+    . maxinterval -> 5.00 minutes (300s)

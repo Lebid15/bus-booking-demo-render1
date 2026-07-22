@@ -1,0 +1,6 @@
+--- /health/live ---
+{"status":"ok","service":"bus-booking-api"}
+--- /health/ready ---
+{"status":"ok","checks":{"database":"ok","cache":"ok","continuity":"ok"}}
+--- /v1/public/locations ---
+[]

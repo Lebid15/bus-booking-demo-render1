@@ -1,0 +1,9 @@
+PASS — stopped Uvicorn API (pid 37294)
+PASS — stopped Celery worker (pid 26008)
+PASS — stopped Celery beat (pid 26018)
+PASS — stopped Redis 8.8
+waiting for server to shut down.... done
+server stopped
+PASS — stopped PostgreSQL 18.4
+
+Remaining project runtime processes:

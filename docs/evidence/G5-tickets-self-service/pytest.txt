@@ -1,0 +1,96 @@
+.....................s.................................s.                [100%]
+==================================== PASSES ====================================
+________ test_public_hold_requires_passenger_gender_with_catalog_error _________
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:253 Unprocessable Content: /v1/public/trips/01KY1T47TXNCEB627T92W5S2D3/seat-holds
+_______________ test_e08_ac02_lookup_is_generic_and_rate_limited _______________
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:253 Not Found: /v1/public/bookings/lookup
+WARNING  django.request:log.py:253 Not Found: /v1/public/bookings/lookup
+WARNING  django.request:log.py:253 Too Many Requests: /v1/public/bookings/lookup
+___ test_e08_ticket_qr_is_tamper_evident_and_document_requires_manage_token ____
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:253 Not Found: /v1/public/bookings/ZAX32W8C/tickets/c342c7cf-28d7-4423-aa42-e7b2e687c0ff/document
+____________ test_e01_ac03_revoked_session_is_rejected_immediately _____________
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:253 Unauthorized: /v1/me/sessions
+____________ test_e01_ac02_sensitive_office_user_must_complete_mfa _____________
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:253 Forbidden: /v1/auth/login
+_______________ test_e01_ac04_progressive_rate_limit_is_generic ________________
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:253 Unauthorized: /v1/auth/login
+WARNING  django.request:log.py:253 Unauthorized: /v1/auth/login
+WARNING  django.request:log.py:253 Too Many Requests: /v1/auth/login
+_______ test_expired_database_session_rejected_even_when_jwt_not_expired _______
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:253 Unauthorized: /v1/me/sessions
+__________________ test_mfa_challenge_is_bound_to_request_ip ___________________
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:253 Forbidden: /v1/auth/login
+WARNING  django.request:log.py:253 Forbidden: /v1/auth/mfa/verify
+________________ test_ambiguous_membership_context_fails_closed ________________
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:253 Forbidden: /v1/office/context
+_____ test_e01_ac01_registration_normalizes_phone_and_prevents_duplicates ______
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:253 Unprocessable Content: /v1/auth/register
+=========================== short test summary info ============================
+PASSED tests/test_e04_trips.py::test_e04_ac01_schedule_returns_missing_fields_and_does_not_mutate_trip
+PASSED tests/test_e04_trips.py::test_schedule_captures_policy_pricing_stops_and_seat_inventory_snapshots
+PASSED tests/test_e04_trips.py::test_e04_ac03_material_time_change_creates_explicit_customer_responses
+PASSED tests/test_e04_trips.py::test_e04_ac04_departure_is_blocked_for_confirmed_passenger_without_seat
+PASSED tests/test_e04_trips.py::test_e04_ac05_cancellation_stops_sales_and_starts_action_for_every_booking
+PASSED tests/test_e05_public_search_holds.py::test_e05_ac01_search_uses_office_local_date_and_only_bookable_trips
+PASSED tests/test_e05_public_search_holds.py::test_e05_ac02_search_discloses_honest_price_fees_and_policy
+PASSED tests/test_e05_public_search_holds.py::test_e05_ac05_restricted_office_trips_are_hidden[no_new_bookings]
+PASSED tests/test_e05_public_search_holds.py::test_e05_ac05_restricted_office_trips_are_hidden[restricted]
+PASSED tests/test_e05_public_search_holds.py::test_e05_ac05_restricted_office_trips_are_hidden[suspended]
+PASSED tests/test_e05_public_search_holds.py::test_public_hold_revalidates_inventory_and_is_idempotent
+PASSED tests/test_e05_public_search_holds.py::test_idempotent_hold_replay_does_not_consume_rate_limit_twice
+PASSED tests/test_e05_public_search_holds.py::test_e05_ac03_map_does_not_authorize_stale_seat_selection
+PASSED tests/test_e05_public_search_holds.py::test_hold_release_and_expiry_restore_availability
+PASSED tests/test_e05_public_search_holds.py::test_public_api_search_hold_and_release_contract
+PASSED tests/test_e06_booking_confirmation.py::test_e06_hold_is_consumed_atomically_and_booking_snapshots_are_frozen
+PASSED tests/test_e06_booking_confirmation.py::test_e06_expired_hold_is_rejected_without_consuming_resold_seat
+PASSED tests/test_e06_booking_confirmation.py::test_e06_gender_conflict_is_private_across_bookings_but_allowed_inside_one_booking
+PASSED tests/test_e06_booking_confirmation.py::test_e06_child_guardian_group_is_snapshotted_and_boarding_states_remain_independent
+PASSED tests/test_e06_booking_confirmation.py::test_public_booking_api_is_idempotent_and_returns_pnr_and_manage_token
+PASSED tests/test_e06_booking_confirmation.py::test_manual_transfer_booking_waits_for_payment_and_keeps_deadline_snapshot
+PASSED tests/test_e06_booking_confirmation.py::test_public_hold_requires_passenger_gender_with_catalog_error
+PASSED tests/test_e08_tickets_self_service.py::test_e08_ac01_confirmed_guest_booking_issues_ticket_per_passenger
+PASSED tests/test_e08_tickets_self_service.py::test_e08_awaiting_payment_booking_does_not_issue_active_ticket
+PASSED tests/test_e08_tickets_self_service.py::test_e08_guest_manage_token_and_lookup_retrieve_ticket
+PASSED tests/test_e08_tickets_self_service.py::test_e08_ac02_lookup_is_generic_and_rate_limited
+PASSED tests/test_e08_tickets_self_service.py::test_e08_ac03_reissue_revokes_old_qr_and_increments_version
+PASSED tests/test_e08_tickets_self_service.py::test_e08_ac04_ticket_document_and_qr_are_available_without_email
+PASSED tests/test_e08_tickets_self_service.py::test_e08_ac05_verified_customer_links_guest_booking_without_copy
+PASSED tests/test_e08_tickets_self_service.py::test_e08_ticket_qr_is_tamper_evident_and_document_requires_manage_token
+PASSED tests/test_identity_foundation.py::test_database_enforces_unique_normalized_email
+PASSED tests/test_identity_foundation.py::test_phone_normalization_supports_local_and_e164
+PASSED tests/test_identity_foundation.py::test_login_creates_revocable_server_side_session
+PASSED tests/test_identity_foundation.py::test_e01_ac03_revoked_session_is_rejected_immediately
+PASSED tests/test_identity_foundation.py::test_e01_ac02_sensitive_office_user_must_complete_mfa
+PASSED tests/test_identity_foundation.py::test_e01_ac04_progressive_rate_limit_is_generic
+PASSED tests/test_identity_foundation.py::test_e01_ac05_revoking_one_session_keeps_other_active_and_audits
+PASSED tests/test_identity_foundation.py::test_expired_database_session_rejected_even_when_jwt_not_expired
+PASSED tests/test_identity_foundation.py::test_mfa_challenge_is_bound_to_request_ip
+PASSED tests/test_phase1_geography_fleet.py::test_e03_ac01_reverse_direction_is_not_inferred
+PASSED tests/test_phase1_geography_fleet.py::test_e03_ac02_duplicate_seat_position_is_rejected
+PASSED tests/test_phase1_geography_fleet.py::test_e03_ac03_across_aisle_is_not_same_unit
+PASSED tests/test_phase1_geography_fleet.py::test_e03_ac04_inactive_or_expired_resources_are_not_assignable
+PASSED tests/test_phase1_geography_fleet.py::test_e03_ac05_layout_change_creates_version_and_keeps_existing_vehicle_snapshot_reference
+PASSED tests/test_phase1_organizations.py::test_e02_ac01_incomplete_verification_cannot_be_submitted
+PASSED tests/test_phase1_organizations.py::test_e02_ac02_enhanced_verification_requires_distinct_final_approver
+PASSED tests/test_phase1_organizations.py::test_e02_ac03_expired_critical_office_document_blocks_new_trip_assignment
+PASSED tests/test_phase1_organizations.py::test_e02_ac04_payout_change_requires_mfa_dual_approval_cooling_and_notification
+PASSED tests/test_platform_baseline.py::test_liveness_and_request_id
+PASSED tests/test_platform_baseline.py::test_readiness_checks_database_and_cache
+PASSED tests/test_platform_baseline.py::test_invalid_request_id_is_replaced
+PASSED tests/test_tenant_context.py::test_office_context_is_derived_from_membership_not_request_office_id
+PASSED tests/test_tenant_context.py::test_ambiguous_membership_context_fails_closed
+PASSED tests/test_e04_trips.py::test_e04_ac02_booking_opens_automatically_once
+PASSED tests/test_identity_foundation.py::test_e01_ac01_registration_normalizes_phone_and_prevents_duplicates
+SKIPPED [1] tests/test_e06_booking_confirmation.py:275: PostgreSQL row-lock concurrency gate
+SKIPPED [1] tests/test_e05_public_search_holds.py:441: PostgreSQL row-lock and partial-unique gate runs in CI
+55 passed, 2 skipped, 15 warnings in 8.49s

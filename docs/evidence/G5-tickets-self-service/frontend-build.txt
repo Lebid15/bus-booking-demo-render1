@@ -1,0 +1,37 @@
+
+> bus-booking-web@0.1.0 build
+> next build
+
+▲ Next.js 16.2.10 (Turbopack)
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 7.0s
+  Running TypeScript ...
+  Finished TypeScript in 2.5s ...
+  Collecting page data using 15 workers ...
+  Generating static pages using 15 workers (0/13) ...
+  Generating static pages using 15 workers (3/13) 
+  Generating static pages using 15 workers (6/13) 
+  Generating static pages using 15 workers (9/13) 
+✓ Generating static pages using 15 workers (13/13) in 656ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ƒ /
+├ ○ /_not-found
+├ ƒ /login
+├ ƒ /manage-booking
+├ ƒ /office
+├ ƒ /office/fleet
+├ ƒ /office/trips
+├ ƒ /office/verification
+├ ƒ /platform
+├ ƒ /platform/catalog
+├ ƒ /platform/policies
+├ ƒ /search
+└ ƒ /trips/[tripId]/seats
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

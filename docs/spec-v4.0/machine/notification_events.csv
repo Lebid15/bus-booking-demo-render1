@@ -1,0 +1,6 @@
+﻿event,audience,channels,critical,action
+booking.created_unpaid,customer,"in_app,email",yes,complete_payment
+payment.confirmed,customer,"in_app,email",yes,none
+trip.material_change,customer,"in_app,email,sms_if_enabled",yes,accept_or_alternative
+support.p1_opened,"office,support","dashboard,escalation",yes,respond
+refund.initiated,customer,"in_app,email",yes,none

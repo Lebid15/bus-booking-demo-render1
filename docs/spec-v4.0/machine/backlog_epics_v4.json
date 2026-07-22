@@ -1,0 +1,78 @@
+[
+  {
+    "epic_id": "E01",
+    "name": "Foundation"
+  },
+  {
+    "epic_id": "E02",
+    "name": "Identity & Access"
+  },
+  {
+    "epic_id": "E03",
+    "name": "Offices & Verification"
+  },
+  {
+    "epic_id": "E04",
+    "name": "Geography & Fleet"
+  },
+  {
+    "epic_id": "E05",
+    "name": "Trip Scheduling"
+  },
+  {
+    "epic_id": "E06",
+    "name": "Seat Inventory"
+  },
+  {
+    "epic_id": "E07",
+    "name": "Public Booking"
+  },
+  {
+    "epic_id": "E08",
+    "name": "Office Booking"
+  },
+  {
+    "epic_id": "E09",
+    "name": "Payments"
+  },
+  {
+    "epic_id": "E10",
+    "name": "Tickets & Boarding"
+  },
+  {
+    "epic_id": "E11",
+    "name": "Changes & Cancellation"
+  },
+  {
+    "epic_id": "E12",
+    "name": "Ledger & Commission"
+  },
+  {
+    "epic_id": "E13",
+    "name": "Settlement"
+  },
+  {
+    "epic_id": "E14",
+    "name": "Support & Disputes"
+  },
+  {
+    "epic_id": "E15",
+    "name": "Notifications"
+  },
+  {
+    "epic_id": "E16",
+    "name": "Policies & Privacy"
+  },
+  {
+    "epic_id": "E17",
+    "name": "Platform Admin"
+  },
+  {
+    "epic_id": "E18",
+    "name": "Reporting"
+  },
+  {
+    "epic_id": "E19",
+    "name": "Reliability & Launch"
+  }
+]

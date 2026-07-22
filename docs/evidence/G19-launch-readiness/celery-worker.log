@@ -1,0 +1,55 @@
+/opt/pyvenv/lib/python3.13/site-packages/celery/platforms.py:841: SecurityWarning: You're running the worker with superuser privileges: this is
+absolutely not recommended!
+
+Please specify a different user using the --uid option.
+
+User information: uid=0 euid=0 gid=0 egid=0
+
+  warnings.warn(SecurityWarning(ROOT_DISCOURAGED.format(
+ 
+ -------------- g19-worker@4ff7e8cf2207 v5.6.3 (recovery)
+--- ***** ----- 
+-- ******* ---- Linux-4.4.0-x86_64-with-glibc2.41 2026-07-21 22:21:53
+- *** --- * --- 
+- ** ---------- [config]
+- ** ---------- .> app:         bus_booking:0x7eb3592082f0
+- ** ---------- .> transport:   redis://127.0.0.1:56379/1
+- ** ---------- .> results:     redis://127.0.0.1:56379/2
+- *** --- * --- .> concurrency: 1 (solo)
+-- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+--- ***** ----- 
+ -------------- [queues]
+                .> celery           exchange=celery(direct) key=celery
+                
+
+[tasks]
+  . boarding.mark_due_no_shows
+  . bookings.expire_seat_holds
+  . notifications.deliver_due_notifications
+  . notifications.dispatch_outbox_events
+  . organizations.activate_due_payout_accounts
+  . payments.expire_due_unpaid_bookings
+  . payments.process_received_webhooks
+  . securityops.process_retention_requests
+  . subscriptions.process_due_subscriptions
+  . support.escalate_overdue_cases
+  . trips.open_due_bookings
+
+[2026-07-21 22:21:53,454: INFO/MainProcess] Connected to redis://127.0.0.1:56379/1
+[2026-07-21 22:21:53,457: INFO/MainProcess] mingle: searching for neighbors
+[2026-07-21 22:21:54,468: INFO/MainProcess] mingle: all alone
+[2026-07-21 22:21:54,485: INFO/MainProcess] g19-worker@4ff7e8cf2207 ready.
+[2026-07-21 22:21:58,446: INFO/MainProcess] Task payments.process_received_webhooks[4b855591-4d64-4aa7-b396-fa09161f188d] received
+[2026-07-21 22:21:58,517: INFO/MainProcess] Task payments.process_received_webhooks[4b855591-4d64-4aa7-b396-fa09161f188d] succeeded in 0.07039528699988296s: 0
+[2026-07-21 22:21:58,520: INFO/MainProcess] Task notifications.dispatch_outbox_events[8ab68013-30eb-43f1-95ab-d712e6a2bfad] received
+[2026-07-21 22:21:58,582: INFO/MainProcess] Task notifications.dispatch_outbox_events[8ab68013-30eb-43f1-95ab-d712e6a2bfad] succeeded in 0.06215683900018121s: 0
+[2026-07-21 22:21:58,584: INFO/MainProcess] Task notifications.deliver_due_notifications[5938a7dc-02c7-42e0-897e-2ef11d3d7e3e] received
+[2026-07-21 22:21:58,654: INFO/MainProcess] Task notifications.deliver_due_notifications[5938a7dc-02c7-42e0-897e-2ef11d3d7e3e] succeeded in 0.06987471399997958s: 0
+[2026-07-21 22:22:03,436: INFO/MainProcess] Task payments.process_received_webhooks[e37bc353-2cdb-40e5-b383-ecadd7cc70b1] received
+[2026-07-21 22:22:03,506: INFO/MainProcess] Task payments.process_received_webhooks[e37bc353-2cdb-40e5-b383-ecadd7cc70b1] succeeded in 0.06976728700010426s: 0
+[2026-07-21 22:22:03,508: INFO/MainProcess] Task notifications.dispatch_outbox_events[df0cdd27-e495-42fc-8368-46c75a9de70f] received
+[2026-07-21 22:22:03,574: INFO/MainProcess] Task notifications.dispatch_outbox_events[df0cdd27-e495-42fc-8368-46c75a9de70f] succeeded in 0.0657407910002803s: 0
+[2026-07-21 22:22:03,576: INFO/MainProcess] Task notifications.deliver_due_notifications[e3c7705f-0632-43a0-b0b8-bdcd26216d4a] received
+[2026-07-21 22:22:03,650: INFO/MainProcess] Task notifications.deliver_due_notifications[e3c7705f-0632-43a0-b0b8-bdcd26216d4a] succeeded in 0.07379646700019293s: 0
+
+worker: Warm shutdown (MainProcess)

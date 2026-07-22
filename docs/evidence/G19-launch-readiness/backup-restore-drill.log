@@ -1,0 +1,19 @@
+started_at=2026-07-21T22:24:35Z
+source_counts:
+migrations=36
+permissions=43
+notification_templates=120
+/mnt/data/bus_booking_work/bus-booking-platform/docs/evidence/G19-launch-readiness/backups/bus-booking-20260721T222436Z.dump: OK
+backup_path=/mnt/data/bus_booking_work/bus-booking-platform/docs/evidence/G19-launch-readiness/backups/bus-booking-20260721T222436Z.dump
+backup_sha256=d60e4d81bc2f70b31fb7c852a43643a66436dfea4a30a575493bf65212b8b456
+backup_size_bytes=830584
+backup_duration_ms=1153
+restore_duration_ms=5554
+restored_counts:
+migrations=36
+permissions=43
+notification_templates=120
+integrity:
+idempotency_scope_max=80
+ledger_trigger=1
+completed_at=2026-07-21T22:24:43Z

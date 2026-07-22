@@ -1,0 +1,10 @@
+
+> bus-booking-web@0.1.0 start
+> next start --hostname 0.0.0.0 --port 3000
+
+▲ Next.js 16.2.10
+- Local:         http://localhost:3000
+- Network:       http://0.0.0.0:3000
+✓ Ready in 173ms
+⚠ "next start" does not work with "output: standalone" configuration. Use "node .next/standalone/server.js" instead.
+Killed

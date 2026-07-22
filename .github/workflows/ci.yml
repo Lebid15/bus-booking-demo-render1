@@ -1,0 +1,103 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_DB: bus_booking
+          POSTGRES_USER: bus_booking
+          POSTGRES_PASSWORD: bus_booking
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U bus_booking -d bus_booking"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+      redis:
+        image: redis:8-alpine
+        ports: ["6379:6379"]
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 20
+    env:
+      APP_ENV: ci
+      DJANGO_SECRET_KEY: ci-only-secret
+      JWT_SIGNING_KEY: ci-only-jwt-key
+      MFA_ENCRYPTION_KEY: _nbw8sF50FwIT-SnFZxlFVZH3M6COcnPzHoVRS24lUE=
+      BOOKING_MANAGE_TOKEN_KEY: ci-only-booking-manage-key
+      TICKET_QR_SIGNING_KEY: ci-only-ticket-qr-key
+      PAYMENT_WEBHOOK_SECRET: ci-only-payment-webhook-secret
+      CANCELLATION_QUOTE_SIGNING_KEY: ci-only-cancellation-quote-key
+      REFUND_DUAL_APPROVAL_THRESHOLD: "500000.00"
+      BOARDING_OFFLINE_ENCRYPTION_KEY: ci-only-boarding-encryption-key
+      BOARDING_OFFLINE_SIGNING_KEY: ci-only-boarding-signing-key
+      OFFLINE_BOARDING_PACKAGE_TTL_SECONDS: "21600"
+      ELECTRONIC_PAYMENT_ENABLED: "true"
+      DATABASE_URL: postgresql://bus_booking:bus_booking@127.0.0.1:5432/bus_booking
+      REDIS_URL: redis://127.0.0.1:6379/0
+      CELERY_TASK_ALWAYS_EAGER: "true"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: apps/api/requirements*.txt
+      - run: pip install -r apps/api/requirements-dev.txt
+      - run: python scripts/validate_spec_package.py
+      - working-directory: apps/api
+        run: |
+          python manage.py check
+          python manage.py makemigrations --check --dry-run
+          python manage.py migrate --noinput
+          ruff check .
+          mypy common identity organizations geography fleet policies trips bookings tickets payments finance auditlog boarding support adminops notifications securityops subscriptions continuity config
+          pytest
+          python manage.py seed_foundation
+          python manage.py seed_notification_templates
+          APP_ENV=production DJANGO_DEBUG=false \
+          DJANGO_SECRET_KEY=ci-production-check-secret-key-with-more-than-fifty-characters \
+          JWT_SIGNING_KEY=ci-production-jwt-signing-key-with-more-than-fifty-characters \
+          DJANGO_ALLOWED_HOSTS=example.com CORS_ALLOWED_ORIGINS=https://example.com \
+          PRIVATE_UPLOAD_BASE_URL=https://uploads.example.com/private \
+          FILE_SCANNER_BACKEND=securityops.scanners._local_scanner RISK_STEP_UP_CODE=849271 \
+          PLATFORM_RBAC_LEGACY_ADMIN_FALLBACK=false \
+          SECURE_SSL_REDIRECT=true SECURE_HSTS_SECONDS=31536000 \
+          SECURE_HSTS_INCLUDE_SUBDOMAINS=true SECURE_HSTS_PRELOAD=true \
+          python manage.py check --deploy --fail-level WARNING
+          mkdir -p ../../docs/evidence/G18-final-closure
+          python manage.py spectacular --file ../../docs/evidence/G18-final-closure/openapi-generated.yaml --validate --fail-on-warn
+          bandit -q -r . -x './tests,./*/migrations'
+          pip-audit -r requirements.txt
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run test:ux-contract
+      - run: npm run build
+      - run: npm audit --audit-level=moderate

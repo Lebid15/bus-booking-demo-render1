@@ -1,0 +1,4 @@
+Operations to perform:
+  Apply all migrations: auditlog, bookings, common, contenttypes, fleet, geography, identity, organizations, policies, trips
+Running migrations:
+  Applying trips.0003_seathold_quote_snapshot_seathold_quote_version... OK

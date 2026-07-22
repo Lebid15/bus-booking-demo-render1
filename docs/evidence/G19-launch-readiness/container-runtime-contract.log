@@ -1,0 +1,12 @@
+# Container/runtime contract
+
+PASS — docker-compose parses
+PASS — no Django runserver in runtime definitions
+PASS — no Next dev server in runtime definitions
+PASS — API uses Uvicorn ASGI
+PASS — Web uses production Next start
+PASS — Uvicorn is pinned
+PASS — Next worker count capped
+PASS — DB connection age is configurable
+
+Total: 8/8 checks passed.

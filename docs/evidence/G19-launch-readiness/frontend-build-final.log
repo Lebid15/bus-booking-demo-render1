@@ -1,0 +1,67 @@
+
+> bus-booking-web@0.1.0 build
+> next build
+
+▲ Next.js 16.2.10 (Turbopack)
+- Experiments (use with caution):
+  · cpus: 4
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 11.5s
+  Running TypeScript ...
+  Finished TypeScript in 6.9s ...
+  Collecting page data using 4 workers ...
+  Generating static pages using 4 workers (0/40) ...
+  Generating static pages using 4 workers (10/40) 
+  Generating static pages using 4 workers (20/40) 
+  Generating static pages using 4 workers (30/40) 
+✓ Generating static pages using 4 workers (40/40) in 662ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ƒ /
+├ ○ /_not-found
+├ ƒ /login
+├ ƒ /manage-booking
+├ ƒ /notifications
+├ ƒ /office
+├ ƒ /office/boarding
+├ ƒ /office/disputes
+├ ƒ /office/fleet
+├ ƒ /office/notifications
+├ ƒ /office/payments
+├ ƒ /office/reallocation
+├ ƒ /office/refunds
+├ ƒ /office/reports
+├ ƒ /office/settings
+├ ƒ /office/settlements
+├ ƒ /office/subscription
+├ ƒ /office/support
+├ ƒ /office/trips
+├ ƒ /office/verification
+├ ƒ /platform
+├ ƒ /platform/approvals
+├ ƒ /platform/audit
+├ ƒ /platform/catalog
+├ ƒ /platform/continuity
+├ ƒ /platform/disputes
+├ ƒ /platform/finance
+├ ƒ /platform/incidents
+├ ƒ /platform/notifications
+├ ƒ /platform/offices
+├ ƒ /platform/policies
+├ ƒ /platform/refunds
+├ ƒ /platform/reports
+├ ƒ /platform/security
+├ ƒ /platform/settings
+├ ƒ /platform/subscriptions
+├ ƒ /policies
+├ ƒ /policies/[code]
+├ ƒ /privacy
+├ ƒ /search
+└ ƒ /trips/[tripId]/seats
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

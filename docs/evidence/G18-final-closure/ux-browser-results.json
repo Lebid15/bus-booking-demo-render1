@@ -1,0 +1,119 @@
+[
+  {
+    "name": "Arabic RTL root",
+    "ok": true,
+    "details": {
+      "dir": "rtl",
+      "lang": "ar",
+      "overflow": 0,
+      "skipLink": true
+    }
+  },
+  {
+    "name": "No horizontal overflow at 360px",
+    "ok": true,
+    "details": {
+      "dir": "rtl",
+      "lang": "ar",
+      "overflow": 0,
+      "skipLink": true
+    }
+  },
+  {
+    "name": "Skip link exists",
+    "ok": true,
+    "details": {
+      "dir": "rtl",
+      "lang": "ar",
+      "overflow": 0,
+      "skipLink": true
+    }
+  },
+  {
+    "name": "No serious/critical accessibility violations on seat page",
+    "ok": true,
+    "details": {
+      "violations": []
+    }
+  },
+  {
+    "name": "Arrow-key seat navigation moves focus",
+    "ok": true,
+    "details": {
+      "beforeIndex": "0",
+      "afterIndex": "1"
+    }
+  },
+  {
+    "name": "Booking draft survives reload",
+    "ok": true,
+    "details": {
+      "restored": "محمد أحمد",
+      "selectedId": "0",
+      "restoredSeat": "0"
+    }
+  },
+  {
+    "name": "Versioned policy summaries appear before confirmation",
+    "ok": true,
+    "details": {
+      "policyCount": 3,
+      "fullLinks": [
+        "/policies/boarding.54a70d02?office_id=01KY393AB25YBW5B04EY27EZB9",
+        "/policies/cancellation.bc076a4b?office_id=01KY393AB25YBW5B04EY27EZB9",
+        "/policies/payment.9cde016b?office_id=01KY393AB25YBW5B04EY27EZB9"
+      ]
+    }
+  },
+  {
+    "name": "Mobile browser completes booking and receives PNR",
+    "ok": true,
+    "details": {
+      "text": "تم إنشاء الحجز بنجاحمرجع الحجز BKY6PPNUحالة الحجزconfirmedحالة الدفعunpaidالإجمالي‏106,000 SYPالمقاعد1Aمهلة الدفع حتى ٢١‏/٠٧‏/٢٠٢٦، ٩:٤٥ مالمسافرمحمد أحمدالمقعد 1Aعرض وطباعة التذكرةاحتفظ بالـPNR ورمز الإدارة. يمكنك استرجاع الحجز لاحقًا من صفحة متابعة الحجز.نسخ PNRإدارة الحجز",
+      "pnr": "BKY6PPNU",
+      "overflow": 0,
+      "ticketLinks": 1
+    }
+  },
+  {
+    "name": "Booking success keeps mobile layout within viewport",
+    "ok": true,
+    "details": {
+      "text": "تم إنشاء الحجز بنجاحمرجع الحجز BKY6PPNUحالة الحجزconfirmedحالة الدفعunpaidالإجمالي‏106,000 SYPالمقاعد1Aمهلة الدفع حتى ٢١‏/٠٧‏/٢٠٢٦، ٩:٤٥ مالمسافرمحمد أحمدالمقعد 1Aعرض وطباعة التذكرةاحتفظ بالـPNR ورمز الإدارة. يمكنك استرجاع الحجز لاحقًا من صفحة متابعة الحجز.نسخ PNRإدارة الحجز",
+      "pnr": "BKY6PPNU",
+      "overflow": 0,
+      "ticketLinks": 1
+    }
+  },
+  {
+    "name": "Ticket action is available",
+    "ok": true,
+    "details": {
+      "text": "تم إنشاء الحجز بنجاحمرجع الحجز BKY6PPNUحالة الحجزconfirmedحالة الدفعunpaidالإجمالي‏106,000 SYPالمقاعد1Aمهلة الدفع حتى ٢١‏/٠٧‏/٢٠٢٦، ٩:٤٥ مالمسافرمحمد أحمدالمقعد 1Aعرض وطباعة التذكرةاحتفظ بالـPNR ورمز الإدارة. يمكنك استرجاع الحجز لاحقًا من صفحة متابعة الحجز.نسخ PNRإدارة الحجز",
+      "pnr": "BKY6PPNU",
+      "overflow": 0,
+      "ticketLinks": 1
+    }
+  },
+  {
+    "name": "No serious/critical accessibility violations on success page",
+    "ok": true,
+    "details": {
+      "violations": []
+    }
+  },
+  {
+    "name": "Visible primary touch targets are at least 40px",
+    "ok": true,
+    "details": {
+      "smallTargets": []
+    }
+  },
+  {
+    "name": "Complete mobile journey transfer remains below 3 MB",
+    "ok": true,
+    "details": {
+      "encodedBytes": 180540
+    }
+  }
+]

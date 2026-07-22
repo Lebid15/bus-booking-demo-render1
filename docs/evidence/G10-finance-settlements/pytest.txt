@@ -1,0 +1,8 @@
+.....................s.........s........................................ [ 74%]
+......................ss.                                                [100%]
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_e06_booking_confirmation.py:275: PostgreSQL row-lock concurrency gate
+SKIPPED [1] tests/test_e07_payments.py:467: PostgreSQL deferred constraint trigger required
+SKIPPED [1] tests/test_e05_public_search_holds.py:441: PostgreSQL row-lock and partial-unique gate runs in CI
+SKIPPED [1] tests/test_e10_boarding_offline.py:489: PostgreSQL row-lock concurrency gate
+93 passed, 4 skipped, 15 warnings in 18.39s

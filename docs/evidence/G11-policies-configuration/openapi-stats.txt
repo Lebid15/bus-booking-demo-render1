@@ -1,0 +1,4 @@
+paths=86
+operations=105
+office_configuration=True
+platform_configuration=True

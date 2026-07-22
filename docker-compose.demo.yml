@@ -1,0 +1,35 @@
+services:
+  api:
+    env_file: .env.demo
+    command:
+      - sh
+      - -c
+      - >-
+        python manage.py migrate &&
+        python manage.py seed_demo &&
+        uvicorn config.asgi:application --host 0.0.0.0 --port 8000
+        --workers $${WEB_CONCURRENCY:-2} --proxy-headers --forwarded-allow-ips='*'
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/health/ready', timeout=3)\""]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+
+  worker:
+    env_file: .env.demo
+    depends_on:
+      api:
+        condition: service_healthy
+
+  beat:
+    env_file: .env.demo
+    depends_on:
+      api:
+        condition: service_healthy
+
+  web:
+    env_file: .env.demo
+    depends_on:
+      api:
+        condition: service_healthy

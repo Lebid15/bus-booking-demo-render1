@@ -1,0 +1,14 @@
+-r requirements.txt
+pytest==8.4.2
+pytest-django==4.11.1
+ruff==0.12.12
+mypy==1.17.1
+django-stubs==5.2.8
+djangorestframework-stubs==3.16.6
+coverage==7.10.7
+bandit==1.9.4
+pip-audit==2.10.1
+PyYAML==6.0.3
+jsonschema==4.26.0
+
+types-qrcode==8.2.0.20260518

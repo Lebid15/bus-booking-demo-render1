@@ -1,0 +1,18 @@
+Operations to perform:
+  Apply all migrations: auditlog, bookings, common, contenttypes, fleet, geography, identity, organizations, policies, trips
+Running migrations:
+  Applying identity.0001_initial... OK
+  Applying auditlog.0001_initial... OK
+  Applying organizations.0001_initial... OK
+  Applying geography.0001_initial... OK
+  Applying organizations.0002_verification_branches_and_payouts... OK
+  Applying identity.0002_session_mfa_evidence... OK
+  Applying fleet.0001_initial... OK
+  Applying bookings.0001_initial... OK
+  Applying trips.0001_initial... OK
+  Applying bookings.0002_initial... OK
+  Applying common.0001_initial... OK
+  Applying contenttypes.0001_initial... OK
+  Applying contenttypes.0002_remove_content_type_name... OK
+  Applying policies.0001_initial... OK
+CLEAN_MIGRATION_OK path=/tmp/bus-booking-g2-clean.sqlite3 bytes=1003520

@@ -1,0 +1,17 @@
+INFO:     Started server process [47236]
+INFO:     Waiting for application startup.
+INFO:     ASGI 'lifespan' protocol appears unsupported.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:58002 (Press CTRL+C to quit)
+INFO:     127.0.0.1:50862 - "GET /health/live HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50866 - "GET /v1/public/locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50866 - "GET /health/live HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50866 - "GET /v1/public/locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50866 - "GET /health/live HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50866 - "GET /health/live HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50866 - "GET /health/live HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50866 - "GET /health/live HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50866 - "GET /health/live HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50876 - "GET /health/ready HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Finished server process [47236]

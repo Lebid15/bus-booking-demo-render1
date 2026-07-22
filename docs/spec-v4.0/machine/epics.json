@@ -1,0 +1,756 @@
+{
+  "version": "3.0",
+  "epics": [
+    {
+      "id": "E01",
+      "title_ar": "الهوية والمصادقة والجلسات",
+      "scope_ar": "تسجيل الزبائن والموظفين، MFA، الأجهزة والجلسات",
+      "acceptance_criteria": [
+        {
+          "id": "E01-AC01",
+          "text_ar": "Given حساب زبون جديد، When يسجل بالهاتف أو البريد المتاح، Then ينشأ حساب واحد فقط بعد التطبيع والتحقق",
+          "evidence": "E2E+Integration",
+          "priority": "P0"
+        },
+        {
+          "id": "E01-AC02",
+          "text_ar": "Given موظف مكتب بصلاحية حساسة، When يسجل الدخول، Then لا يحصل على جلسة كاملة قبل نجاح MFA",
+          "evidence": "E2E+Security",
+          "priority": "P0"
+        },
+        {
+          "id": "E01-AC03",
+          "text_ar": "Given جلسة موظف ألغيت أو تغير دوره، When يستخدم رمزًا قديمًا، Then يرفض فورًا دون انتظار انتهاء JWT",
+          "evidence": "Integration",
+          "priority": "P0"
+        },
+        {
+          "id": "E01-AC04",
+          "text_ar": "Given محاولات دخول متكررة، When يتجاوز الحد، Then يطبق Rate limit تدريجيًا دون كشف وجود الحساب",
+          "evidence": "Security",
+          "priority": "P1"
+        },
+        {
+          "id": "E01-AC05",
+          "text_ar": "Given مستخدمًا، When يعرض الأجهزة والجلسات وينهي أحدها، Then تتوقف الجلسة المحددة فقط ويسجل Audit",
+          "evidence": "E2E",
+          "priority": "P1"
+        }
+      ]
+    },
+    {
+      "id": "E02",
+      "title_ar": "اعتماد المكتب والناقل",
+      "scope_ar": "تسجيل المكتب، الوثائق، التحقق، الحساب المالي",
+      "acceptance_criteria": [
+        {
+          "id": "E02-AC01",
+          "text_ar": "Given طلب مكتب ناقص، When يحاول الإرسال، Then يعرض النواقص ولا ينتقل إلى submitted",
+          "evidence": "Integration",
+          "priority": "P0"
+        },
+        {
+          "id": "E02-AC02",
+          "text_ar": "Given ملف تحقق معزز، When يراجع ويعتمد، Then يكون المراجع النهائي مختلفًا عن صاحب المراجعة الأولى",
+          "evidence": "Security+Manual",
+          "priority": "P0"
+        },
+        {
+          "id": "E02-AC03",
+          "text_ar": "Given وثيقة حرجة منتهية، When يحاول تعيين المكتب/المركبة لرحلة جديدة، Then يمنع مع بقاء الالتزامات القائمة قابلة للمعالجة",
+          "evidence": "Integration",
+          "priority": "P0"
+        },
+        {
+          "id": "E02-AC04",
+          "text_ar": "Given تغيير حساب التسوية، When يطلبه المالك، Then يتطلب MFA وموافقة ثانية وتأخير نفاذ وإشعارًا للحساب القديم",
+          "evidence": "E2E+Security",
+          "priority": "P0"
+        },
+        {
+          "id": "E02-AC05",
+          "text_ar": "Given مكتبًا معلقًا، When يبحث الزبون، Then لا تظهر رحلات جديدة له بينما تبقى الحجوزات القائمة قابلة للإدارة",
+          "evidence": "E2E",
+          "priority": "P0"
+        }
+      ]
+    },
+    {
+      "id": "E03",
+      "title_ar": "الجغرافيا والمسارات والأسطول",
+      "scope_ar": "النقاط والخطوط والبولمانات ومخططات المقاعد والسائقون",
+      "acceptance_criteria": [
+        {
+          "id": "E03-AC01",
+          "text_ar": "Given خط رقة-دمشق، When يبحث بالعكس، Then لا يفترض وجود دمشق-رقة إلا إذا عُرف كخط مستقل",
+          "evidence": "Integration",
+          "priority": "P1"
+        },
+        {
+          "id": "E03-AC02",
+          "text_ar": "Given مخطط 2+1 أو 2+2، When يحفظ، Then يكون لكل مقعد موضع فريد وتجاور معرف صراحة",
+          "evidence": "Integration",
+          "priority": "P0"
+        },
+        {
+          "id": "E03-AC03",
+          "text_ar": "Given مقعدين عبر الممر، When لا توجد adjacency same_unit، Then لا تطبق عليهما قاعدة الجنس",
+          "evidence": "Automated",
+          "priority": "P0"
+        },
+        {
+          "id": "E03-AC04",
+          "text_ar": "Given مركبة خارج الخدمة أو وثيقتها منتهية، When تُجدول رحلة، Then يرفض الخادم",
+          "evidence": "Integration",
+          "priority": "P0"
+        },
+        {
+          "id": "E03-AC05",
+          "text_ar": "Given تعديل مخطط مستخدم في رحلة منشورة، When يحاول الموظف تغييره، Then ينشئ Version جديدًا ولا يغير Snapshot الرحلة",
+          "evidence": "Integration",
+          "priority": "P0"
+        }
+      ]
+    },
+    {
+      "id": "E04",
+      "title_ar": "إنشاء الرحلات ونشرها",
+      "scope_ar": "الجدولة والسياسات والأسعار ودورة الرحلة",
+      "acceptance_criteria": [
+        {
+          "id": "E04-AC01",
+          "text_ar": "Given رحلة ناقصة المركبة أو السياسة أو السعر، When يأمر schedule، Then تعود TRIP_NOT_READY مع حقول النقص",
+          "evidence": "Integration",
+          "priority": "P0"
+        },
+        {
+          "id": "E04-AC02",
+          "text_ar": "Given رحلة منشورة، When يحين booking_open_at، Then تنتقل آليًا إلى booking_open مرة واحدة",
+          "evidence": "Jobs+Integration",
+          "priority": "P0"
+        },
+        {
+          "id": "E04-AC03",
+          "text_ar": "Given رحلة عليها حجوزات، When يتغير وقتها تغييرًا جوهريًا، Then تُصنف الحالة وتُنشأ استجابات مطلوبة للزبائن",
+          "evidence": "E2E+Integration",
+          "priority": "P0"
+        },
+        {
+          "id": "E04-AC04",
+          "text_ar": "Given رحلة boarding_closed، When يوجد ازدواج/حالة عاجلة/راكب بلا مقعد، Then يمنع depart",
+          "evidence": "Integration",
+          "priority": "P0"
+        },
+        {
+          "id": "E04-AC05",
+          "text_ar": "Given إلغاء رحلة، When يؤكد المكتب، Then تتوقف الحجوزات الجديدة وتبدأ بدائل/استردادات لكل المتأثرين",
+          "evidence": "E2E+Finance",
+          "priority": "P0"
+        }
+      ]
+    },
+    {
+      "id": "E05",
+      "title_ar": "البحث والتوفر والتسعير",
+      "scope_ar": "البحث العام والفلترة والسعر النهائي",
+      "acceptance_criteria": [
+        {
+          "id": "E05-AC01",
+          "text_ar": "Given أصل ووجهة وتاريخ، When يبحث الزبون، Then تظهر فقط الرحلات النشطة القابلة للحجز وبالمنطقة الزمنية الصحيحة",
+          "evidence": "E2E",
+          "priority": "P0"
+        },
+        {
+          "id": "E05-AC02",
+          "text_ar": "Given رحلة، When تعرض نتيجة البحث، Then يظهر السعر النهائي أو بداية سعر صادقة مع الرسوم والسياسة المختصرة",
+          "evidence": "UX+E2E",
+          "priority": "P0"
+        },
+        {
+          "id": "E05-AC03",
+          "text_ar": "Given ضغطًا عاليًا، When تتغير المقاعد بين العرض والتأكيد، Then الخادم يعيد التحقق ولا يعتمد لون الواجهة",
+          "evidence": "Concurrency",
+          "priority": "P0"
+        },
+        {
+          "id": "E05-AC04",
+          "text_ar": "Given عدم توفر قناة إشعار، When يبحث ويحجز، Then لا تتأثر صحة نتائج البحث والحجز",
+          "evidence": "Failure",
+          "priority": "P1"
+        },
+        {
+          "id": "E05-AC05",
+          "text_ar": "Given مكتبًا restricted no_new_bookings، When يبحث الزبون، Then لا تظهر رحلاته الجديدة",
+          "evidence": "Integration",
+          "priority": "P0"
+        }
+      ]
+    },
+    {
+      "id": "E06",
+      "title_ar": "الحجز والمرافقون والمقاعد",
+      "scope_ar": "Seat holds، الحجز الجماعي، قاعدة الجنس، Snapshots",
+      "acceptance_criteria": [
+        {
+          "id": "E06-AC01",
+          "text_ar": "Given مستخدمان يطلبان المقعد نفسه بالتزامن، When يؤكدان، Then ينجح تخصيص نشط واحد فقط",
+          "evidence": "Concurrency",
+          "priority": "P0"
+        },
+        {
+          "id": "E06-AC02",
+          "text_ar": "Given ذكر وأنثى من حجزين مستقلين، When يختار الثاني المقعد المجاور same_unit، Then يرفض خادميًا دون كشف جنس الآخر",
+          "evidence": "E2E+Integration",
+          "priority": "P0"
+        },
+        {
+          "id": "E06-AC03",
+          "text_ar": "Given ذكر وأنثى ضمن الحجز نفسه، When يختاران مقعدين متجاورين، Then يسمح",
+          "evidence": "E2E",
+          "priority": "P0"
+        },
+        {
+          "id": "E06-AC04",
+          "text_ar": "Given طفل ومرافق بالغ في الحجز نفسه، When يعاد توزيع البولمان، Then تبقى المجموعة متجاورة أو تُرفع للمراجعة ولا تُفصل بصمت",
+          "evidence": "Integration",
+          "priority": "P0"
+        },
+        {
+          "id": "E06-AC05",
+          "text_ar": "Given Seat Hold منتهي، When يصل تأكيد متأخر، Then يرفض ولا يستهلك مقعدًا بيع لاحقًا",
+          "evidence": "Integration",
+          "priority": "P0"
+        },
+        {
+          "id": "E06-AC06",
+          "text_ar": "Given تعديل إعدادات المكتب بعد إنشاء الحجز، When يعرض الحجز، Then يستخدم السعر والسياسة والعمولة والمهل المحفوظة",
+          "evidence": "Integration",
+          "priority": "P0"
+        },
+        {
+          "id": "E06-AC07",
+          "text_ar": "Given حجز جماعي، When يصعد بعض الركاب، Then تبقى حالات البقية مستقلة",
+          "evidence": "E2E",
+          "priority": "P1"
+        }
+      ]
+    },
+    {
+      "id": "E07",
+      "title_ar": "الدفع النقدي والتحويل والإلكتروني",
+      "scope_ar": "نيات الدفع، التحقق، Webhooks، التكرار",
+      "acceptance_criteria": [
+        {
+          "id": "E07-AC01",
+          "text_ar": "Given حجز يسمح بالدفع في المكتب، When يسجل موظف مخول قبضًا بإيصال، Then تنشأ حركة واحدة وقيد متوازن وAudit",
+          "evidence": "Finance+E2E",
+          "priority": "P0"
+        },
+        {
+          "id": "E07-AC02",
+          "text_ar": "Given صورة تحويل مكررة أو مرجع مستخدم، When ترفع، Then ترفض كـduplicate",
+          "evidence": "Integration",
+          "priority": "P0"
+        },
+        {
+          "id": "E07-AC03",
+          "text_ar": "Given تحويل تم قبل المهلة وتحقق بعد انتهائها، When يثبت وقت التحويل، Then تطبق قاعدة الدفع ضمن المهلة مع فحص توفر المقعد",
+          "evidence": "Integration",
+          "priority": "P0"
+        },
+        {
+          "id": "E07-AC04",
+          "text_ar": "Given Webhook ناجح مكرر، When يصل عدة مرات، Then تسجل حركة واحدة فقط",
+          "evidence": "Integration",
+          "priority": "P0"
+        },
+        {
+          "id": "E07-AC05",
+          "text_ar": "Given نجاح دفع بعد انتهاء Hold وبيع المقعد، When تصل المصالحة، Then لا يؤكد الحجز ويبدأ استرداد/بديل",
+          "evidence": "Finance+Integration",
+          "priority": "P0"
+        },
+        {
+          "id": "E07-AC06",
+          "text_ar": "Given مبلغ أو عملة مختلفة من المزود، When يصل الحدث، Then لا ينجح الدفع ويرفع حالة مصالحة",
+          "evidence": "Security+Integration",
+          "priority": "P0"
+        }
+      ]
+    },
+    {
+      "id": "E08",
+      "title_ar": "PNR والتذاكر وخدمة الزبون الذاتية",
+      "scope_ar": "الحجز كضيف، التذكرة وQR والحساب الاختياري",
+      "acceptance_criteria": [
+        {
+          "id": "E08-AC01",
+          "text_ar": "Given حجز ضيف مؤكد، When يكتمل، Then يصدر PNR عشوائي ورمز إدارة آمن وتذكرة لكل راكب",
+          "evidence": "E2E",
+          "priority": "P0"
+        },
+        {
+          "id": "E08-AC02",
+          "text_ar": "Given محاولة تخمين PNR، When تتكرر، Then يطبق rate limit ولا يكشف إن كان الحجز موجودًا",
+          "evidence": "Security",
+          "priority": "P0"
+        },
+        {
+          "id": "E08-AC03",
+          "text_ar": "Given تغيير مقعد أو راكب، When يعتمد، Then يبطل QR القديم ويصدر Version جديد",
+          "evidence": "E2E",
+          "priority": "P0"
+        },
+        {
+          "id": "E08-AC04",
+          "text_ar": "Given فشل البريد، When ينجح الحجز، Then تظهر التذكرة في صفحة النجاح ويمكن استرجاعها بالـPNR",
+          "evidence": "Failure+E2E",
+          "priority": "P0"
+        },
+        {
+          "id": "E08-AC05",
+          "text_ar": "Given حساب زبون، When يربط حجز ضيف بعد تحقق الاتصال، Then يظهر في حجوزاتي دون نسخ الحجز",
+          "evidence": "Integration",
+          "priority": "P1"
+        }
+      ]
+    },
+    {
+      "id": "E09",
+      "title_ar": "التعديل والإلغاء والاسترداد",
+      "scope_ar": "تغيير راكب/مقعد، الإلغاء، الاسترداد الجزئي",
+      "acceptance_criteria": [
+        {
+          "id": "E09-AC01",
+          "text_ar": "Given حجز مؤكد، When يطلب إلغاء، Then يعرض Quote مبنيًا على Snapshot قبل التنفيذ",
+          "evidence": "E2E",
+          "priority": "P0"
+        },
+        {
+          "id": "E09-AC02",
+          "text_ar": "Given راكبًا صعد، When يحاول إلغاءه، Then يرفض PASSENGER_ALREADY_BOARDED",
+          "evidence": "Integration",
+          "priority": "P0"
+        },
+        {
+          "id": "E09-AC03",
+          "text_ar": "Given حجزًا متعدد الركاب، When يُلغى راكب واحد، Then يتحرر مقعده وتعدل الأموال والعمولة دون تغيير الآخرين",
+          "evidence": "Finance+E2E",
+          "priority": "P0"
+        },
+        {
+          "id": "E09-AC04",
+          "text_ar": "Given استردادًا فوق الحد، When ينشئه موظف، Then لا يستطيع اعتماده بنفسه",
+          "evidence": "Security",
+          "priority": "P0"
+        },
+        {
+          "id": "E09-AC05",
+          "text_ar": "Given Chargeback مفتوح، When يُعتمد استرداد على المبلغ نفسه، Then يمنع التعويض المزدوج",
+          "evidence": "Finance",
+          "priority": "P0"
+        },
+        {
+          "id": "E09-AC06",
+          "text_ar": "Given استبدال راكب، When يتغير الجنس، Then يعاد فحص التجاور قبل التثبيت",
+          "evidence": "Integration",
+          "priority": "P0"
+        }
+      ]
+    },
+    {
+      "id": "E10",
+      "title_ar": "الصعود والعمل دون اتصال وعدم الحضور",
+      "scope_ar": "QR، Manifest، offline، no-show",
+      "acceptance_criteria": [
+        {
+          "id": "E10-AC01",
+          "text_ar": "Given QR صالح، When يمسح جهازان بالتزامن، Then يسجل boarded مرة واحدة",
+          "evidence": "Concurrency",
+          "priority": "P0"
+        },
+        {
+          "id": "E10-AC02",
+          "text_ar": "Given QR تالف وهويته قابلة للتحقق، When يستخدم الموظف manual check، Then يسمح مع سبب وAudit",
+          "evidence": "E2E",
+          "priority": "P1"
+        },
+        {
+          "id": "E10-AC03",
+          "text_ar": "Given راكبًا لديه حالة رفض صعود عاجلة، When تعمل مهمة No-show، Then لا تغير حالته",
+          "evidence": "Integration",
+          "priority": "P0"
+        },
+        {
+          "id": "E10-AC04",
+          "text_ar": "Given حزمة offline صالحة، When تسجل أحداثًا ثم تزامن، Then تكون idempotent وتظهر التعارضات",
+          "evidence": "Recovery",
+          "priority": "P0"
+        },
+        {
+          "id": "E10-AC05",
+          "text_ar": "Given الرحلة انطلقت، When يحاول الموظف عكس boarded، Then يرفض إلا بتصحيح إداري معتمد",
+          "evidence": "Security+Integration",
+          "priority": "P0"
+        },
+        {
+          "id": "E10-AC06",
+          "text_ar": "Given إغلاق الصعود، When ينشأ manifest، Then تكون النسخة hashed وغير قابلة للتعديل بصمت",
+          "evidence": "Integration",
+          "priority": "P0"
+        }
+      ]
+    },
+    {
+      "id": "E11",
+      "title_ar": "تغيير البولمان والحوادث والدعم",
+      "scope_ar": "إعادة التوزيع، الحالات العاجلة، SLA",
+      "acceptance_criteria": [
+        {
+          "id": "E11-AC01",
+          "text_ar": "Given تغيير بولمان، When يعاد التوزيع، Then لا يوجد مقعد مزدوج وتبقى المجموعات وقاعدة الجنس",
+          "evidence": "Integration",
+          "priority": "P0"
+        },
+        {
+          "id": "E11-AC02",
+          "text_ar": "Given مكتبًا يرفض تذكرة صحيحة، When تفتح P1، Then يجمد المقعد من إعادة البيع ويتصعد تلقائيًا",
+          "evidence": "E2E+Manual",
+          "priority": "P0"
+        },
+        {
+          "id": "E11-AC03",
+          "text_ar": "Given مكتبًا لا يرد قبل الرحلة، When ينتهي SLA، Then تنتقل الحالة للمنصة وتُسجل مخالفة",
+          "evidence": "Jobs+Manual",
+          "priority": "P0"
+        },
+        {
+          "id": "E11-AC04",
+          "text_ar": "Given تعطل النظام، When يصل راكب بتذكرة صحيحة، Then يمكن التحقق بالقائمة/PNR ولا يطلب دفعًا جديدًا",
+          "evidence": "Recovery+Manual",
+          "priority": "P0"
+        },
+        {
+          "id": "E11-AC05",
+          "text_ar": "Given رحلة interrupted، When تحسم، Then لا تتحول إلى completed طبيعيًا دون معالجة حقوق الركاب",
+          "evidence": "Integration",
+          "priority": "P0"
+        }
+      ]
+    },
+    {
+      "id": "E12",
+      "title_ar": "العمولات والدفتر والتسويات",
+      "scope_ar": "دفتر مزدوج، عمولة مباشرة/إلكترونية، مقاصة",
+      "acceptance_criteria": [
+        {
+          "id": "E12-AC01",
+          "text_ar": "Given أي ledger entry، When تنتهي المعاملة، Then مجموع المدين يساوي الدائن أو تفشل المعاملة",
+          "evidence": "Database",
+          "priority": "P0"
+        },
+        {
+          "id": "E12-AC02",
+          "text_ar": "Given دفعًا إلكترونيًا قبل الرحلة، When يُقبض، Then يسجل Customer Funds لا Commission Revenue",
+          "evidence": "Finance",
+          "priority": "P0"
+        },
+        {
+          "id": "E12-AC03",
+          "text_ar": "Given حجزًا دفع مباشرة للمكتب وأكملت الرحلة، When يستحق، Then تنشأ ذمة عمولة على المكتب",
+          "evidence": "Finance",
+          "priority": "P0"
+        },
+        {
+          "id": "E12-AC04",
+          "text_ar": "Given تسوية فيها مستحقات إلكترونية وعمولات مباشرة، When تحسب، Then تتم المقاصة بنفس العملة فقط",
+          "evidence": "Finance",
+          "priority": "P0"
+        },
+        {
+          "id": "E12-AC05",
+          "text_ar": "Given نزاعًا على حجز واحد، When تُغلق الرحلة، Then يجمد مبلغه فقط وتتاح بقية الحجوزات للتسوية",
+          "evidence": "Finance",
+          "priority": "P0"
+        },
+        {
+          "id": "E12-AC06",
+          "text_ar": "Given قيدًا منشورًا خاطئًا، When يصحح، Then ينشأ Reversal/Adjustment ولا يعدل القيد الأصلي",
+          "evidence": "Finance+Audit",
+          "priority": "P0"
+        },
+        {
+          "id": "E12-AC07",
+          "text_ar": "Given تسوية، When يعتمدها منشئها نفسه، Then ترفض",
+          "evidence": "Security",
+          "priority": "P0"
+        }
+      ]
+    },
+    {
+      "id": "E13",
+      "title_ar": "السياسات والإعدادات والموافقات",
+      "scope_ar": "مركز السياسات، التدرج، Versioning، Snapshot",
+      "acceptance_criteria": [
+        {
+          "id": "E13-AC01",
+          "text_ar": "Given حدود منصة، When يضبط المكتب قيمة خارجها، Then ترفض CONFIGURATION_OUT_OF_RANGE",
+          "evidence": "Integration",
+          "priority": "P0"
+        },
+        {
+          "id": "E13-AC02",
+          "text_ar": "Given سياسة جديدة مستقبلية، When تنشر، Then لا تغير حجوزات قائمة",
+          "evidence": "Integration",
+          "priority": "P0"
+        },
+        {
+          "id": "E13-AC03",
+          "text_ar": "Given زبونًا لم يوافق على الإصدار المطلوب، When يؤكد الحجز، Then يرفض POLICY_ACCEPTANCE_REQUIRED",
+          "evidence": "E2E",
+          "priority": "P0"
+        },
+        {
+          "id": "E13-AC04",
+          "text_ar": "Given موافقة، When تحفظ، Then تشمل الإصدار واللغة والوقت والكيان دون تخزين أسرار غير لازمة",
+          "evidence": "Integration",
+          "priority": "P0"
+        },
+        {
+          "id": "E13-AC05",
+          "text_ar": "Given تعديلًا حساسًا، When يعتمد، Then يسجل before/after والفاعل والسبب وتاريخ النفاذ",
+          "evidence": "Audit",
+          "priority": "P0"
+        }
+      ]
+    },
+    {
+      "id": "E14",
+      "title_ar": "الخصوصية والأمان ومكافحة الاحتيال",
+      "scope_ar": "العزل، التدقيق، الملفات، المخاطر، حقوق البيانات",
+      "acceptance_criteria": [
+        {
+          "id": "E14-AC01",
+          "text_ar": "Given موظف مكتب A، When يطلب مورد مكتب B، Then يرفض ولا يعيد حتى count أو metadata حساسة",
+          "evidence": "Security",
+          "priority": "P0"
+        },
+        {
+          "id": "E14-AC02",
+          "text_ar": "Given ملفًا غير مسموح أو مصابًا، When يرفع، Then لا يدخل التخزين النهائي",
+          "evidence": "Security",
+          "priority": "P0"
+        },
+        {
+          "id": "E14-AC03",
+          "text_ar": "Given طلب حذف حساب مع حجوزات مالية، When ينفذ، Then يعطل الحساب ويخفي غير الضروري ويحافظ على الملزم",
+          "evidence": "Privacy",
+          "priority": "P0"
+        },
+        {
+          "id": "E14-AC04",
+          "text_ar": "Given Legal Hold، When تعمل مهمة الحذف، Then تتجاوز السجل وتوثق السبب",
+          "evidence": "Privacy",
+          "priority": "P0"
+        },
+        {
+          "id": "E14-AC05",
+          "text_ar": "Given Risk score متوسط، When ينفذ حجزًا، Then يطلب step-up بدل الحظر النهائي التلقائي",
+          "evidence": "Security+E2E",
+          "priority": "P1"
+        },
+        {
+          "id": "E14-AC06",
+          "text_ar": "Given عملية حساسة، When تنجح أو تفشل، Then تسجل Audit منقحًا دون CVV أو أسرار",
+          "evidence": "Security",
+          "priority": "P0"
+        }
+      ]
+    },
+    {
+      "id": "E15",
+      "title_ar": "الإشعارات",
+      "scope_ar": "قنوات التشغيل، retry، dedupe، تغييرات الرحلة",
+      "acceptance_criteria": [
+        {
+          "id": "E15-AC01",
+          "text_ar": "Given نجاح حجز، When يفشل البريد، Then يبقى الحجز ناجحًا وتُعاد المحاولة",
+          "evidence": "Failure",
+          "priority": "P0"
+        },
+        {
+          "id": "E15-AC02",
+          "text_ar": "Given نفس الحدث أُعيد نشره، When يعالج، Then لا ترسل رسالة مكررة لنفس القناة/الإصدار",
+          "evidence": "Integration",
+          "priority": "P1"
+        },
+        {
+          "id": "E15-AC03",
+          "text_ar": "Given تغيير جوهري، When يبلغ الزبون، Then يطلب قبول/اختيار صريح ولا يعتبر الصمت موافقة",
+          "evidence": "E2E",
+          "priority": "P0"
+        },
+        {
+          "id": "E15-AC04",
+          "text_ar": "Given قناة فاشلة والرحلة قريبة، When تنتهي المحاولات، Then يصعد لمهمة بشرية/قناة بديلة",
+          "evidence": "Jobs+Manual",
+          "priority": "P1"
+        },
+        {
+          "id": "E15-AC05",
+          "text_ar": "Given لغة المستخدم، When تُرسل الرسالة، Then تستخدم قالبًا بالإصدار واللغة المناسبين",
+          "evidence": "Integration",
+          "priority": "P1"
+        }
+      ]
+    },
+    {
+      "id": "E16",
+      "title_ar": "لوحة المنصة والرقابة",
+      "scope_ar": "المكاتب، النزاعات، المخالفات، التقارير والإعدادات",
+      "acceptance_criteria": [
+        {
+          "id": "E16-AC01",
+          "text_ar": "Given دور دعم، When يدخل، Then لا يرى أو يعدل حسابات التسوية دون صلاحية مالية",
+          "evidence": "Security",
+          "priority": "P0"
+        },
+        {
+          "id": "E16-AC02",
+          "text_ar": "Given مخالفة حرجة، When يعلق المكتب، Then تتوقف حجوزاته الجديدة ولا تضيع الحجوزات القائمة",
+          "evidence": "E2E",
+          "priority": "P0"
+        },
+        {
+          "id": "E16-AC03",
+          "text_ar": "Given نزاعًا، When يصدر قرارًا، Then يتضمن السبب والأثر المالي وحق الاعتراض",
+          "evidence": "Manual+Integration",
+          "priority": "P0"
+        },
+        {
+          "id": "E16-AC04",
+          "text_ar": "Given تعديل منصة حساس، When ينفذ، Then يتطلب MFA واعتمادًا ثانيًا إذا تجاوز التصنيف",
+          "evidence": "Security",
+          "priority": "P0"
+        },
+        {
+          "id": "E16-AC05",
+          "text_ar": "Given لوحة تقارير، When تعرض أرقامًا مالية، Then تطابق ledger لا تجميعات واجهة منفصلة",
+          "evidence": "Finance",
+          "priority": "P0"
+        }
+      ]
+    },
+    {
+      "id": "E17",
+      "title_ar": "الاشتراكات والباقات",
+      "scope_ar": "اشتراك المكتب مستقل عن عمولة الحجز",
+      "acceptance_criteria": [
+        {
+          "id": "E17-AC01",
+          "text_ar": "Given خطة مفعلة، When يشترك مكتب، Then تحفظ خطة وسعر وفترة Snapshot",
+          "evidence": "Integration",
+          "priority": "P1"
+        },
+        {
+          "id": "E17-AC02",
+          "text_ar": "Given انتهاء الاشتراك، When توجد حجوزات قائمة، Then لا تضيع؛ يطبق تقييد الخدمة وفق سياسة المنصة",
+          "evidence": "Integration",
+          "priority": "P0"
+        },
+        {
+          "id": "E17-AC03",
+          "text_ar": "Given فاتورة اشتراك، When تُقبض، Then تنشأ قيود SUBSCRIPTION_INVOICED وSUBSCRIPTION_PAID متوازنة",
+          "evidence": "Finance",
+          "priority": "P1"
+        },
+        {
+          "id": "E17-AC04",
+          "text_ar": "Given تغيير سعر الباقة، When يحدث، Then لا يغير فترة مدفوعة سابقة بأثر رجعي",
+          "evidence": "Integration",
+          "priority": "P1"
+        }
+      ]
+    },
+    {
+      "id": "E18",
+      "title_ar": "الاستمرارية والمراقبة والإطلاق",
+      "scope_ar": "نسخ احتياطي، أعطال، قياس، CI/CD",
+      "acceptance_criteria": [
+        {
+          "id": "E18-AC01",
+          "text_ar": "Given تعطل PostgreSQL، When يحدث، Then تتوقف الحجوزات والتغييرات ولا يعتمد Redis كمصدر حقيقة",
+          "evidence": "Failure",
+          "priority": "P0"
+        },
+        {
+          "id": "E18-AC02",
+          "text_ar": "Given نسخة احتياطية، When يجرى تمرين الاستعادة، Then تتحقق RPO<=15m وRTO<=4h أو يسجل فشل إطلاق",
+          "evidence": "Recovery",
+          "priority": "P0"
+        },
+        {
+          "id": "E18-AC03",
+          "text_ar": "Given عودة الخدمة، When تفتح الحجوزات، Then تكتمل مصالحة الدفع والمقاعد أولًا",
+          "evidence": "Recovery",
+          "priority": "P0"
+        },
+        {
+          "id": "E18-AC04",
+          "text_ar": "Given إصدارًا جديدًا، When يفشل Health/Smoke، Then يتراجع تلقائيًا أو يدويًا حسب Runbook",
+          "evidence": "Delivery",
+          "priority": "P0"
+        },
+        {
+          "id": "E18-AC05",
+          "text_ar": "Given حادث SEV-1، When يفتح، Then يوجد قائد وسجل زمني واتصالات وتقرير بعد الحادث",
+          "evidence": "Manual",
+          "priority": "P1"
+        },
+        {
+          "id": "E18-AC06",
+          "text_ar": "Given حمل إطلاق متوقع، When يختبر، Then تحقق SLOs المحددة دون ازدواج مالي أو مقاعد",
+          "evidence": "Performance",
+          "priority": "P0"
+        }
+      ]
+    },
+    {
+      "id": "E19",
+      "title_ar": "تجربة الاستخدام وRTL وإمكانية الوصول",
+      "scope_ar": "الموقع ولوحات المكتب والمنصة",
+      "acceptance_criteria": [
+        {
+          "id": "E19-AC01",
+          "text_ar": "Given هاتفًا متوسطًا واتصالًا ضعيفًا، When يكمل الحجز، Then لا تتطلب العملية تطبيقًا أو تحميلًا ثقيلًا",
+          "evidence": "E2E+Performance",
+          "priority": "P0"
+        },
+        {
+          "id": "E19-AC02",
+          "text_ar": "Given واجهة عربية، When تعرض الشاشات، Then يكون RTL صحيحًا مع الأرقام/العملة/التواريخ مفهومة",
+          "evidence": "Visual",
+          "priority": "P1"
+        },
+        {
+          "id": "E19-AC03",
+          "text_ar": "Given مستخدم لوحة بالمفاتيح، When يتنقل، Then يمكنه الوصول للوظائف الأساسية دون فأرة",
+          "evidence": "Accessibility",
+          "priority": "P1"
+        },
+        {
+          "id": "E19-AC04",
+          "text_ar": "Given حالة تحميل/فراغ/خطأ، When تحدث، Then تعرض إجراءً واضحًا ولا تفقد مدخلات الحجز بلا سبب",
+          "evidence": "E2E",
+          "priority": "P1"
+        },
+        {
+          "id": "E19-AC05",
+          "text_ar": "Given سياسة مهمة، When يكون الزبون في خطوة القرار، Then يظهر ملخصها قبل التأكيد مع رابط كامل",
+          "evidence": "UX",
+          "priority": "P0"
+        }
+      ]
+    }
+  ]
+}

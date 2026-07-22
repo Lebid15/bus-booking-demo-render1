@@ -1,0 +1,62 @@
+
+> bus-booking-web@0.1.0 build
+> next build
+
+▲ Next.js 16.2.10 (Turbopack)
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 7.7s
+  Running TypeScript ...
+  Finished TypeScript in 3.5s ...
+  Collecting page data using 40 workers ...
+  Generating static pages using 40 workers (0/37) ...
+  Generating static pages using 40 workers (9/37) 
+  Generating static pages using 40 workers (18/37) 
+  Generating static pages using 40 workers (27/37) 
+✓ Generating static pages using 40 workers (37/37) in 1390ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ƒ /
+├ ○ /_not-found
+├ ƒ /login
+├ ƒ /manage-booking
+├ ƒ /notifications
+├ ƒ /office
+├ ƒ /office/boarding
+├ ƒ /office/disputes
+├ ƒ /office/fleet
+├ ƒ /office/notifications
+├ ƒ /office/payments
+├ ƒ /office/reallocation
+├ ƒ /office/refunds
+├ ƒ /office/reports
+├ ƒ /office/settings
+├ ƒ /office/settlements
+├ ƒ /office/support
+├ ƒ /office/trips
+├ ƒ /office/verification
+├ ƒ /platform
+├ ƒ /platform/approvals
+├ ƒ /platform/audit
+├ ƒ /platform/catalog
+├ ƒ /platform/disputes
+├ ƒ /platform/finance
+├ ƒ /platform/incidents
+├ ƒ /platform/notifications
+├ ƒ /platform/offices
+├ ƒ /platform/policies
+├ ƒ /platform/refunds
+├ ƒ /platform/reports
+├ ƒ /platform/security
+├ ƒ /platform/settings
+├ ƒ /policies
+├ ƒ /policies/[code]
+├ ƒ /privacy
+├ ƒ /search
+└ ƒ /trips/[tripId]/seats
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

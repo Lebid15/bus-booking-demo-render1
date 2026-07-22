@@ -1,0 +1,21 @@
+PITR drill started: 2026-07-21T22:28:22Z
+sh: locale: Permission denied
+2026-07-21 22:28:24.572 UTC [33341] WARNING:  no usable system locales were found
+127.0.0.1:55434 - accepting connections
+CREATE DATABASE
+CREATE TABLE
+INSERT 0 1
+Base backup duration_ms=707
+INSERT 0 1
+Recovery target time=2026-07-21 22:28:27.982381+00
+DELETE 1
+Destructive delete time=2026-07-21 22:28:30.126150+00
+Archived WAL segments=4 failed=0
+Source row count after delete=0
+127.0.0.1:55435 - accepting connections
+PITR restore duration_ms=630
+Restored target marker=must-survive-pitr
+Restored total rows=2
+Restored server still in recovery=f
+PITR drill: PASS
+PITR drill completed: 2026-07-21T22:28:31Z

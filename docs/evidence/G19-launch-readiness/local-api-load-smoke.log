@@ -1,0 +1,15 @@
+requests=600 concurrency=30 elapsed_seconds=14.904
+throughput_rps=40.26
+latency_ms_p50=318.12
+latency_ms_p95=1507.63
+latency_ms_p99=1618.04
+latency_ms_max=1797.49
+status_counts={200: 600}
+errors=0
+endpoint=/health/live requests=300 p95_ms=306.61
+endpoint=/health/ready requests=150 p95_ms=1405.33
+endpoint=/v1/public/locations requests=150 p95_ms=1611.77
+
+--- post-load database connections ---
+active|1
+backend|8

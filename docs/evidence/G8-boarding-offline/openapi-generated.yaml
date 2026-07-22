@@ -1,0 +1,4734 @@
+openapi: 3.0.3
+info:
+  title: Bus Booking Platform API
+  version: 4.0.0-g8-boarding-offline
+paths:
+  /health/live:
+    get:
+      operationId: health_live_retrieve
+      tags:
+      - health
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LiveHealth'
+          description: ''
+  /health/ready:
+    get:
+      operationId: health_ready_retrieve
+      tags:
+      - health
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadyHealth'
+          description: ''
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadyHealth'
+          description: ''
+  /v1/auth/login:
+    post:
+      operationId: v1_auth_login_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Login'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Login'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Login'
+        required: true
+      security:
+      - bearerAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /v1/auth/mfa/verify:
+    post:
+      operationId: v1_auth_mfa_verify_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MfaVerify'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MfaVerify'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MfaVerify'
+        required: true
+      security:
+      - bearerAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /v1/auth/register:
+    post:
+      operationId: v1_auth_register_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Register'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Register'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Register'
+        required: true
+      security:
+      - bearerAuth: []
+      - {}
+      responses:
+        '202':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /v1/auth/register/verify:
+    post:
+      operationId: v1_auth_register_verify_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistrationVerify'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RegistrationVerify'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RegistrationVerify'
+        required: true
+      security:
+      - bearerAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /v1/me/bookings:
+    get:
+      operationId: v1_me_bookings_list
+      tags:
+      - v1
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PublicBookingResponse'
+          description: ''
+  /v1/me/bookings/link:
+    post:
+      operationId: v1_me_bookings_link_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LinkGuestBooking'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LinkGuestBooking'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LinkGuestBooking'
+        required: true
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicBookingResponse'
+          description: ''
+  /v1/me/sessions:
+    get:
+      operationId: v1_me_sessions_list
+      tags:
+      - v1
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Session'
+          description: ''
+  /v1/me/sessions/{session_id}:
+    delete:
+      operationId: v1_me_sessions_destroy
+      parameters:
+      - in: path
+        name: session_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /v1/office/bookings/{booking_id}/commands:
+    post:
+      operationId: v1_office_bookings_commands_create
+      parameters:
+      - in: path
+        name: booking_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OfficeBookingCommand'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OfficeBookingCommand'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OfficeBookingCommand'
+        required: true
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicBookingResponse'
+          description: ''
+  /v1/office/bookings/{booking_id}/payments/cash:
+    post:
+      operationId: v1_office_bookings_payments_cash_create
+      parameters:
+      - in: path
+        name: booking_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OfficeCashPayment'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OfficeCashPayment'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OfficeCashPayment'
+        required: true
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentIntent'
+          description: ''
+  /v1/office/branches:
+    get:
+      operationId: v1_office_branches_list
+      tags:
+      - v1
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OfficeBranch'
+          description: ''
+    post:
+      operationId: v1_office_branches_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OfficeBranchWrite'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OfficeBranchWrite'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OfficeBranchWrite'
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OfficeBranch'
+          description: ''
+  /v1/office/branches/{branch_id}:
+    patch:
+      operationId: v1_office_branches_partial_update
+      parameters:
+      - in: path
+        name: branch_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedOfficeBranchWrite'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedOfficeBranchWrite'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedOfficeBranchWrite'
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OfficeBranch'
+          description: ''
+  /v1/office/context:
+    get:
+      operationId: v1_office_context_retrieve
+      tags:
+      - v1
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /v1/office/drivers:
+    get:
+      operationId: v1_office_drivers_list
+      tags:
+      - v1
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Driver'
+          description: ''
+    post:
+      operationId: v1_office_drivers_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DriverWrite'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DriverWrite'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DriverWrite'
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Driver'
+          description: ''
+  /v1/office/drivers/{driver_id}:
+    patch:
+      operationId: v1_office_drivers_partial_update
+      parameters:
+      - in: path
+        name: driver_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedDriverWrite'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedDriverWrite'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedDriverWrite'
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Driver'
+          description: ''
+  /v1/office/manual-payments:
+    get:
+      operationId: v1_office_manual_payments_list
+      tags:
+      - v1
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ManualPaymentQueueItem'
+          description: ''
+  /v1/office/manual-payments/{submission_id}/verify:
+    post:
+      operationId: v1_office_manual_payments_verify_create
+      parameters:
+      - in: path
+        name: submission_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ManualPaymentDecision'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ManualPaymentDecision'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ManualPaymentDecision'
+        required: true
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentIntent'
+          description: ''
+  /v1/office/payout-accounts:
+    get:
+      operationId: v1_office_payout_accounts_list
+      tags:
+      - v1
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PayoutAccount'
+          description: ''
+    post:
+      operationId: v1_office_payout_accounts_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PayoutAccountWrite'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PayoutAccountWrite'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PayoutAccountWrite'
+        required: true
+      security:
+      - bearerAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PayoutAccount'
+          description: ''
+  /v1/office/payout-accounts/{account_id}/approve:
+    post:
+      operationId: v1_office_payout_accounts_approve_create
+      parameters:
+      - in: path
+        name: account_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PayoutAccount'
+          description: ''
+  /v1/office/refunds:
+    get:
+      operationId: v1_office_refunds_list
+      tags:
+      - v1
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Refund'
+          description: ''
+  /v1/office/refunds/{refund_id}/commands:
+    post:
+      operationId: v1_office_refunds_commands_create
+      parameters:
+      - in: path
+        name: refund_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefundCommand'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RefundCommand'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RefundCommand'
+        required: true
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Refund'
+          description: ''
+  /v1/office/seat-layouts:
+    get:
+      operationId: v1_office_seat_layouts_list
+      tags:
+      - v1
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SeatLayout'
+          description: ''
+    post:
+      operationId: v1_office_seat_layouts_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SeatLayoutWrite'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SeatLayoutWrite'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SeatLayoutWrite'
+        required: true
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeatLayout'
+          description: ''
+  /v1/office/seat-layouts/{layout_id}:
+    get:
+      operationId: v1_office_seat_layouts_retrieve
+      parameters:
+      - in: path
+        name: layout_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeatLayout'
+          description: ''
+    patch:
+      operationId: v1_office_seat_layouts_partial_update
+      parameters:
+      - in: path
+        name: layout_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSeatLayoutWrite'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSeatLayoutWrite'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSeatLayoutWrite'
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeatLayout'
+          description: ''
+  /v1/office/staff:
+    get:
+      operationId: v1_office_staff_list
+      tags:
+      - v1
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Membership'
+          description: ''
+    post:
+      operationId: v1_office_staff_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffInvite'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffInvite'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffInvite'
+        required: true
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Membership'
+          description: ''
+  /v1/office/staff/{membership_id}:
+    patch:
+      operationId: v1_office_staff_partial_update
+      parameters:
+      - in: path
+        name: membership_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffUpdate'
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Membership'
+          description: ''
+  /v1/office/trips:
+    get:
+      operationId: v1_office_trips_list
+      parameters:
+      - in: query
+        name: date_from
+        schema:
+          type: string
+      - in: query
+        name: date_to
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+      tags:
+      - v1
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Trip'
+          description: ''
+    post:
+      operationId: v1_office_trips_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TripWrite'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TripWrite'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TripWrite'
+        required: true
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trip'
+          description: ''
+  /v1/office/trips/{trip_id}:
+    get:
+      operationId: v1_office_trips_retrieve
+      parameters:
+      - in: path
+        name: trip_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trip'
+          description: ''
+    patch:
+      operationId: v1_office_trips_partial_update
+      parameters:
+      - in: path
+        name: trip_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedTripPatch'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedTripPatch'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedTripPatch'
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trip'
+          description: ''
+  /v1/office/trips/{trip_id}/boarding:
+    post:
+      operationId: boardingCommand
+      summary: تنفيذ أمر صعود
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+        description: مفتاح فريد من 8 إلى 120 محرفًا لإعادة المحاولة الآمنة.
+        required: true
+      - in: path
+        name: trip_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - Boarding
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BoardingCommand'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BoardingCommand'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BoardingCommand'
+        required: true
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BoardingResult'
+          description: ''
+  /v1/office/trips/{trip_id}/commands:
+    post:
+      operationId: v1_office_trips_commands_create
+      parameters:
+      - in: path
+        name: trip_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TripCommand'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TripCommand'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TripCommand'
+        required: true
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trip'
+          description: ''
+  /v1/office/trips/{trip_id}/manifest:
+    get:
+      operationId: getManifest
+      summary: قائمة ركاب الرحلة
+      parameters:
+      - in: path
+        name: trip_id
+        schema:
+          type: string
+        required: true
+      - in: query
+        name: version
+        schema:
+          type: string
+      tags:
+      - Boarding
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /v1/office/trips/{trip_id}/offline-package:
+    post:
+      operationId: createOfflinePackage
+      summary: توليد حزمة صعود دون اتصال
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+        description: مفتاح فريد من 8 إلى 120 محرفًا لإعادة المحاولة الآمنة.
+        required: true
+      - in: path
+        name: trip_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - Boarding
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OfflinePackageResponse'
+          description: ''
+  /v1/office/trips/{trip_id}/offline-sync:
+    post:
+      operationId: syncOfflineBoarding
+      summary: مزامنة أحداث الصعود غير المتصلة
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+        description: مفتاح فريد من 8 إلى 120 محرفًا لإعادة المحاولة الآمنة.
+        required: true
+      - in: path
+        name: trip_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - Boarding
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OfflineSync'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OfflineSync'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OfflineSync'
+        required: true
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OfflineSyncResponse'
+          description: ''
+  /v1/office/trips/{trip_id}/seat-map:
+    get:
+      operationId: v1_office_trips_seat_map_retrieve
+      parameters:
+      - in: path
+        name: trip_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeatMap'
+          description: ''
+  /v1/office/vehicles:
+    get:
+      operationId: v1_office_vehicles_list
+      tags:
+      - v1
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Vehicle'
+          description: ''
+    post:
+      operationId: v1_office_vehicles_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VehicleWrite'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/VehicleWrite'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/VehicleWrite'
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vehicle'
+          description: ''
+  /v1/office/vehicles/{vehicle_id}:
+    patch:
+      operationId: v1_office_vehicles_partial_update
+      parameters:
+      - in: path
+        name: vehicle_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedVehicleWrite'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedVehicleWrite'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedVehicleWrite'
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vehicle'
+          description: ''
+  /v1/office/verification:
+    get:
+      operationId: v1_office_verification_retrieve
+      tags:
+      - v1
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerificationCase'
+          description: ''
+  /v1/office/verification/commands:
+    post:
+      operationId: v1_office_verification_commands_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerificationCommand'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/VerificationCommand'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/VerificationCommand'
+        required: true
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerificationCase'
+          description: ''
+  /v1/office/verification/documents:
+    get:
+      operationId: v1_office_verification_documents_list
+      tags:
+      - v1
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OfficeDocument'
+          description: ''
+    post:
+      operationId: v1_office_verification_documents_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OfficeDocumentWrite'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OfficeDocumentWrite'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OfficeDocumentWrite'
+        required: true
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OfficeDocument'
+          description: ''
+  /v1/platform/chargebacks:
+    get:
+      operationId: v1_platform_chargebacks_list
+      tags:
+      - v1
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Chargeback'
+          description: ''
+  /v1/platform/locations:
+    get:
+      operationId: v1_platform_locations_list
+      tags:
+      - v1
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Location'
+          description: ''
+    post:
+      operationId: v1_platform_locations_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LocationWrite'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LocationWrite'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LocationWrite'
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+          description: ''
+  /v1/platform/locations/{location_id}:
+    patch:
+      operationId: v1_platform_locations_partial_update
+      parameters:
+      - in: path
+        name: location_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedLocationWrite'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedLocationWrite'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedLocationWrite'
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+          description: ''
+  /v1/platform/offices:
+    get:
+      operationId: v1_platform_offices_list
+      tags:
+      - v1
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Office'
+          description: ''
+  /v1/platform/offices/{office_id}/documents/{document_id}:
+    patch:
+      operationId: v1_platform_offices_documents_partial_update
+      parameters:
+      - in: path
+        name: document_id
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: office_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedOfficeDocumentReview'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedOfficeDocumentReview'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedOfficeDocumentReview'
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OfficeDocument'
+          description: ''
+  /v1/platform/offices/{office_id}/verification/commands:
+    post:
+      operationId: v1_platform_offices_verification_commands_create
+      parameters:
+      - in: path
+        name: office_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerificationCommand'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/VerificationCommand'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/VerificationCommand'
+        required: true
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerificationCase'
+          description: ''
+  /v1/platform/policies:
+    get:
+      operationId: v1_platform_policies_list
+      tags:
+      - v1
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PolicyVersion'
+          description: ''
+    post:
+      operationId: v1_platform_policies_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PolicyVersionWrite'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PolicyVersionWrite'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PolicyVersionWrite'
+        required: true
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicyVersion'
+          description: ''
+  /v1/platform/refunds:
+    get:
+      operationId: v1_platform_refunds_list
+      tags:
+      - v1
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Refund'
+          description: ''
+  /v1/platform/routes:
+    get:
+      operationId: v1_platform_routes_list
+      tags:
+      - v1
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Route'
+          description: ''
+    post:
+      operationId: v1_platform_routes_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RouteWrite'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RouteWrite'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RouteWrite'
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Route'
+          description: ''
+  /v1/platform/routes/{route_id}:
+    patch:
+      operationId: v1_platform_routes_partial_update
+      parameters:
+      - in: path
+        name: route_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedRouteWrite'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedRouteWrite'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedRouteWrite'
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Route'
+          description: ''
+  /v1/public/bookings:
+    post:
+      operationId: v1_public_bookings_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBookingRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateBookingRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateBookingRequest'
+        required: true
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicBookingResponse'
+          description: ''
+  /v1/public/bookings/{pnr}:
+    get:
+      operationId: v1_public_bookings_retrieve
+      parameters:
+      - in: query
+        name: manage_token
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: pnr
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicBookingResponse'
+          description: ''
+  /v1/public/bookings/{pnr}/cancel:
+    post:
+      operationId: v1_public_bookings_cancel_create
+      parameters:
+      - in: query
+        name: manage_token
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: pnr
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelBookingRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CancelBookingRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CancelBookingRequest'
+        required: true
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicBookingResponse'
+          description: ''
+  /v1/public/bookings/{pnr}/cancellation-quote:
+    get:
+      operationId: v1_public_bookings_cancellation_quote_retrieve
+      parameters:
+      - in: query
+        name: manage_token
+        schema:
+          type: string
+        required: true
+      - in: query
+        name: passenger_id
+        schema:
+          type: array
+          items:
+            type: string
+      - in: path
+        name: pnr
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CancellationQuoteResponse'
+          description: ''
+  /v1/public/bookings/{pnr}/payments:
+    post:
+      operationId: v1_public_bookings_payments_create
+      parameters:
+      - in: query
+        name: manage_token
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: pnr
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePaymentIntent'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreatePaymentIntent'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreatePaymentIntent'
+        required: true
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentIntent'
+          description: ''
+  /v1/public/bookings/{pnr}/tickets/{ticket_id}/document:
+    get:
+      operationId: v1_public_bookings_tickets_document_retrieve
+      parameters:
+      - in: query
+        name: manage_token
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: pnr
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: ticket_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            text/html:
+              schema:
+                type: string
+                format: binary
+          description: ''
+  /v1/public/bookings/lookup:
+    post:
+      operationId: v1_public_bookings_lookup_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingLookupRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BookingLookupRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BookingLookupRequest'
+        required: true
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicBookingResponse'
+          description: ''
+  /v1/public/locations:
+    get:
+      operationId: v1_public_locations_list
+      tags:
+      - v1
+      security:
+      - bearerAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PublicLocation'
+          description: ''
+  /v1/public/payment-intents/{intent_id}/manual-transfer:
+    post:
+      operationId: v1_public_payment_intents_manual_transfer_create
+      parameters:
+      - in: path
+        name: intent_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ManualTransfer'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ManualTransfer'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ManualTransfer'
+        required: true
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentIntent'
+          description: ''
+  /v1/public/policies/{policy_code}:
+    get:
+      operationId: v1_public_policies_retrieve
+      parameters:
+      - in: path
+        name: policy_code
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicyVersion'
+          description: ''
+  /v1/public/seat-holds/{hold_token}/release:
+    post:
+      operationId: v1_public_seat_holds_release_create
+      parameters:
+      - in: path
+        name: hold_token
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeatHoldReleaseResponse'
+          description: ''
+  /v1/public/tickets/{ticket_id}/qr.svg:
+    get:
+      operationId: v1_public_tickets_qr.svg_retrieve
+      parameters:
+      - in: query
+        name: manage_token
+        schema:
+          type: string
+        required: true
+      - in: query
+        name: pnr
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: ticket_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            image/svg+xml:
+              schema:
+                type: string
+                format: binary
+          description: ''
+  /v1/public/trips/{trip_id}:
+    get:
+      operationId: v1_public_trips_retrieve
+      parameters:
+      - in: path
+        name: trip_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicTripSummary'
+          description: ''
+  /v1/public/trips/{trip_id}/seat-holds:
+    post:
+      operationId: v1_public_trips_seat_holds_create
+      parameters:
+      - in: path
+        name: trip_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SeatHoldRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SeatHoldRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SeatHoldRequest'
+        required: true
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeatHoldResponse'
+          description: ''
+  /v1/public/trips/{trip_id}/seats:
+    get:
+      operationId: v1_public_trips_seats_retrieve
+      parameters:
+      - in: query
+        name: session_token
+        schema:
+          type: string
+      - in: path
+        name: trip_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeatMap'
+          description: ''
+  /v1/public/trips/search:
+    get:
+      operationId: v1_public_trips_search_list
+      parameters:
+      - in: query
+        name: date
+        schema:
+          type: string
+        required: true
+      - in: query
+        name: destination_id
+        schema:
+          type: string
+        required: true
+      - in: query
+        name: origin_id
+        schema:
+          type: string
+        required: true
+      - in: query
+        name: passengers
+        schema:
+          type: integer
+      tags:
+      - v1
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PublicTripSummary'
+          description: ''
+  /v1/webhooks/payments/{provider_code}:
+    post:
+      operationId: v1_webhooks_payments_create
+      parameters:
+      - in: path
+        name: provider_code
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentWebhookRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PaymentWebhookRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PaymentWebhookRequest'
+        required: true
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookResponse'
+          description: ''
+components:
+  schemas:
+    ActiveInactiveStatus:
+      enum:
+      - active
+      - inactive
+      type: string
+      description: |-
+        * `active` - Active
+        * `inactive` - Inactive
+    BoardingCommand:
+      type: object
+      properties:
+        command:
+          $ref: '#/components/schemas/BoardingCommandCommandEnum'
+        ticket_qr:
+          type: string
+          nullable: true
+        passenger_id:
+          type: string
+          format: uuid
+          nullable: true
+        reason_code:
+          type: string
+          nullable: true
+          maxLength: 80
+        offline_event_id:
+          type: string
+          nullable: true
+          maxLength: 80
+        occurred_at:
+          type: string
+          format: date-time
+        correction_approval_id:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - command
+    BoardingCommandCommandEnum:
+      enum:
+      - arrive
+      - verify
+      - board
+      - reverse
+      - deny
+      - no_show
+      type: string
+      description: |-
+        * `arrive` - arrive
+        * `verify` - verify
+        * `board` - board
+        * `reverse` - reverse
+        * `deny` - deny
+        * `no_show` - no_show
+    BoardingResult:
+      type: object
+      properties:
+        passenger_id:
+          type: string
+          format: uuid
+        boarding_status:
+          type: string
+        ticket_status:
+          type: string
+          nullable: true
+      required:
+      - boarding_status
+      - passenger_id
+      - ticket_status
+    BookingContact:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 160
+          minLength: 2
+        phone:
+          type: string
+          maxLength: 20
+          minLength: 8
+        email:
+          type: string
+          format: email
+          nullable: true
+      required:
+      - name
+      - phone
+    BookingContactOutput:
+      type: object
+      properties:
+        name:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+          format: email
+          nullable: true
+      required:
+      - email
+      - name
+      - phone
+    BookingLookupRequest:
+      type: object
+      properties:
+        pnr:
+          type: string
+          maxLength: 12
+          minLength: 6
+        contact_verifier:
+          type: string
+          maxLength: 254
+          minLength: 4
+      required:
+      - contact_verifier
+      - pnr
+    BookingPassengerOutput:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        full_name:
+          type: string
+        gender:
+          type: string
+        passenger_type:
+          type: string
+        date_of_birth:
+          type: string
+          format: date
+          nullable: true
+        nationality_code:
+          type: string
+          nullable: true
+        boarding_status:
+          type: string
+        status:
+          type: string
+        seat_id:
+          type: string
+          format: uuid
+          nullable: true
+        seat_code:
+          type: string
+          nullable: true
+        ticket:
+          allOf:
+          - $ref: '#/components/schemas/TicketOutput'
+          nullable: true
+      required:
+      - boarding_status
+      - date_of_birth
+      - full_name
+      - gender
+      - id
+      - nationality_code
+      - passenger_type
+      - seat_code
+      - seat_id
+      - status
+      - ticket
+    BookingPaymentMethod:
+      enum:
+      - office_cash
+      - manual_transfer
+      - electronic
+      type: string
+      description: |-
+        * `office_cash` - Office cash
+        * `manual_transfer` - Manual transfer
+        * `electronic` - Electronic
+    BookingQuote:
+      type: object
+      properties:
+        subtotal:
+          $ref: '#/components/schemas/Money'
+        discount:
+          $ref: '#/components/schemas/Money'
+        fees:
+          $ref: '#/components/schemas/Money'
+        total:
+          $ref: '#/components/schemas/Money'
+        payment_deadline_at:
+          type: string
+          format: date-time
+          nullable: true
+        policy_version_ids:
+          type: array
+          items:
+            type: string
+        quote_version:
+          type: integer
+      required:
+      - discount
+      - fees
+      - payment_deadline_at
+      - policy_version_ids
+      - quote_version
+      - subtotal
+      - total
+    BookingTripLocation:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+      required:
+      - id
+      - name
+    BookingTripOffice:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+      required:
+      - id
+      - name
+    BookingTripSummary:
+      type: object
+      properties:
+        id:
+          type: string
+        departure_at:
+          type: string
+          format: date-time
+        arrival_at:
+          type: string
+          format: date-time
+          nullable: true
+        origin:
+          $ref: '#/components/schemas/BookingTripLocation'
+        destination:
+          $ref: '#/components/schemas/BookingTripLocation'
+        office:
+          $ref: '#/components/schemas/BookingTripOffice'
+      required:
+      - arrival_at
+      - departure_at
+      - destination
+      - id
+      - office
+      - origin
+    CancelBookingRequest:
+      type: object
+      properties:
+        quote_token:
+          type: string
+          minLength: 20
+        reason_code:
+          type: string
+          maxLength: 80
+      required:
+      - quote_token
+    CancellationPassengerQuote:
+      type: object
+      properties:
+        passenger_id:
+          type: string
+          format: uuid
+        full_name:
+          type: string
+        seat_id:
+          type: string
+          format: uuid
+        seat_code:
+          type: string
+        subtotal_amount:
+          type: string
+        discount_amount:
+          type: string
+        fee_amount:
+          type: string
+        total_amount:
+          type: string
+        refund_amount:
+          type: string
+        retained_amount:
+          type: string
+      required:
+      - discount_amount
+      - fee_amount
+      - full_name
+      - passenger_id
+      - refund_amount
+      - retained_amount
+      - seat_code
+      - seat_id
+      - subtotal_amount
+      - total_amount
+    CancellationQuoteResponse:
+      type: object
+      properties:
+        allowed:
+          type: boolean
+        refund_amount:
+          $ref: '#/components/schemas/Money'
+        retained_amount:
+          $ref: '#/components/schemas/Money'
+        reason:
+          type: string
+        expires_at:
+          type: string
+          format: date-time
+        quote_token:
+          type: string
+        passengers:
+          type: array
+          items:
+            $ref: '#/components/schemas/CancellationPassengerQuote'
+      required:
+      - allowed
+      - expires_at
+      - passengers
+      - quote_token
+      - reason
+      - refund_amount
+      - retained_amount
+    Chargeback:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        provider_case_id:
+          type: string
+        status:
+          type: string
+        amount:
+          type: string
+        currency:
+          type: string
+        booking_id:
+          type: string
+        opened_at:
+          type: string
+          format: date-time
+        deadline_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - amount
+      - booking_id
+      - currency
+      - deadline_at
+      - id
+      - opened_at
+      - provider_case_id
+      - status
+    CreateBookingRequest:
+      type: object
+      properties:
+        trip_id:
+          type: string
+          maxLength: 26
+        hold_token:
+          type: string
+          maxLength: 200
+          minLength: 36
+        contact:
+          $ref: '#/components/schemas/BookingContact'
+        passengers:
+          type: array
+          items:
+            $ref: '#/components/schemas/PassengerInput'
+        payment_method:
+          $ref: '#/components/schemas/BookingPaymentMethod'
+        accepted_policy_version_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          minItems: 1
+        client_reference:
+          type: string
+          nullable: true
+          maxLength: 120
+      required:
+      - accepted_policy_version_ids
+      - contact
+      - hold_token
+      - passengers
+      - payment_method
+      - trip_id
+    CreatePaymentIntent:
+      type: object
+      properties:
+        method_type:
+          $ref: '#/components/schemas/BookingPaymentMethod'
+        return_url:
+          type: string
+          format: uri
+          nullable: true
+      required:
+      - method_type
+    DecisionEnum:
+      enum:
+      - verify
+      - reject
+      type: string
+      description: |-
+        * `verify` - verify
+        * `reject` - reject
+    Driver:
+      type: object
+      properties:
+        id:
+          type: string
+        full_name:
+          type: string
+          maxLength: 160
+        phone:
+          type: string
+          nullable: true
+          maxLength: 20
+        license_last4:
+          type: string
+          nullable: true
+          maxLength: 8
+        license_expires_at:
+          type: string
+          format: date
+          nullable: true
+        status:
+          $ref: '#/components/schemas/DriverStatus'
+      required:
+      - full_name
+      - id
+    DriverStatus:
+      enum:
+      - active
+      - suspended
+      - expired
+      type: string
+      description: |-
+        * `active` - Active
+        * `suspended` - Suspended
+        * `expired` - Expired
+    DriverWrite:
+      type: object
+      properties:
+        full_name:
+          type: string
+          maxLength: 160
+        phone:
+          type: string
+          nullable: true
+          maxLength: 20
+        license_number:
+          type: string
+          writeOnly: true
+          maxLength: 100
+        license_expires_at:
+          type: string
+          format: date
+          nullable: true
+        status:
+          $ref: '#/components/schemas/DriverStatus'
+    GenderEnum:
+      enum:
+      - male
+      - female
+      type: string
+      description: |-
+        * `male` - Male
+        * `female` - Female
+    LayoutTypeEnum:
+      enum:
+      - 2+2
+      - 2+1
+      - custom
+      type: string
+      description: |-
+        * `2+2` - 2+2
+        * `2+1` - 2+1
+        * `custom` - Custom
+    LinkGuestBooking:
+      type: object
+      properties:
+        pnr:
+          type: string
+          maxLength: 12
+          minLength: 6
+        manage_token:
+          type: string
+          maxLength: 200
+          minLength: 20
+      required:
+      - manage_token
+      - pnr
+    LiveHealth:
+      type: object
+      properties:
+        status:
+          type: string
+        service:
+          type: string
+      required:
+      - service
+      - status
+    Location:
+      type: object
+      properties:
+        public_id:
+          type: string
+          readOnly: true
+        type:
+          type: string
+        parent_id:
+          type: string
+          readOnly: true
+          nullable: true
+        name_ar:
+          type: string
+          maxLength: 160
+        name_en:
+          type: string
+          nullable: true
+          maxLength: 160
+        address:
+          type: string
+          readOnly: true
+          nullable: true
+        latitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          nullable: true
+        longitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          nullable: true
+        status:
+          $ref: '#/components/schemas/ActiveInactiveStatus'
+      required:
+      - address
+      - name_ar
+      - parent_id
+      - public_id
+      - type
+    LocationWrite:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/LocationWriteTypeEnum'
+        parent_id:
+          type: string
+          nullable: true
+        name_ar:
+          type: string
+          maxLength: 160
+        name_en:
+          type: string
+          nullable: true
+          maxLength: 160
+        address:
+          type: string
+          nullable: true
+        latitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          nullable: true
+        longitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          nullable: true
+        status:
+          $ref: '#/components/schemas/ActiveInactiveStatus'
+    LocationWriteTypeEnum:
+      enum:
+      - city
+      - garage
+      - boarding_point
+      - dropoff_point
+      type: string
+      description: |-
+        * `city` - City
+        * `garage` - Garage
+        * `boarding_point` - Boarding point
+        * `dropoff_point` - Drop-off point
+    Login:
+      type: object
+      properties:
+        identifier:
+          type: string
+          maxLength: 254
+        password:
+          type: string
+          writeOnly: true
+          maxLength: 128
+      required:
+      - identifier
+      - password
+    ManualPaymentDecision:
+      type: object
+      properties:
+        decision:
+          $ref: '#/components/schemas/DecisionEnum'
+        reason:
+          type: string
+          nullable: true
+          maxLength: 1000
+      required:
+      - decision
+    ManualPaymentQueueItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        booking_id:
+          type: string
+        pnr:
+          type: string
+        transfer_reference:
+          type: string
+        sender_reference:
+          type: string
+          nullable: true
+        transferred_at:
+          type: string
+          format: date-time
+        amount:
+          type: string
+        currency:
+          type: string
+        proof_file_id:
+          type: string
+          nullable: true
+        status:
+          type: string
+        submitted_at:
+          type: string
+          format: date-time
+      required:
+      - amount
+      - booking_id
+      - currency
+      - id
+      - pnr
+      - proof_file_id
+      - sender_reference
+      - status
+      - submitted_at
+      - transfer_reference
+      - transferred_at
+    ManualTransfer:
+      type: object
+      properties:
+        transfer_reference:
+          type: string
+          maxLength: 160
+        transferred_at:
+          type: string
+          format: date-time
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,16}(?:\.\d{0,2})?$
+        sender_reference:
+          type: string
+          nullable: true
+          maxLength: 160
+        proof_file_id:
+          type: string
+          nullable: true
+          maxLength: 500
+      required:
+      - amount
+      - transfer_reference
+      - transferred_at
+    Membership:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        user:
+          type: object
+          additionalProperties:
+            type: string
+            nullable: true
+          readOnly: true
+        branch_id:
+          type: string
+          nullable: true
+          readOnly: true
+        role:
+          type: string
+        status:
+          $ref: '#/components/schemas/OfficeMembershipStatus'
+      required:
+      - branch_id
+      - id
+      - role
+      - user
+    MfaVerify:
+      type: object
+      properties:
+        challenge_id:
+          type: string
+          maxLength: 100
+        code:
+          type: string
+          pattern: ^\d{6,8}$
+      required:
+      - challenge_id
+      - code
+    Money:
+      type: object
+      properties:
+        amount:
+          type: string
+        currency:
+          type: string
+      required:
+      - amount
+      - currency
+    Office:
+      type: object
+      properties:
+        id:
+          type: string
+        public_id:
+          type: string
+          readOnly: true
+        legal_name:
+          type: string
+          maxLength: 200
+        trade_name:
+          type: string
+          maxLength: 160
+        office_type:
+          $ref: '#/components/schemas/OfficeTypeEnum'
+        status:
+          $ref: '#/components/schemas/OfficeStatusEnum'
+        timezone:
+          type: string
+          maxLength: 64
+        default_currency:
+          type: string
+          maxLength: 3
+        support_phone:
+          type: string
+          maxLength: 20
+        support_email:
+          type: string
+          format: email
+          nullable: true
+          maxLength: 254
+      required:
+      - id
+      - legal_name
+      - office_type
+      - public_id
+      - support_phone
+      - trade_name
+    OfficeBookingCommand:
+      type: object
+      properties:
+        command:
+          $ref: '#/components/schemas/OfficeBookingCommandCommandEnum'
+        passenger_id:
+          type: string
+          format: uuid
+        target_seat_id:
+          type: string
+          format: uuid
+        full_name:
+          type: string
+          maxLength: 160
+          minLength: 2
+        gender:
+          $ref: '#/components/schemas/GenderEnum'
+        passenger_type:
+          $ref: '#/components/schemas/PassengerTypeEnum'
+        date_of_birth:
+          type: string
+          format: date
+          nullable: true
+        nationality_code:
+          type: string
+          nullable: true
+          maxLength: 2
+        reason_code:
+          type: string
+          maxLength: 80
+      required:
+      - command
+      - passenger_id
+    OfficeBookingCommandCommandEnum:
+      enum:
+      - replace_passenger
+      - change_seat
+      type: string
+      description: |-
+        * `replace_passenger` - replace_passenger
+        * `change_seat` - change_seat
+    OfficeBranch:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+          maxLength: 160
+        phone:
+          type: string
+          nullable: true
+          maxLength: 20
+        status:
+          type: string
+          maxLength: 20
+        is_primary:
+          type: boolean
+        version:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        location:
+          $ref: '#/components/schemas/Location'
+      required:
+      - id
+      - location
+      - name
+    OfficeBranchWrite:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 160
+        location_id:
+          type: string
+        phone:
+          type: string
+          nullable: true
+          maxLength: 20
+        status:
+          $ref: '#/components/schemas/OfficeBranchWriteStatusEnum'
+        is_primary:
+          type: boolean
+        version:
+          type: integer
+          minimum: 1
+    OfficeBranchWriteStatusEnum:
+      enum:
+      - active
+      - inactive
+      - suspended
+      type: string
+      description: |-
+        * `active` - active
+        * `inactive` - inactive
+        * `suspended` - suspended
+    OfficeCashPayment:
+      type: object
+      properties:
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,16}(?:\.\d{0,2})?$
+        receipt_number:
+          type: string
+          maxLength: 120
+          minLength: 3
+        occurred_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - amount
+      - receipt_number
+    OfficeDocument:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        document_type:
+          type: string
+          maxLength: 64
+        sha256:
+          type: string
+          maxLength: 64
+        status:
+          $ref: '#/components/schemas/OfficeDocumentStatusEnum'
+        issued_at:
+          type: string
+          format: date
+          nullable: true
+        expires_at:
+          type: string
+          format: date
+          nullable: true
+        is_critical:
+          type: boolean
+        reviewed_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - document_type
+      - id
+      - sha256
+    OfficeDocumentReviewStatusEnum:
+      enum:
+      - verified
+      - rejected
+      type: string
+      description: |-
+        * `verified` - verified
+        * `rejected` - rejected
+    OfficeDocumentStatusEnum:
+      enum:
+      - pending
+      - verified
+      - rejected
+      - expired
+      type: string
+      description: |-
+        * `pending` - Pending
+        * `verified` - Verified
+        * `rejected` - Rejected
+        * `expired` - Expired
+    OfficeDocumentWrite:
+      type: object
+      properties:
+        document_type:
+          type: string
+          maxLength: 64
+        storage_object_key:
+          type: string
+        sha256:
+          type: string
+          pattern: ^[0-9a-fA-F]{64}$
+        issued_at:
+          type: string
+          format: date
+          nullable: true
+        expires_at:
+          type: string
+          format: date
+          nullable: true
+        is_critical:
+          type: boolean
+          default: true
+      required:
+      - document_type
+      - sha256
+      - storage_object_key
+    OfficeMembershipStatus:
+      enum:
+      - active
+      - invited
+      - suspended
+      - revoked
+      type: string
+      description: |-
+        * `active` - Active
+        * `invited` - Invited
+        * `suspended` - Suspended
+        * `revoked` - Revoked
+    OfficeStatusEnum:
+      enum:
+      - draft
+      - submitted
+      - under_review
+      - conditional
+      - active
+      - restricted
+      - no_new_bookings
+      - wind_down
+      - suspended
+      - terminated
+      - archived
+      type: string
+      description: |-
+        * `draft` - Draft
+        * `submitted` - Submitted
+        * `under_review` - Under review
+        * `conditional` - Conditional
+        * `active` - Active
+        * `restricted` - Restricted
+        * `no_new_bookings` - No new bookings
+        * `wind_down` - Wind down
+        * `suspended` - Suspended
+        * `terminated` - Terminated
+        * `archived` - Archived
+    OfficeTypeEnum:
+      enum:
+      - carrier
+      - branch
+      - authorized_agent
+      - garage_office
+      type: string
+      description: |-
+        * `carrier` - Carrier
+        * `branch` - Branch
+        * `authorized_agent` - Authorized agent
+        * `garage_office` - Garage office
+    OfflinePackageResponse:
+      type: object
+      properties:
+        download_url:
+          type: string
+        expires_at:
+          type: string
+          format: date-time
+        package_hash:
+          type: string
+      required:
+      - download_url
+      - expires_at
+      - package_hash
+    OfflineSync:
+      type: object
+      properties:
+        package_hash:
+          type: string
+          maxLength: 64
+          minLength: 64
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/BoardingCommand'
+      required:
+      - events
+      - package_hash
+    OfflineSyncResponse:
+      type: object
+      properties:
+        accepted:
+          type: integer
+        duplicates:
+          type: integer
+        conflicts:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        purge_required:
+          type: boolean
+      required:
+      - accepted
+      - conflicts
+      - duplicates
+      - purge_required
+    OwnerScopeEnum:
+      enum:
+      - platform
+      - office
+      type: string
+      description: |-
+        * `platform` - Platform
+        * `office` - Office
+    PassengerInput:
+      type: object
+      properties:
+        full_name:
+          type: string
+          maxLength: 160
+          minLength: 2
+        gender:
+          $ref: '#/components/schemas/GenderEnum'
+        passenger_type:
+          $ref: '#/components/schemas/PassengerTypeEnum'
+        date_of_birth:
+          type: string
+          format: date
+          nullable: true
+        nationality_code:
+          type: string
+          nullable: true
+          maxLength: 2
+          minLength: 2
+        seat_id:
+          type: string
+          format: uuid
+      required:
+      - full_name
+      - gender
+      - passenger_type
+    PassengerTypeEnum:
+      enum:
+      - adult
+      - child
+      - infant
+      type: string
+      description: |-
+        * `adult` - Adult
+        * `child` - Child
+        * `infant` - Infant
+    PatchedDriverWrite:
+      type: object
+      properties:
+        full_name:
+          type: string
+          maxLength: 160
+        phone:
+          type: string
+          nullable: true
+          maxLength: 20
+        license_number:
+          type: string
+          writeOnly: true
+          maxLength: 100
+        license_expires_at:
+          type: string
+          format: date
+          nullable: true
+        status:
+          $ref: '#/components/schemas/DriverStatus'
+    PatchedLocationWrite:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/LocationWriteTypeEnum'
+        parent_id:
+          type: string
+          nullable: true
+        name_ar:
+          type: string
+          maxLength: 160
+        name_en:
+          type: string
+          nullable: true
+          maxLength: 160
+        address:
+          type: string
+          nullable: true
+        latitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          nullable: true
+        longitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          nullable: true
+        status:
+          $ref: '#/components/schemas/ActiveInactiveStatus'
+    PatchedOfficeBranchWrite:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 160
+        location_id:
+          type: string
+        phone:
+          type: string
+          nullable: true
+          maxLength: 20
+        status:
+          $ref: '#/components/schemas/OfficeBranchWriteStatusEnum'
+        is_primary:
+          type: boolean
+        version:
+          type: integer
+          minimum: 1
+    PatchedOfficeDocumentReview:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/OfficeDocumentReviewStatusEnum'
+        reason:
+          type: string
+          nullable: true
+    PatchedRouteWrite:
+      type: object
+      properties:
+        origin_id:
+          type: string
+        destination_id:
+          type: string
+        name_ar:
+          type: string
+          maxLength: 200
+        status:
+          $ref: '#/components/schemas/ActiveInactiveStatus'
+        stops:
+          type: array
+          items:
+            $ref: '#/components/schemas/RouteStopWrite'
+    PatchedSeatLayoutWrite:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 160
+        layout_type:
+          $ref: '#/components/schemas/LayoutTypeEnum'
+        status:
+          allOf:
+          - $ref: '#/components/schemas/SeatLayoutStatus'
+          default: active
+        seats:
+          type: array
+          items:
+            $ref: '#/components/schemas/SeatWrite'
+        adjacencies:
+          type: array
+          items:
+            $ref: '#/components/schemas/SeatAdjacencyWrite'
+    PatchedStaffUpdate:
+      type: object
+      properties:
+        role_code:
+          type: string
+          maxLength: 80
+        branch_id:
+          type: string
+          nullable: true
+        status:
+          $ref: '#/components/schemas/OfficeMembershipStatus'
+    PatchedTripPatch:
+      type: object
+      properties:
+        scheduled_departure_at:
+          type: string
+          format: date-time
+        scheduled_arrival_at:
+          type: string
+          format: date-time
+          nullable: true
+        base_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,16}(?:\.\d{0,2})?$
+        vehicle_id:
+          type: string
+        driver_id:
+          type: string
+          nullable: true
+        version:
+          type: integer
+          minimum: 1
+    PatchedVehicleWrite:
+      type: object
+      properties:
+        plate_number:
+          type: string
+          maxLength: 40
+        fleet_number:
+          type: string
+          nullable: true
+          maxLength: 40
+        seat_layout_id:
+          type: string
+        status:
+          $ref: '#/components/schemas/VehicleStatus'
+        make_model:
+          type: string
+          nullable: true
+          maxLength: 160
+        year:
+          type: integer
+          maximum: 2100
+          minimum: 1980
+          nullable: true
+    PaymentIntent:
+      type: object
+      properties:
+        id:
+          type: string
+        method_type:
+          type: string
+        status:
+          type: string
+        amount:
+          type: string
+        currency:
+          type: string
+        provider_action:
+          nullable: true
+        expires_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - amount
+      - currency
+      - expires_at
+      - id
+      - method_type
+      - provider_action
+      - status
+    PaymentWebhookRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          maxLength: 160
+        intent_id:
+          type: string
+          maxLength: 26
+        status:
+          $ref: '#/components/schemas/PaymentWebhookRequestStatusEnum'
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,16}(?:\.\d{0,2})?$
+        currency:
+          type: string
+          maxLength: 3
+          minLength: 3
+        occurred_at:
+          type: string
+          format: date-time
+        provider_reference:
+          type: string
+          nullable: true
+          maxLength: 160
+      required:
+      - amount
+      - currency
+      - event_id
+      - intent_id
+      - occurred_at
+      - status
+    PaymentWebhookRequestStatusEnum:
+      enum:
+      - succeeded
+      type: string
+      description: '* `succeeded` - succeeded'
+    PayoutAccount:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        method_type:
+          $ref: '#/components/schemas/PayoutMethodType'
+        account_holder_name:
+          type: string
+          maxLength: 200
+        account_reference_last4:
+          type: string
+          nullable: true
+          maxLength: 8
+        status:
+          $ref: '#/components/schemas/PayoutAccountStatusEnum'
+        verified_at:
+          type: string
+          format: date-time
+          nullable: true
+        effective_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_by_id:
+          type: string
+          format: uuid
+          readOnly: true
+        approved_by_id:
+          type: string
+          format: uuid
+          nullable: true
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - account_holder_name
+      - approved_by_id
+      - created_at
+      - created_by_id
+      - id
+      - method_type
+    PayoutAccountStatusEnum:
+      enum:
+      - pending
+      - verified
+      - active
+      - suspended
+      - replaced
+      type: string
+      description: |-
+        * `pending` - Pending
+        * `verified` - Verified
+        * `active` - Active
+        * `suspended` - Suspended
+        * `replaced` - Replaced
+    PayoutAccountWrite:
+      type: object
+      properties:
+        method_type:
+          $ref: '#/components/schemas/PayoutMethodType'
+        account_holder_name:
+          type: string
+          maxLength: 200
+        account_reference:
+          type: string
+          writeOnly: true
+          maxLength: 500
+          minLength: 4
+      required:
+      - account_holder_name
+      - account_reference
+      - method_type
+    PayoutMethodType:
+      enum:
+      - bank
+      - wallet
+      - cash_clearing
+      type: string
+      description: |-
+        * `bank` - Bank
+        * `wallet` - Wallet
+        * `cash_clearing` - Cash clearing
+    PolicyTypeEnum:
+      enum:
+      - cancellation
+      - payment
+      - boarding
+      - baggage
+      - terms
+      - privacy
+      type: string
+      description: |-
+        * `cancellation` - Cancellation
+        * `payment` - Payment
+        * `boarding` - Boarding
+        * `baggage` - Baggage
+        * `terms` - Terms
+        * `privacy` - Privacy
+    PolicyVersion:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        code:
+          type: string
+          readOnly: true
+        policy_type:
+          type: string
+          readOnly: true
+        owner_scope:
+          type: string
+          readOnly: true
+        office_id:
+          type: string
+          readOnly: true
+          nullable: true
+        version_no:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        language:
+          type: string
+          maxLength: 5
+        title:
+          type: string
+          maxLength: 200
+        content_markdown:
+          type: string
+        rules_json: {}
+        effective_from:
+          type: string
+          format: date-time
+        effective_to:
+          type: string
+          format: date-time
+          nullable: true
+        published_at:
+          type: string
+          format: date-time
+          nullable: true
+        content_sha256:
+          type: string
+          maxLength: 64
+      required:
+      - code
+      - content_markdown
+      - content_sha256
+      - effective_from
+      - id
+      - office_id
+      - owner_scope
+      - policy_type
+      - title
+      - version_no
+    PolicyVersionWrite:
+      type: object
+      properties:
+        code:
+          type: string
+          maxLength: 80
+        policy_type:
+          $ref: '#/components/schemas/PolicyTypeEnum'
+        owner_scope:
+          $ref: '#/components/schemas/OwnerScopeEnum'
+        office_id:
+          type: string
+          nullable: true
+        language:
+          type: string
+          default: ar
+          maxLength: 5
+        title:
+          type: string
+          maxLength: 200
+        content_markdown:
+          type: string
+        rules_json: {}
+        effective_from:
+          type: string
+          format: date-time
+        effective_to:
+          type: string
+          format: date-time
+          nullable: true
+        publish:
+          type: boolean
+          default: true
+      required:
+      - code
+      - content_markdown
+      - effective_from
+      - owner_scope
+      - policy_type
+      - title
+    PublicBookingResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        pnr:
+          type: string
+        status:
+          type: string
+        payment_status:
+          type: string
+        trip:
+          $ref: '#/components/schemas/BookingTripSummary'
+        contact:
+          $ref: '#/components/schemas/BookingContactOutput'
+        passengers:
+          type: array
+          items:
+            $ref: '#/components/schemas/BookingPassengerOutput'
+        pricing:
+          $ref: '#/components/schemas/BookingQuote'
+        payment_deadline_at:
+          type: string
+          format: date-time
+          nullable: true
+        payment_methods:
+          type: array
+          items:
+            type: string
+        outstanding_amount:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        manage_actions:
+          type: array
+          items:
+            type: string
+        manage_token:
+          type: string
+      required:
+      - contact
+      - created_at
+      - id
+      - manage_actions
+      - outstanding_amount
+      - passengers
+      - payment_deadline_at
+      - payment_methods
+      - payment_status
+      - pnr
+      - pricing
+      - status
+      - trip
+    PublicLocation:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+        address:
+          type: string
+          nullable: true
+      required:
+      - address
+      - id
+      - name
+      - type
+    PublicLocationSummary:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+        address:
+          type: string
+          nullable: true
+      required:
+      - address
+      - id
+      - name
+      - type
+    PublicParty:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+      required:
+      - id
+      - name
+    PublicTripSummary:
+      type: object
+      properties:
+        id:
+          type: string
+        office:
+          $ref: '#/components/schemas/PublicParty'
+        operator:
+          $ref: '#/components/schemas/PublicParty'
+        origin:
+          $ref: '#/components/schemas/PublicLocationSummary'
+        destination:
+          $ref: '#/components/schemas/PublicLocationSummary'
+        departure_at:
+          type: string
+          format: date-time
+        arrival_at:
+          type: string
+          format: date-time
+          nullable: true
+        currency:
+          type: string
+        from_price:
+          type: string
+        available_seats:
+          type: integer
+        payment_methods:
+          type: array
+          items:
+            type: string
+        cancellation_summary:
+          type: string
+        quote_version:
+          type: integer
+      required:
+      - arrival_at
+      - available_seats
+      - cancellation_summary
+      - currency
+      - departure_at
+      - destination
+      - from_price
+      - id
+      - office
+      - operator
+      - origin
+      - payment_methods
+      - quote_version
+    ReadyHealth:
+      type: object
+      properties:
+        status:
+          type: string
+        checks:
+          type: object
+          additionalProperties:
+            type: string
+      required:
+      - checks
+      - status
+    Refund:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        booking_id:
+          type: string
+        pnr:
+          type: string
+        passenger_id:
+          type: string
+          format: uuid
+          nullable: true
+        passenger_name:
+          type: string
+          nullable: true
+        status:
+          type: string
+        requested_amount:
+          type: string
+        approved_amount:
+          type: string
+          nullable: true
+        currency:
+          type: string
+        reason_code:
+          type: string
+        provider_reference:
+          type: string
+          nullable: true
+        requested_by:
+          type: string
+          format: uuid
+          nullable: true
+        approved_by:
+          type: string
+          format: uuid
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - approved_amount
+      - approved_by
+      - booking_id
+      - completed_at
+      - created_at
+      - currency
+      - id
+      - passenger_id
+      - passenger_name
+      - pnr
+      - provider_reference
+      - reason_code
+      - requested_amount
+      - requested_by
+      - status
+    RefundCommand:
+      type: object
+      properties:
+        command:
+          $ref: '#/components/schemas/RefundCommandCommandEnum'
+        approved_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,16}(?:\.\d{0,2})?$
+        reason:
+          type: string
+          maxLength: 1000
+        provider_reference:
+          type: string
+          maxLength: 160
+      required:
+      - command
+    RefundCommandCommandEnum:
+      enum:
+      - review
+      - approve
+      - reject
+      - process
+      - succeed
+      - fail
+      - retry
+      - cancel
+      type: string
+      description: |-
+        * `review` - review
+        * `approve` - approve
+        * `reject` - reject
+        * `process` - process
+        * `succeed` - succeed
+        * `fail` - fail
+        * `retry` - retry
+        * `cancel` - cancel
+    Register:
+      type: object
+      properties:
+        full_name:
+          type: string
+          maxLength: 160
+        email:
+          type: string
+          format: email
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+          maxLength: 30
+        password:
+          type: string
+          writeOnly: true
+          maxLength: 128
+          minLength: 10
+      required:
+      - full_name
+      - password
+    RegistrationVerify:
+      type: object
+      properties:
+        challenge_id:
+          type: string
+          maxLength: 100
+        code:
+          type: string
+          pattern: ^\d{6}$
+      required:
+      - challenge_id
+      - code
+    RiskLevelEnum:
+      enum:
+      - basic
+      - documented
+      - enhanced
+      type: string
+      description: |-
+        * `basic` - Basic
+        * `documented` - Documented
+        * `enhanced` - Enhanced
+    Route:
+      type: object
+      properties:
+        public_id:
+          type: string
+          readOnly: true
+        origin_id:
+          type: string
+        destination_id:
+          type: string
+        name_ar:
+          type: string
+          maxLength: 200
+        status:
+          $ref: '#/components/schemas/ActiveInactiveStatus'
+        stops:
+          type: array
+          items:
+            $ref: '#/components/schemas/RouteStop'
+      required:
+      - destination_id
+      - name_ar
+      - origin_id
+      - public_id
+      - stops
+    RouteStop:
+      type: object
+      properties:
+        sequence_no:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        location_id:
+          type: string
+        stop_type:
+          $ref: '#/components/schemas/StopTypeEnum'
+        offset_minutes:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+      required:
+      - location_id
+      - sequence_no
+      - stop_type
+    RouteStopWrite:
+      type: object
+      properties:
+        sequence_no:
+          type: integer
+          minimum: 1
+        location_id:
+          type: string
+        stop_type:
+          $ref: '#/components/schemas/StopTypeEnum'
+        offset_minutes:
+          type: integer
+          minimum: 0
+          default: 0
+      required:
+      - location_id
+      - sequence_no
+      - stop_type
+    RouteWrite:
+      type: object
+      properties:
+        origin_id:
+          type: string
+        destination_id:
+          type: string
+        name_ar:
+          type: string
+          maxLength: 200
+        status:
+          $ref: '#/components/schemas/ActiveInactiveStatus'
+        stops:
+          type: array
+          items:
+            $ref: '#/components/schemas/RouteStopWrite'
+    Seat:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        code:
+          type: string
+        row:
+          type: integer
+        column:
+          type: integer
+        type:
+          type: string
+        sellable:
+          type: boolean
+        metadata: {}
+      required:
+      - code
+      - column
+      - id
+      - row
+      - sellable
+      - type
+    SeatAdjacency:
+      type: object
+      properties:
+        seat_a:
+          type: string
+        seat_b:
+          type: string
+        type:
+          type: string
+      required:
+      - seat_a
+      - seat_b
+      - type
+    SeatAdjacencyWrite:
+      type: object
+      properties:
+        seat_a:
+          type: string
+          maxLength: 12
+        seat_b:
+          type: string
+          maxLength: 12
+        type:
+          allOf:
+          - $ref: '#/components/schemas/SeatAdjacencyWriteTypeEnum'
+          default: same_unit
+      required:
+      - seat_a
+      - seat_b
+    SeatAdjacencyWriteTypeEnum:
+      enum:
+      - same_unit
+      - aisle
+      - nearby
+      type: string
+      description: |-
+        * `same_unit` - Same unit
+        * `aisle` - Across aisle
+        * `nearby` - Nearby
+    SeatAvailability:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+        row:
+          type: integer
+        column:
+          type: integer
+        type:
+          type: string
+        status:
+          $ref: '#/components/schemas/SeatAvailabilityStatusEnum'
+        price:
+          type: string
+          nullable: true
+      required:
+      - code
+      - column
+      - id
+      - price
+      - row
+      - status
+      - type
+    SeatAvailabilityStatusEnum:
+      enum:
+      - available
+      - held_by_you
+      - unavailable
+      - policy_unavailable
+      - blocked
+      type: string
+      description: |-
+        * `available` - available
+        * `held_by_you` - held_by_you
+        * `unavailable` - unavailable
+        * `policy_unavailable` - policy_unavailable
+        * `blocked` - blocked
+    SeatHoldReleaseResponse:
+      type: object
+      properties:
+        released:
+          type: boolean
+      required:
+      - released
+    SeatHoldRequest:
+      type: object
+      properties:
+        seat_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 8
+          minItems: 1
+        passengers:
+          type: array
+          items:
+            $ref: '#/components/schemas/PassengerInput'
+        quote_version:
+          type: integer
+          minimum: 1
+      required:
+      - passengers
+      - seat_ids
+    SeatHoldResponse:
+      type: object
+      properties:
+        hold_token:
+          type: string
+        expires_at:
+          type: string
+          format: date-time
+        quote:
+          $ref: '#/components/schemas/BookingQuote'
+      required:
+      - expires_at
+      - hold_token
+      - quote
+    SeatLayout:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 160
+        layout_type:
+          $ref: '#/components/schemas/LayoutTypeEnum'
+        seat_count:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        version:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        status:
+          $ref: '#/components/schemas/SeatLayoutStatus'
+        seats:
+          type: array
+          items:
+            $ref: '#/components/schemas/Seat'
+        adjacencies:
+          type: array
+          items:
+            $ref: '#/components/schemas/SeatAdjacency'
+      required:
+      - adjacencies
+      - id
+      - layout_type
+      - name
+      - seat_count
+      - seats
+    SeatLayoutStatus:
+      enum:
+      - draft
+      - active
+      - retired
+      type: string
+      description: |-
+        * `draft` - Draft
+        * `active` - Active
+        * `retired` - Retired
+    SeatLayoutWrite:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 160
+        layout_type:
+          $ref: '#/components/schemas/LayoutTypeEnum'
+        status:
+          allOf:
+          - $ref: '#/components/schemas/SeatLayoutStatus'
+          default: active
+        seats:
+          type: array
+          items:
+            $ref: '#/components/schemas/SeatWrite'
+        adjacencies:
+          type: array
+          items:
+            $ref: '#/components/schemas/SeatAdjacencyWrite'
+      required:
+      - layout_type
+      - name
+      - seats
+    SeatMap:
+      type: object
+      properties:
+        trip_id:
+          type: string
+        layout_version:
+          type: integer
+        expires_at:
+          type: string
+          format: date-time
+          nullable: true
+        seats:
+          type: array
+          items:
+            $ref: '#/components/schemas/SeatAvailability'
+      required:
+      - expires_at
+      - layout_version
+      - seats
+      - trip_id
+    SeatWrite:
+      type: object
+      properties:
+        code:
+          type: string
+          maxLength: 12
+        row:
+          type: integer
+          minimum: 1
+        column:
+          type: integer
+          minimum: 1
+        type:
+          allOf:
+          - $ref: '#/components/schemas/SeatWriteTypeEnum'
+          default: standard
+        sellable:
+          type: boolean
+          default: true
+        metadata: {}
+      required:
+      - code
+      - column
+      - row
+    SeatWriteTypeEnum:
+      enum:
+      - standard
+      - vip
+      - single
+      - accessible
+      - crew
+      - blocked
+      type: string
+      description: |-
+        * `standard` - Standard
+        * `vip` - VIP
+        * `single` - Single
+        * `accessible` - Accessible
+        * `crew` - Crew
+        * `blocked` - Blocked
+    Session:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        device:
+          type: object
+          additionalProperties: {}
+          nullable: true
+          readOnly: true
+        user_agent:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        expires_at:
+          type: string
+          format: date-time
+        revoked_at:
+          type: string
+          format: date-time
+          nullable: true
+        current:
+          type: boolean
+          readOnly: true
+      required:
+      - created_at
+      - current
+      - device
+      - expires_at
+      - id
+    StaffInvite:
+      type: object
+      properties:
+        identifier:
+          type: string
+        role_code:
+          type: string
+          maxLength: 80
+        branch_id:
+          type: string
+          nullable: true
+      required:
+      - identifier
+      - role_code
+    StopTypeEnum:
+      enum:
+      - boarding
+      - dropoff
+      - both
+      type: string
+      description: |-
+        * `boarding` - Boarding
+        * `dropoff` - Drop-off
+        * `both` - Both
+    TicketOutput:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        version:
+          type: integer
+        status:
+          type: string
+        qr_data:
+          type: string
+        seat_code:
+          type: string
+        pdf_url:
+          type: string
+          nullable: true
+      required:
+      - id
+      - pdf_url
+      - qr_data
+      - seat_code
+      - status
+      - version
+    Trip:
+      type: object
+      properties:
+        id:
+          type: string
+        office:
+          type: object
+          additionalProperties:
+            type: string
+          readOnly: true
+        operator:
+          type: object
+          additionalProperties:
+            type: string
+          readOnly: true
+        origin:
+          allOf:
+          - $ref: '#/components/schemas/Location'
+          readOnly: true
+        destination:
+          allOf:
+          - $ref: '#/components/schemas/Location'
+          readOnly: true
+        departure_at:
+          type: string
+          format: date-time
+        arrival_at:
+          type: string
+          format: date-time
+          nullable: true
+        currency:
+          type: string
+          maxLength: 3
+        from_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,16}(?:\.\d{0,2})?$
+        available_seats:
+          type: integer
+          readOnly: true
+        payment_methods:
+          type: array
+          items:
+            type: string
+          readOnly: true
+        cancellation_summary:
+          type: string
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/TripStatusEnum'
+        version:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        boarding_counts:
+          type: object
+          additionalProperties:
+            type: integer
+          readOnly: true
+        branch_id:
+          type: string
+          readOnly: true
+        route_id:
+          type: string
+          readOnly: true
+        vehicle_id:
+          type: string
+          readOnly: true
+        driver_id:
+          type: string
+          readOnly: true
+          nullable: true
+        seat_layout_id:
+          type: string
+          format: uuid
+          readOnly: true
+        booking_open_at:
+          type: string
+          format: date-time
+          nullable: true
+        booking_close_at:
+          type: string
+          format: date-time
+          nullable: true
+        boarding_open_at:
+          type: string
+          format: date-time
+          nullable: true
+        boarding_close_at:
+          type: string
+          format: date-time
+          nullable: true
+        policy_snapshot:
+          readOnly: true
+        pricing_snapshot:
+          readOnly: true
+        stops:
+          type: array
+          items:
+            $ref: '#/components/schemas/TripStop'
+          readOnly: true
+        actual_departure_at:
+          type: string
+          format: date-time
+          nullable: true
+        actual_arrival_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - arrival_at
+      - available_seats
+      - boarding_counts
+      - branch_id
+      - cancellation_summary
+      - currency
+      - departure_at
+      - destination
+      - driver_id
+      - from_price
+      - id
+      - office
+      - operator
+      - origin
+      - payment_methods
+      - policy_snapshot
+      - pricing_snapshot
+      - route_id
+      - seat_layout_id
+      - stops
+      - vehicle_id
+    TripCommand:
+      type: object
+      properties:
+        command:
+          $ref: '#/components/schemas/TripCommandCommandEnum'
+        reason_code:
+          type: string
+          nullable: true
+          maxLength: 80
+        version:
+          type: integer
+          minimum: 1
+      required:
+      - command
+      - version
+    TripCommandCommandEnum:
+      enum:
+      - schedule
+      - publish
+      - open_booking
+      - open_boarding
+      - close_boarding
+      - depart
+      - arrive
+      - complete
+      - cancel
+      type: string
+      description: |-
+        * `schedule` - schedule
+        * `publish` - publish
+        * `open_booking` - open_booking
+        * `open_boarding` - open_boarding
+        * `close_boarding` - close_boarding
+        * `depart` - depart
+        * `arrive` - arrive
+        * `complete` - complete
+        * `cancel` - cancel
+    TripStatusEnum:
+      enum:
+      - draft
+      - scheduled
+      - published
+      - booking_open
+      - boarding_open
+      - boarding_closed
+      - departed
+      - arrived
+      - completed
+      - cancelled
+      - interrupted
+      type: string
+      description: |-
+        * `draft` - Draft
+        * `scheduled` - Scheduled
+        * `published` - Published
+        * `booking_open` - Booking open
+        * `boarding_open` - Boarding open
+        * `boarding_closed` - Boarding closed
+        * `departed` - Departed
+        * `arrived` - Arrived
+        * `completed` - Completed
+        * `cancelled` - Cancelled
+        * `interrupted` - Interrupted
+    TripStop:
+      type: object
+      properties:
+        sequence_no:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        location:
+          allOf:
+          - $ref: '#/components/schemas/Location'
+          readOnly: true
+        scheduled_at:
+          type: string
+          format: date-time
+          nullable: true
+        actual_at:
+          type: string
+          format: date-time
+          nullable: true
+        stop_type:
+          $ref: '#/components/schemas/StopTypeEnum'
+      required:
+      - location
+      - sequence_no
+      - stop_type
+    TripWrite:
+      type: object
+      properties:
+        route_id:
+          type: string
+        branch_id:
+          type: string
+        operator_id:
+          type: string
+        vehicle_id:
+          type: string
+        driver_id:
+          type: string
+          nullable: true
+        scheduled_departure_at:
+          type: string
+          format: date-time
+        scheduled_arrival_at:
+          type: string
+          format: date-time
+          nullable: true
+        currency:
+          type: string
+          maxLength: 3
+          minLength: 3
+        base_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,16}(?:\.\d{0,2})?$
+        policy_version_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        payment_methods:
+          type: array
+          items:
+            type: string
+            maxLength: 40
+        booking_open_at:
+          type: string
+          format: date-time
+          nullable: true
+        booking_close_at:
+          type: string
+          format: date-time
+          nullable: true
+        boarding_open_at:
+          type: string
+          format: date-time
+          nullable: true
+        boarding_close_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - base_price
+      - branch_id
+      - currency
+      - operator_id
+      - route_id
+      - scheduled_departure_at
+      - vehicle_id
+    Vehicle:
+      type: object
+      properties:
+        id:
+          type: string
+        plate_number:
+          type: string
+          maxLength: 40
+        fleet_number:
+          type: string
+          nullable: true
+          maxLength: 40
+        seat_layout_id:
+          type: string
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/VehicleStatus'
+        make_model:
+          type: string
+          nullable: true
+          maxLength: 160
+        year:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+      required:
+      - id
+      - plate_number
+      - seat_layout_id
+    VehicleStatus:
+      enum:
+      - active
+      - maintenance
+      - out_of_service
+      - retired
+      type: string
+      description: |-
+        * `active` - Active
+        * `maintenance` - Maintenance
+        * `out_of_service` - Out of service
+        * `retired` - Retired
+    VehicleWrite:
+      type: object
+      properties:
+        plate_number:
+          type: string
+          maxLength: 40
+        fleet_number:
+          type: string
+          nullable: true
+          maxLength: 40
+        seat_layout_id:
+          type: string
+        status:
+          $ref: '#/components/schemas/VehicleStatus'
+        make_model:
+          type: string
+          nullable: true
+          maxLength: 160
+        year:
+          type: integer
+          maximum: 2100
+          minimum: 1980
+          nullable: true
+    VerificationCase:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/VerificationCaseStatusEnum'
+        risk_level:
+          $ref: '#/components/schemas/RiskLevelEnum'
+        submitted_at:
+          type: string
+          format: date-time
+          nullable: true
+        decided_at:
+          type: string
+          format: date-time
+          nullable: true
+        decision_reason:
+          type: string
+          nullable: true
+        conditions: {}
+        version:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        reviewer_user_id:
+          type: string
+          format: uuid
+          nullable: true
+          readOnly: true
+        approver_user_id:
+          type: string
+          format: uuid
+          nullable: true
+          readOnly: true
+        documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/OfficeDocument'
+          readOnly: true
+      required:
+      - approver_user_id
+      - documents
+      - id
+      - reviewer_user_id
+    VerificationCaseStatusEnum:
+      enum:
+      - draft
+      - submitted
+      - under_review
+      - info_required
+      - external_verification
+      - conditional
+      - approved
+      - rejected
+      - expired
+      type: string
+      description: |-
+        * `draft` - Draft
+        * `submitted` - Submitted
+        * `under_review` - Under review
+        * `info_required` - Information required
+        * `external_verification` - External verification
+        * `conditional` - Conditional
+        * `approved` - Approved
+        * `rejected` - Rejected
+        * `expired` - Expired
+    VerificationCommand:
+      type: object
+      properties:
+        command:
+          $ref: '#/components/schemas/VerificationCommandCommandEnum'
+        reason:
+          type: string
+          nullable: true
+        conditions:
+          nullable: true
+      required:
+      - command
+    VerificationCommandCommandEnum:
+      enum:
+      - submit
+      - start_review
+      - request_info
+      - resubmit
+      - external_check
+      - conditional_approve
+      - approve
+      - reject
+      - expire
+      type: string
+      description: |-
+        * `submit` - submit
+        * `start_review` - start_review
+        * `request_info` - request_info
+        * `resubmit` - resubmit
+        * `external_check` - external_check
+        * `conditional_approve` - conditional_approve
+        * `approve` - approve
+        * `reject` - reject
+        * `expire` - expire
+    WebhookResponse:
+      type: object
+      properties:
+        received:
+          type: boolean
+      required:
+      - received
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

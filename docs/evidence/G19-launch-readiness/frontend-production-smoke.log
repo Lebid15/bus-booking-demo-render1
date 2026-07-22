@@ -1,0 +1,7 @@
+path=/ status=200 bytes=14421 rtl=1
+path=/manage-booking status=200 bytes=10111 rtl=1
+path=/office status=200 bytes=24429 rtl=1
+path=/platform status=200 bytes=21111 rtl=1
+path=/privacy status=200 bytes=10956 rtl=1
+{"status":"ok","checks":{"database":"ok","cache":"ok","continuity":"ok"}}
+api_pid=47236 web_pid=47416

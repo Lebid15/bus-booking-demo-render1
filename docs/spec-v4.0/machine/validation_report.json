@@ -1,0 +1,26 @@
+{
+  "package_version": "4.0",
+  "generated_at": "2026-07-20T00:00:00Z",
+  "checks": {
+    "postgresql_sql_parse": "PASS",
+    "openapi_3_1_validation": "PASS",
+    "json": "PASS",
+    "csv": "PASS",
+    "todo_tbd_fixme": "PASS",
+    "manifest_sha256": "PASS"
+  },
+  "stats": {
+    "tables": 68,
+    "machines": 9,
+    "transitions": 78,
+    "ledger_accounts": 17,
+    "ledger_events": 22,
+    "epics": 19,
+    "acceptance": 103,
+    "api_paths": 87,
+    "api_operations": 108,
+    "api_schemas": 35,
+    "screens": 90,
+    "policies": 12
+  }
+}

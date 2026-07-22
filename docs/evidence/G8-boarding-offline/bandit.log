@@ -1,0 +1,21 @@
+[manager]	WARNING	Test in comment: DRF is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: setting is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: not is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: a is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: password is not a test name or id, ignoring
+[tester]	WARNING	nosec encountered (B105), but no failed test on file ./config/settings.py:124
+[tester]	WARNING	nosec encountered (B105), but no failed test on file ./config/settings.py:125
+[tester]	WARNING	nosec encountered (B105), but no failed test on file ./config/settings.py:126
+[tester]	WARNING	nosec encountered (B105), but no failed test on file ./config/settings.py:127
+[tester]	WARNING	nosec encountered (B105), but no failed test on file ./config/settings.py:128
+[tester]	WARNING	nosec encountered (B105), but no failed test on file ./config/settings.py:129
+[tester]	WARNING	nosec encountered (B105), but no failed test on file ./config/settings.py:126
+[tester]	WARNING	nosec encountered (B105), but no failed test on file ./config/settings.py:127
+[manager]	WARNING	Test in comment: OAuth is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: token is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: type is not a test name or id, ignoring
+[tester]	WARNING	nosec encountered (B105), but no failed test on file ./identity/tokens.py:51
+[tester]	WARNING	nosec encountered (B105), but no failed test on file ./identity/tokens.py:52
+[tester]	WARNING	nosec encountered (B105), but no failed test on file ./identity/tokens.py:54
+[tester]	WARNING	nosec encountered (B105), but no failed test on file ./identity/tokens.py:55
+[tester]	WARNING	nosec encountered (B105), but no failed test on file ./identity/tokens.py:53

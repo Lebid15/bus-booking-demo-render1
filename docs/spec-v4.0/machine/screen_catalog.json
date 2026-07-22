@@ -1,0 +1,812 @@
+[
+  {
+    "surface": "public",
+    "id": "PUB-01",
+    "name": "الرئيسية والبحث",
+    "goal": "بدء البحث",
+    "components": "نموذج الانطلاق/الوصول/التاريخ/الركاب، خطوط نشطة، مساعدة",
+    "actions": "بحث، تبديل الاتجاه، اختيار اليوم",
+    "special_states": "تحميل/لا خطوط/خطأ موقع"
+  },
+  {
+    "surface": "public",
+    "id": "PUB-02",
+    "name": "نتائج الرحلات",
+    "goal": "مقارنة الرحلات",
+    "components": "TripCard، فلترة الوقت والسعر والمكتب والخدمات",
+    "actions": "فتح التفاصيل، اختيار الرحلة",
+    "special_states": "لا نتائج، نتائج محدثة، رحلة امتلأت"
+  },
+  {
+    "surface": "public",
+    "id": "PUB-03",
+    "name": "تفاصيل الرحلة",
+    "goal": "فهم العرض والسياسات",
+    "components": "المكتب/الناقل، المحطات، المدة، الخدمات، الأمتعة، الإلغاء",
+    "actions": "متابعة للمقاعد",
+    "special_states": "تغيير جوهري، مقاعد محدودة"
+  },
+  {
+    "surface": "public",
+    "id": "PUB-04",
+    "name": "اختيار المقاعد",
+    "goal": "تخصيص مقعد لكل راكب",
+    "components": "SeatMap، عداد المهلة، مفتاح الحالات، بطاقات الركاب",
+    "actions": "اختيار/تغيير/تحرير",
+    "special_states": "تعارض جنس، مقعد حُجز، انتهاء Hold"
+  },
+  {
+    "surface": "public",
+    "id": "PUB-05",
+    "name": "بيانات الركاب",
+    "goal": "جمع بيانات ضرورية",
+    "components": "بطاقة لكل راكب، الجنس، الهوية/الجواز حسب السياسة، جهة الاتصال",
+    "actions": "حفظ ومتابعة",
+    "special_states": "تحقق حقول، بيانات مكررة"
+  },
+  {
+    "surface": "public",
+    "id": "PUB-06",
+    "name": "مراجعة الحجز",
+    "goal": "موافقة واعية",
+    "components": "ملخص الرحلة والمقاعد والركاب والسعر والسياسة",
+    "actions": "تعديل، الموافقة، متابعة الدفع",
+    "special_states": "تغير سعر/سياسة يحتاج موافقة"
+  },
+  {
+    "surface": "public",
+    "id": "PUB-07",
+    "name": "اختيار الدفع",
+    "goal": "اختيار قناة متاحة",
+    "components": "دفع مكتب، تحويل يدوي، إلكتروني إن مفعل، المهلة والتعليمات",
+    "actions": "إنشاء الحجز/بدء الدفع",
+    "special_states": "مزود غير متاح، مهلة قصيرة"
+  },
+  {
+    "surface": "public",
+    "id": "PUB-08",
+    "name": "رفع إثبات التحويل",
+    "goal": "إرسال دليل دفع يدوي",
+    "components": "تعليمات الحساب، مبلغ، رقم مرجع، ملف خاص",
+    "actions": "رفع وإرسال",
+    "special_states": "فشل فحص، ملف غير مدعوم"
+  },
+  {
+    "surface": "public",
+    "id": "PUB-09",
+    "name": "نجاح الحجز",
+    "goal": "إظهار النتيجة الموثوقة",
+    "components": "PNR، الحالة، الدفع، المهلة، المقاعد، تعليمات",
+    "actions": "تنزيل، مشاركة، فتح الإدارة",
+    "special_states": "إشعار فشل لكن الحجز ناجح"
+  },
+  {
+    "surface": "public",
+    "id": "PUB-10",
+    "name": "إدارة الحجز",
+    "goal": "خدمة ذاتية دون حساب",
+    "components": "ملخص، Timeline، الدفع، الإلغاء، التذكرة، الدعم",
+    "actions": "دفع/إلغاء/تنزيل/شكوى",
+    "special_states": "رمز منتهي أو غير صالح"
+  },
+  {
+    "surface": "public",
+    "id": "PUB-11",
+    "name": "عرض التذكرة",
+    "goal": "إثبات السفر",
+    "components": "QR لكل راكب، PNR، المقعد، الرحلة، التعليمات",
+    "actions": "تنزيل/طباعة",
+    "special_states": "QR مبطل، نسخة أحدث"
+  },
+  {
+    "surface": "public",
+    "id": "PUB-12",
+    "name": "عرض الإلغاء",
+    "goal": "معرفة الأثر قبل التنفيذ",
+    "components": "تفصيل المبلغ والسياسة والموعد",
+    "actions": "تأكيد الإلغاء",
+    "special_states": "انتهاء نافذة، نزاع قائم"
+  },
+  {
+    "surface": "public",
+    "id": "PUB-13",
+    "name": "نتيجة الإلغاء",
+    "goal": "توثيق الإلغاء والاسترداد",
+    "components": "حالة كل راكب، المبلغ والطريقة والوقت المتوقع",
+    "actions": "العودة للحجز، دعم",
+    "special_states": "استرداد قيد المعالجة"
+  },
+  {
+    "surface": "public",
+    "id": "PUB-14",
+    "name": "البحث عن حجز",
+    "goal": "استرجاع كضيف",
+    "components": "PNR + هاتف/بريد + مكتب/ناقل عند الحاجة",
+    "actions": "تحقق وفتح",
+    "special_states": "محاولات كثيرة، عدم تطابق"
+  },
+  {
+    "surface": "public",
+    "id": "PUB-15",
+    "name": "تسجيل الدخول",
+    "goal": "وصول الحساب الاختياري",
+    "components": "هاتف/بريد وكلمة مرور/رمز حسب التصميم",
+    "actions": "دخول، استعادة",
+    "special_states": "جهاز جديد، MFA عند الحاجة"
+  },
+  {
+    "surface": "public",
+    "id": "PUB-16",
+    "name": "حجوزاتي",
+    "goal": "عرض التاريخ والحجوزات القادمة",
+    "components": "بطاقات مقسمة قادمة/سابقة/ملغاة",
+    "actions": "فتح الحجز",
+    "special_states": "لا حجوزات"
+  },
+  {
+    "surface": "public",
+    "id": "PUB-17",
+    "name": "ملفي",
+    "goal": "إدارة بيانات الحساب",
+    "components": "الاسم، الاتصال، الجلسات، الخصوصية",
+    "actions": "تعديل، تصدير، حذف حساب",
+    "special_states": "قيود حذف قانونية"
+  },
+  {
+    "surface": "public",
+    "id": "PUB-18",
+    "name": "مركز المساعدة",
+    "goal": "إجابة ودعم",
+    "components": "مقالات، بحث، إنشاء حالة",
+    "actions": "فتح مقال/تذكرة",
+    "special_states": "حالة عاجلة ترفع الأولوية"
+  },
+  {
+    "surface": "public",
+    "id": "PUB-19",
+    "name": "مركز السياسات",
+    "goal": "شفافية الشروط",
+    "components": "فهرس النسخ والملخص والنص الكامل",
+    "actions": "عرض/تنزيل",
+    "special_states": "نسخة تاريخية"
+  },
+  {
+    "surface": "public",
+    "id": "PUB-20",
+    "name": "حالة النظام",
+    "goal": "إبلاغ الأعطال",
+    "components": "الخدمات المتأثرة والتحديثات",
+    "actions": "اشتراك بالتحديث",
+    "special_states": "وضع متدهور"
+  },
+  {
+    "surface": "office",
+    "id": "OFF-01",
+    "name": "لوحة اليوم",
+    "goal": "مؤشرات وتشغيل",
+    "components": "رحلات اليوم، حجوزات معلقة، دفع للتحقق، حالات عاجلة",
+    "actions": "فتح الرحلة/الحالة",
+    "special_states": "وضع متدهور"
+  },
+  {
+    "surface": "office",
+    "id": "OFF-02",
+    "name": "قائمة الرحلات",
+    "goal": "إدارة الرحلات",
+    "components": "فلترة تاريخ/مسار/حالة/فرع",
+    "actions": "إنشاء، فتح، نسخ رحلة",
+    "special_states": "لا رحلات"
+  },
+  {
+    "surface": "office",
+    "id": "OFF-03",
+    "name": "إنشاء/تعديل رحلة",
+    "goal": "تعريف التشغيل",
+    "components": "مسار، توقيت، بولمان، سائق، سعر، سياسة، دفع",
+    "actions": "حفظ مسودة، نشر",
+    "special_states": "تعارض جاهزية"
+  },
+  {
+    "surface": "office",
+    "id": "OFF-04",
+    "name": "تفاصيل الرحلة",
+    "goal": "مركز الرحلة",
+    "components": "مؤشرات، خريطة، ركاب، دفع، تغييرات",
+    "actions": "فتح الصعود، تغيير، إلغاء",
+    "special_states": "رحلة مقفلة"
+  },
+  {
+    "surface": "office",
+    "id": "OFF-05",
+    "name": "خريطة المقاعد الحية",
+    "goal": "المخزون الموحد",
+    "components": "SeatMap + حالة كل مقعد + قناة البيع",
+    "actions": "حجز مكتب، نقل مقعد",
+    "special_states": "تزامن وتحديث لحظي"
+  },
+  {
+    "surface": "office",
+    "id": "OFF-06",
+    "name": "حجز من المكتب",
+    "goal": "بيع سريع",
+    "components": "مقعد، راكب، اتصال، دفع",
+    "actions": "تأكيد وطباعة",
+    "special_states": "تعارض جنس/حظر"
+  },
+  {
+    "surface": "office",
+    "id": "OFF-07",
+    "name": "قائمة الحجوزات",
+    "goal": "بحث وإدارة",
+    "components": "PNR، راكب، هاتف، حالة، قناة",
+    "actions": "فتح/تصدير",
+    "special_states": "بيانات مخفية حسب الصلاحية"
+  },
+  {
+    "surface": "office",
+    "id": "OFF-08",
+    "name": "تفاصيل الحجز",
+    "goal": "إدارة شاملة",
+    "components": "ركاب، مقاعد، دفع، Timeline، مستندات",
+    "actions": "تأكيد دفع، تعديل مسموح، دعم",
+    "special_states": "حجز مقفل"
+  },
+  {
+    "surface": "office",
+    "id": "OFF-09",
+    "name": "تحقق التحويلات",
+    "goal": "معالجة الدفع اليدوي",
+    "components": "إثبات، وقت التحويل، مبلغ، تطابق",
+    "actions": "قبول/رفض/طلب معلومات",
+    "special_states": "مقعد غير متاح"
+  },
+  {
+    "surface": "office",
+    "id": "OFF-10",
+    "name": "الصعود",
+    "goal": "تشغيل البوابة",
+    "components": "ماسح QR، بحث يدوي، قائمة ركاب",
+    "actions": "صعود/تراجع مخول",
+    "special_states": "QR مكرر/مبطل"
+  },
+  {
+    "surface": "office",
+    "id": "OFF-11",
+    "name": "Manifest",
+    "goal": "قائمة تشغيل",
+    "components": "ركاب ومقاعد وحالات وملاحظات آمنة",
+    "actions": "طباعة/تنزيل مشفر",
+    "special_states": "مقفل بعد الانطلاق"
+  },
+  {
+    "surface": "office",
+    "id": "OFF-12",
+    "name": "تغيير البولمان",
+    "goal": "إعادة توزيع",
+    "components": "المركبة الجديدة، خوارزمية المطابقة، تعارضات",
+    "actions": "محاكاة، اعتماد",
+    "special_states": "لا توزيع صالح"
+  },
+  {
+    "surface": "office",
+    "id": "OFF-13",
+    "name": "إلغاء/تغيير الرحلة",
+    "goal": "إجراء جوهري",
+    "components": "سبب، بدائل، متأثرون، تكلفة",
+    "actions": "معاينة، اعتماد",
+    "special_states": "موافقة إضافية"
+  },
+  {
+    "surface": "office",
+    "id": "OFF-14",
+    "name": "البولمانات",
+    "goal": "إدارة الأسطول",
+    "components": "قائمة وحالة ووثائق ومخطط",
+    "actions": "إضافة/تعطيل",
+    "special_states": "وثيقة منتهية"
+  },
+  {
+    "surface": "office",
+    "id": "OFF-15",
+    "name": "مخططات المقاعد",
+    "goal": "إنشاء الإصدارات",
+    "components": "محرر صفوف/ممر/مجاورات",
+    "actions": "حفظ إصدار/معاينة",
+    "special_states": "مخطط مستخدم لا يعدل"
+  },
+  {
+    "surface": "office",
+    "id": "OFF-16",
+    "name": "السائقون",
+    "goal": "إدارة بيانات التشغيل",
+    "components": "بيانات ووثائق وحالة",
+    "actions": "إضافة/تعليق",
+    "special_states": "وثيقة حرجة"
+  },
+  {
+    "surface": "office",
+    "id": "OFF-17",
+    "name": "المسارات والنقاط",
+    "goal": "إعداد العرض",
+    "components": "نقاط مرتبة ومدد",
+    "actions": "طلب/تعديل ضمن صلاحية",
+    "special_states": "اعتماد منصة مطلوب"
+  },
+  {
+    "surface": "office",
+    "id": "OFF-18",
+    "name": "الأسعار والسياسات",
+    "goal": "تكوين الرحلات",
+    "components": "قوالب سعر/إلغاء/أمتعة/دفع",
+    "actions": "إنشاء إصدار",
+    "special_states": "حد منصة"
+  },
+  {
+    "surface": "office",
+    "id": "OFF-19",
+    "name": "الفروع",
+    "goal": "إدارة نقاط التشغيل",
+    "components": "بيانات واتصال وصندوق",
+    "actions": "إنشاء/تعطيل",
+    "special_states": "التزامات قائمة"
+  },
+  {
+    "surface": "office",
+    "id": "OFF-20",
+    "name": "الموظفون والصلاحيات",
+    "goal": "الوصول",
+    "components": "عضويات وأدوار وجلسات",
+    "actions": "دعوة/تعليق/دور",
+    "special_states": "فصل واجبات"
+  },
+  {
+    "surface": "office",
+    "id": "OFF-21",
+    "name": "الدعم",
+    "goal": "حالات المكتب",
+    "components": "P0–P4، SLA، ملكية",
+    "actions": "رد/تصعيد",
+    "special_states": "مكتب غير مستجيب"
+  },
+  {
+    "surface": "office",
+    "id": "OFF-22",
+    "name": "حالة دعم",
+    "goal": "حل قضية",
+    "components": "رسائل، أدلة، Timeline، قرار",
+    "actions": "رد/اقتراح حل",
+    "special_states": "حماية بيانات"
+  },
+  {
+    "surface": "office",
+    "id": "OFF-23",
+    "name": "المبيعات",
+    "goal": "تقارير",
+    "components": "حسب رحلة/فرع/موظف/قناة",
+    "actions": "تصدير",
+    "special_states": "إخفاء مبالغ بلا finance.view"
+  },
+  {
+    "surface": "office",
+    "id": "OFF-24",
+    "name": "العمولات",
+    "goal": "ما على المكتب",
+    "components": "حجوزات وعمولات وحالات",
+    "actions": "اعتراض",
+    "special_states": "قيد مقفل"
+  },
+  {
+    "surface": "office",
+    "id": "OFF-25",
+    "name": "التسويات",
+    "goal": "صافي المكتب",
+    "components": "دورات وبنود وتجميد",
+    "actions": "عرض/تنزيل",
+    "special_states": "مبلغ متنازع"
+  },
+  {
+    "surface": "office",
+    "id": "OFF-26",
+    "name": "الاشتراك",
+    "goal": "خطة المكتب",
+    "components": "الخطة والاستخدام والفواتير",
+    "actions": "طلب تغيير",
+    "special_states": "تاريخ نفاذ"
+  },
+  {
+    "surface": "office",
+    "id": "OFF-27",
+    "name": "الإشعارات",
+    "goal": "صندوق إجراءات",
+    "components": "تنبيهات تشغيلية ومالية",
+    "actions": "تعليم كمقروء/فتح",
+    "special_states": "حرج لا يختفي"
+  },
+  {
+    "surface": "office",
+    "id": "OFF-28",
+    "name": "إعدادات المكتب",
+    "goal": "تخصيص مسموح",
+    "components": "طرق دفع، اتصال، افتراضيات",
+    "actions": "حفظ إصدار",
+    "special_states": "حدود المنصة"
+  },
+  {
+    "surface": "office",
+    "id": "OFF-29",
+    "name": "سجل النشاط",
+    "goal": "تدقيق متاح",
+    "components": "من/متى/ماذا",
+    "actions": "بحث",
+    "special_states": "قيم حساسة مخفية"
+  },
+  {
+    "surface": "office",
+    "id": "OFF-30",
+    "name": "الوثائق والتحقق",
+    "goal": "حالة الاعتماد",
+    "components": "المستندات والانتهاء",
+    "actions": "رفع/تجديد",
+    "special_states": "فحص أمني"
+  },
+  {
+    "surface": "office",
+    "id": "OFF-31",
+    "name": "الإغلاق اليومي",
+    "goal": "مراجعة تشغيلية",
+    "components": "رحلات/دفع/فروقات",
+    "actions": "اعتماد إغلاق",
+    "special_states": "فروقات مفتوحة"
+  },
+  {
+    "surface": "office",
+    "id": "OFF-32",
+    "name": "المفقودات",
+    "goal": "إدارة البلاغات",
+    "components": "وصف آمن وربط رحلة",
+    "actions": "تسجيل/تسليم",
+    "special_states": "عدم كشف زائد"
+  },
+  {
+    "surface": "office",
+    "id": "OFF-33",
+    "name": "حالة النظام",
+    "goal": "العمل المتدهور",
+    "components": "خدمات متاحة/متوقفة",
+    "actions": "تنزيل Manifest طوارئ",
+    "special_states": "DB غير متاحة"
+  },
+  {
+    "surface": "office",
+    "id": "OFF-34",
+    "name": "الملف والأجهزة",
+    "goal": "أمان المستخدم",
+    "components": "جلسات، MFA، أجهزة",
+    "actions": "إلغاء جلسة",
+    "special_states": "إعادة تحقق"
+  },
+  {
+    "surface": "office",
+    "id": "OFF-35",
+    "name": "مركز التعليمات",
+    "goal": "تدريب المكتب",
+    "components": "مقالات وسيناريوهات",
+    "actions": "بحث/فتح",
+    "special_states": "نسخة حسب الدور"
+  },
+  {
+    "surface": "platform",
+    "id": "PLT-01",
+    "name": "لوحة المنصة",
+    "goal": "الصحة العامة",
+    "components": "حجوزات، رحلات، مال، دعم، مخاطر",
+    "actions": "الانتقال للمجالات",
+    "special_states": "تنبيهات حرجة"
+  },
+  {
+    "surface": "platform",
+    "id": "PLT-02",
+    "name": "المكاتب",
+    "goal": "إدارة الشركاء",
+    "components": "حالة وتحقق وأداء",
+    "actions": "فتح/تقييد",
+    "special_states": "بحث وتصفية"
+  },
+  {
+    "surface": "platform",
+    "id": "PLT-03",
+    "name": "طلب انضمام",
+    "goal": "مراجعة KYC/KYB",
+    "components": "وثائق وملكية وناقل",
+    "actions": "قبول مشروط/رفض",
+    "special_states": "مراجعة مزدوجة"
+  },
+  {
+    "surface": "platform",
+    "id": "PLT-04",
+    "name": "تفاصيل المكتب",
+    "goal": "360 درجة",
+    "components": "فروع، موظفون، رحلات، مال، مخالفات",
+    "actions": "تقييد/تعليق",
+    "special_states": "التزامات قائمة"
+  },
+  {
+    "surface": "platform",
+    "id": "PLT-05",
+    "name": "الناقلون",
+    "goal": "سجل الجهات الفعلية",
+    "components": "علاقات المكاتب والتراخيص",
+    "actions": "اعتماد/تعليق",
+    "special_states": "تعارض هوية"
+  },
+  {
+    "surface": "platform",
+    "id": "PLT-06",
+    "name": "المواقع والنقاط",
+    "goal": "الجغرافيا التشغيلية",
+    "components": "مدن، كراجات، نقاط",
+    "actions": "إنشاء/دمج",
+    "special_states": "مراجع قائمة"
+  },
+  {
+    "surface": "platform",
+    "id": "PLT-07",
+    "name": "المسارات",
+    "goal": "إدارة الخطوط",
+    "components": "نقاط وتسلسل وحالة",
+    "actions": "اعتماد/تعطيل",
+    "special_states": "رحلات قائمة"
+  },
+  {
+    "surface": "platform",
+    "id": "PLT-08",
+    "name": "الرحلات المراقبة",
+    "goal": "رقابة تشغيلية",
+    "components": "بحث كل الرحلات",
+    "actions": "فتح/تدخل محدود",
+    "special_states": "عزل مكتب"
+  },
+  {
+    "surface": "platform",
+    "id": "PLT-09",
+    "name": "الحجوزات",
+    "goal": "تحقيق ودعم",
+    "components": "بحث PNR/راكب/مكتب",
+    "actions": "فتح",
+    "special_states": "إخفاء PII"
+  },
+  {
+    "surface": "platform",
+    "id": "PLT-10",
+    "name": "المدفوعات",
+    "goal": "مصالحة",
+    "components": "حالات وقنوات ومزود",
+    "actions": "فتح/مصالحة",
+    "special_states": "تكرار"
+  },
+  {
+    "surface": "platform",
+    "id": "PLT-11",
+    "name": "الاستردادات",
+    "goal": "إدارة الطلبات",
+    "components": "مبلغ وسبب وموافقات",
+    "actions": "اعتماد/رفض",
+    "special_states": "فصل واجبات"
+  },
+  {
+    "surface": "platform",
+    "id": "PLT-12",
+    "name": "Chargebacks",
+    "goal": "منع التعويض المزدوج",
+    "components": "ملف اعتراض وأدلة",
+    "actions": "رد/تجميد",
+    "special_states": "موعد مزود"
+  },
+  {
+    "surface": "platform",
+    "id": "PLT-13",
+    "name": "العمولات",
+    "goal": "ملفات وقواعد",
+    "components": "إصدارات ونطاق",
+    "actions": "إنشاء إصدار",
+    "special_states": "عدم رجعية"
+  },
+  {
+    "surface": "platform",
+    "id": "PLT-14",
+    "name": "التسويات",
+    "goal": "دورات مالية",
+    "components": "صافي وتجميد وتعديلات",
+    "actions": "اعتماد/دفع",
+    "special_states": "قيود متوازنة"
+  },
+  {
+    "surface": "platform",
+    "id": "PLT-15",
+    "name": "الاشتراكات",
+    "goal": "الباقات والتعيين",
+    "components": "خطط وحدود وتاريخ",
+    "actions": "إصدار/تفعيل",
+    "special_states": "حجوزات لا تتأثر"
+  },
+  {
+    "surface": "platform",
+    "id": "PLT-16",
+    "name": "الدعم",
+    "goal": "صندوق موحد",
+    "components": "أولوية وSLA ومالك",
+    "actions": "تعيين/تصعيد",
+    "special_states": "P0/P1"
+  },
+  {
+    "surface": "platform",
+    "id": "PLT-17",
+    "name": "الحوادث",
+    "goal": "إدارة حادث",
+    "components": "نطاق، قائد، Timeline",
+    "actions": "تحديث/إغلاق",
+    "special_states": "Postmortem"
+  },
+  {
+    "surface": "platform",
+    "id": "PLT-18",
+    "name": "المخالفات",
+    "goal": "إنفاذ العقد",
+    "components": "أدلة ومستوى وأثر",
+    "actions": "إنذار/تقييد",
+    "special_states": "استئناف"
+  },
+  {
+    "surface": "platform",
+    "id": "PLT-19",
+    "name": "المخاطر",
+    "goal": "مراجعة الاحتيال",
+    "components": "درجة وإشارات وقرار",
+    "actions": "سماح/مراجعة/حظر",
+    "special_states": "قرار بشري"
+  },
+  {
+    "surface": "platform",
+    "id": "PLT-20",
+    "name": "السياسات",
+    "goal": "الإصدارات القانونية",
+    "components": "نصوص ولغات ونفاذ",
+    "actions": "نشر إصدار",
+    "special_states": "موافقة جديدة"
+  },
+  {
+    "surface": "platform",
+    "id": "PLT-21",
+    "name": "الإعدادات",
+    "goal": "ملكية التكوين",
+    "components": "حدود وافتراضيات وFlags",
+    "actions": "تغيير/جدولة",
+    "special_states": "سجل وتحقق"
+  },
+  {
+    "surface": "platform",
+    "id": "PLT-22",
+    "name": "قوالب الإشعارات",
+    "goal": "المحتوى",
+    "components": "حدث، قناة، لغة",
+    "actions": "إصدار/اختبار",
+    "special_states": "متغيرات مفقودة"
+  },
+  {
+    "surface": "platform",
+    "id": "PLT-23",
+    "name": "سجل التدقيق",
+    "goal": "تحقيق شامل",
+    "components": "فاعل/كيان/قبل/بعد",
+    "actions": "بحث/تصدير مخول",
+    "special_states": "غير قابل للحذف"
+  },
+  {
+    "surface": "platform",
+    "id": "PLT-24",
+    "name": "الأدوار والصلاحيات",
+    "goal": "إدارة الوصول",
+    "components": "Roles/Permissions",
+    "actions": "إنشاء/تعديل",
+    "special_states": "صلاحية ذاتية ممنوعة"
+  },
+  {
+    "surface": "platform",
+    "id": "PLT-25",
+    "name": "الجلسات والأجهزة",
+    "goal": "الأمن",
+    "components": "جلسات عالية المخاطر",
+    "actions": "إلغاء/طلب MFA",
+    "special_states": "إشعار مستخدم"
+  },
+  {
+    "surface": "platform",
+    "id": "PLT-26",
+    "name": "الخصوصية",
+    "goal": "طلبات الحقوق",
+    "components": "وصول/تصحيح/تصدير/حذف",
+    "actions": "معالجة/إغلاق",
+    "special_states": "احتفاظ إلزامي"
+  },
+  {
+    "surface": "platform",
+    "id": "PLT-27",
+    "name": "الاحتفاظ",
+    "goal": "سياسات البيانات",
+    "components": "نوع/مدة/أساس",
+    "actions": "إصدار/تشغيل حذف",
+    "special_states": "Legal hold"
+  },
+  {
+    "surface": "platform",
+    "id": "PLT-28",
+    "name": "المراقبة",
+    "goal": "صحة الخدمات",
+    "components": "SLO، أخطاء، Queue، DB",
+    "actions": "فتح Dashboard",
+    "special_states": "بيانات لا تحتوي PII"
+  },
+  {
+    "surface": "platform",
+    "id": "PLT-29",
+    "name": "التقارير",
+    "goal": "مؤشرات الأعمال",
+    "components": "مكاتب، خطوط، تحويل، إيراد",
+    "actions": "تصدير",
+    "special_states": "تعاريف ثابتة"
+  },
+  {
+    "surface": "platform",
+    "id": "PLT-30",
+    "name": "Feature Flags",
+    "goal": "إطلاق تدريجي",
+    "components": "ميزة ونطاق ونسبة",
+    "actions": "تفعيل/رجوع",
+    "special_states": "Kill switch"
+  },
+  {
+    "surface": "platform",
+    "id": "PLT-31",
+    "name": "الإطلاق التجريبي",
+    "goal": "إدارة Pilot",
+    "components": "مكاتب/خطوط/حدود/KPI",
+    "actions": "توسيع/إيقاف",
+    "special_states": "بوابات قبول"
+  },
+  {
+    "surface": "platform",
+    "id": "PLT-32",
+    "name": "مصادر الدفع",
+    "goal": "التكاملات",
+    "components": "مزودون ومفاتيح وحالة",
+    "actions": "اختبار/تفعيل",
+    "special_states": "أسرار مخفية"
+  },
+  {
+    "surface": "platform",
+    "id": "PLT-33",
+    "name": "قنوات الإشعار",
+    "goal": "المزودون",
+    "components": "Email/SMS/Push",
+    "actions": "اختبار/تعطيل",
+    "special_states": "Queue محفوظة"
+  },
+  {
+    "surface": "platform",
+    "id": "PLT-34",
+    "name": "النسخ والاستعادة",
+    "goal": "الاستمرارية",
+    "components": "نسخ وتمارين وRPO/RTO",
+    "actions": "بدء Drill",
+    "special_states": "موافقة تشغيل"
+  },
+  {
+    "surface": "platform",
+    "id": "PLT-35",
+    "name": "مركز القرارات",
+    "goal": "الحوكمة",
+    "components": "Change Requests وADRs",
+    "actions": "اعتماد/رفض",
+    "special_states": "أثر وترحيل"
+  }
+]

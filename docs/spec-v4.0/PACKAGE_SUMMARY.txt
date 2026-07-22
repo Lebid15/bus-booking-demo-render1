@@ -1,0 +1,11 @@
+Bus Booking Final Specification v4.0
+Generated: 2026-07-20
+Files: 120
+Approx. words in Markdown/TXT: 38965
+Screens: 90
+Policies: 12
+Tables: 68
+State transitions: 78
+API operations: 108
+Acceptance criteria: 103
+Status: READY FOR CONTROLLED IMPLEMENTATION

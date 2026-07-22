@@ -1,0 +1,56 @@
+System check identified no issues (0 silenced).
+No changes detected
+System check identified some issues:
+
+WARNINGS:
+organizations.OfficeMembership: (models.W047) SQLite does not support unique constraints with nulls distinct.
+	HINT: A constraint won't be created. Silence this warning if you don't care about it.
+Operations to perform:
+  Apply all migrations: auditlog, common, contenttypes, fleet, geography, identity, organizations
+Running migrations:
+  Applying identity.0001_initial... OK
+  Applying auditlog.0001_initial... OK
+  Applying common.0001_initial... OK
+  Applying contenttypes.0001_initial... OK
+  Applying contenttypes.0002_remove_content_type_name... OK
+  Applying organizations.0001_initial... OK
+  Applying geography.0001_initial... OK
+  Applying organizations.0002_verification_branches_and_payouts... OK
+  Applying fleet.0001_initial... OK
+  Applying identity.0002_session_mfa_evidence... OK
+Foundation roles and permissions seeded
+All checks passed!
+Success: no issues found in 60 source files
+........................                                                 [100%]
+24 passed, 13 warnings in 2.70s
+[manager]	WARNING	Test in comment: DRF is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: setting is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: not is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: a is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: password is not a test name or id, ignoring
+[tester]	WARNING	nosec encountered (B105), but no failed test on file ./config/settings.py:113
+[tester]	WARNING	nosec encountered (B105), but no failed test on file ./config/settings.py:114
+[tester]	WARNING	nosec encountered (B105), but no failed test on file ./config/settings.py:115
+[tester]	WARNING	nosec encountered (B105), but no failed test on file ./config/settings.py:116
+[tester]	WARNING	nosec encountered (B105), but no failed test on file ./config/settings.py:117
+[tester]	WARNING	nosec encountered (B105), but no failed test on file ./config/settings.py:118
+[tester]	WARNING	nosec encountered (B105), but no failed test on file ./config/settings.py:115
+[tester]	WARNING	nosec encountered (B105), but no failed test on file ./config/settings.py:116
+[manager]	WARNING	Test in comment: OAuth is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: token is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: type is not a test name or id, ignoring
+[tester]	WARNING	nosec encountered (B105), but no failed test on file ./identity/tokens.py:51
+[tester]	WARNING	nosec encountered (B105), but no failed test on file ./identity/tokens.py:52
+[tester]	WARNING	nosec encountered (B105), but no failed test on file ./identity/tokens.py:54
+[tester]	WARNING	nosec encountered (B105), but no failed test on file ./identity/tokens.py:55
+[tester]	WARNING	nosec encountered (B105), but no failed test on file ./identity/tokens.py:53
+Warning: enum naming encountered a non-optimally resolvable collision for fields named "status". The same name has been used for multiple choice sets in multiple components. The collision was resolved with "Status3d9Enum". add an entry to ENUM_NAME_OVERRIDES to fix the naming.
+Warning: enum naming encountered a non-optimally resolvable collision for fields named "status". The same name has been used for multiple choice sets in multiple components. The collision was resolved with "Status06bEnum". add an entry to ENUM_NAME_OVERRIDES to fix the naming.
+Warning: enum naming encountered a non-optimally resolvable collision for fields named "status". The same name has been used for multiple choice sets in multiple components. The collision was resolved with "StatusA3eEnum". add an entry to ENUM_NAME_OVERRIDES to fix the naming.
+Warning: enum naming encountered a non-optimally resolvable collision for fields named "status". The same name has been used for multiple choice sets in multiple components. The collision was resolved with "Status861Enum". add an entry to ENUM_NAME_OVERRIDES to fix the naming.
+Warning: enum naming encountered a non-optimally resolvable collision for fields named "status". The same name has been used for multiple choice sets in multiple components. The collision was resolved with "StatusD91Enum". add an entry to ENUM_NAME_OVERRIDES to fix the naming.
+
+Schema generation summary:
+Warnings: 5 (5 unique)
+Errors:   0 (0 unique)
+

@@ -1,0 +1,25 @@
+# سجل الإعدادات
+
+| المفتاح | المالك | النوع | الافتراضي | الحدود | الأثر |
+| --- | --- | --- | --- | --- | --- |
+| platform.booking.default_hold_minutes | المنصة | عدد صحيح | 10 | 1..60 | الحجوزات الجديدة فقط |
+| platform.booking.max_unpaid_per_phone | المنصة | عدد صحيح | 3 | 1..20 | مكافحة إساءة الحجز |
+| office.payment.deadline_minutes | المكتب/الرحلة | عدد صحيح | 120 | ضمن حدود المنصة | Snapshot |
+| office.boarding.open_minutes | المكتب/الرحلة | عدد صحيح | 60 | 30..180 | Snapshot |
+| office.boarding.close_minutes | المكتب/الرحلة | عدد صحيح | 10 | 5..30 | Snapshot |
+| office.cancellation.policy_version | المكتب/الرحلة | مرجع سياسة | default-flex | قالب معتمد | Snapshot |
+| platform.commission.profile | المنصة/المكتب | مرجع ملف | standard | عقدي | Snapshot |
+| platform.gender_adjacency.enabled | المنصة | منطقي | true | إلزامي افتراضيًا | يُعاد التحقق عند تغيير المقعد |
+| platform.refund.dual_approval_threshold | المنصة | Decimal | قيمة إعداد | >=0 | لا يثبت في الكود |
+| platform.settlement.cadence | المنصة/المكتب | enum | monthly | weekly|monthly | حسب عقد المكتب |
+| office.manual_payment.methods | المكتب | قائمة | cash,transfer | مزودون مفعلون | تظهر للزبون حسب الرحلة |
+| platform.offline_manifest.ttl_hours | المنصة | عدد صحيح | 12 | 2..24 | مشفّر ومحدود المدة |
+| platform.notifications.email_enabled | المنصة | منطقي | true | Feature Flag | لا يؤثر فشله في صحة الحجز |
+| platform.notifications.sms_enabled | المنصة | منطقي | false | Feature Flag | يُفعل عند توفر مزود |
+| platform.risk.manual_review_threshold | المنصة | عدد | إعداد | 0..100 | لا قرار نهائي آلي عالي الأثر |
+
+## قواعد
+
+- القيم التجارية النهائية تُدار من لوحة المنصة ولا تُثبت في الكود.
+- كل تعديل حساس يسجل القيمة القديمة والجديدة والمنفذ والسبب وتاريخ النفاذ.
+- الإعدادات المرتبطة بحقوق الزبون تُنسخ إلى الحجز ولا تتغير بأثر رجعي.

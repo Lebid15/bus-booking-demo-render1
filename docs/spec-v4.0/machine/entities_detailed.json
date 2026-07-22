@@ -1,0 +1,5508 @@
+{
+  "version": "3.0",
+  "database": "PostgreSQL 18",
+  "entities": [
+    {
+      "table": "users",
+      "description_ar": "الحسابات البشرية العامة",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": "المعرف الداخلي"
+        },
+        {
+          "name": "public_id",
+          "type": "varchar(26)",
+          "constraint": "UNIQUE NOT NULL",
+          "default": "",
+          "description_ar": "معرف خارجي ULID/UUID غير متسلسل"
+        },
+        {
+          "name": "email",
+          "type": "citext",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": "البريد بعد التطبيع"
+        },
+        {
+          "name": "phone_e164",
+          "type": "varchar(20)",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": "الهاتف بصيغة دولية عند توفرها"
+        },
+        {
+          "name": "password_hash",
+          "type": "text",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": "لا يستخدم للحسابات الخارجية فقط"
+        },
+        {
+          "name": "full_name",
+          "type": "varchar(160)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": "الاسم"
+        },
+        {
+          "name": "preferred_language",
+          "type": "varchar(5)",
+          "constraint": "NOT NULL",
+          "default": "ar",
+          "description_ar": "ar/en لاحقًا"
+        },
+        {
+          "name": "status",
+          "type": "varchar(24)",
+          "constraint": "NOT NULL",
+          "default": "active",
+          "description_ar": "active/suspended/disabled/deleted"
+        },
+        {
+          "name": "is_platform_staff",
+          "type": "boolean",
+          "constraint": "NOT NULL",
+          "default": "false",
+          "description_ar": "موظف منصة"
+        },
+        {
+          "name": "email_verified_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "phone_verified_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "last_login_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "UNIQUE(email) WHERE email IS NOT NULL",
+        "UNIQUE(phone_e164) WHERE phone_e164 IS NOT NULL",
+        "CHECK (email IS NOT NULL OR phone_e164 IS NOT NULL)"
+      ]
+    },
+    {
+      "table": "customer_profiles",
+      "description_ar": "ملف الزبون الاختياري",
+      "fields": [
+        {
+          "name": "user_id",
+          "type": "uuid",
+          "constraint": "PK FK users",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "date_of_birth",
+          "type": "date",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "gender",
+          "type": "varchar(12)",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": "male/female عند الحاجة"
+        },
+        {
+          "name": "nationality_code",
+          "type": "char(2)",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": "ISO-3166"
+        },
+        {
+          "name": "marketing_consent",
+          "type": "boolean",
+          "constraint": "NOT NULL",
+          "default": "false",
+          "description_ar": ""
+        },
+        {
+          "name": "deleted_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": "تعطيل/إخفاء"
+        }
+      ],
+      "constraints": [
+        "CHECK (gender IS NULL OR gender IN ('male','female'))"
+      ]
+    },
+    {
+      "table": "user_sessions",
+      "description_ar": "الجلسات",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "user_id",
+          "type": "uuid",
+          "constraint": "FK users NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "token_hash",
+          "type": "bytea",
+          "constraint": "UNIQUE NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "device_id",
+          "type": "uuid",
+          "constraint": "NULL FK user_devices",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "ip_hash",
+          "type": "bytea",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": "لا يخزن IP خام طويلًا"
+        },
+        {
+          "name": "user_agent",
+          "type": "text",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "expires_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "revoked_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "CHECK (expires_at > created_at)"
+      ]
+    },
+    {
+      "table": "user_devices",
+      "description_ar": "الأجهزة الموثوقة",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "user_id",
+          "type": "uuid",
+          "constraint": "FK users NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "device_fingerprint_hash",
+          "type": "bytea",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "label",
+          "type": "varchar(120)",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "trusted_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "last_seen_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        },
+        {
+          "name": "revoked_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "UNIQUE(user_id, device_fingerprint_hash)"
+      ]
+    },
+    {
+      "table": "mfa_methods",
+      "description_ar": "وسائل MFA",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "user_id",
+          "type": "uuid",
+          "constraint": "FK users NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "method_type",
+          "type": "varchar(20)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": "totp/webauthn/recovery"
+        },
+        {
+          "name": "secret_ciphertext",
+          "type": "bytea",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": "مشفّر"
+        },
+        {
+          "name": "credential_id",
+          "type": "bytea",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": "WebAuthn"
+        },
+        {
+          "name": "is_primary",
+          "type": "boolean",
+          "constraint": "NOT NULL",
+          "default": "false",
+          "description_ar": ""
+        },
+        {
+          "name": "verified_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "disabled_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "CHECK (method_type IN ('totp','webauthn','recovery'))"
+      ]
+    },
+    {
+      "table": "roles",
+      "description_ar": "الأدوار المعرفة",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "code",
+          "type": "varchar(80)",
+          "constraint": "UNIQUE NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "scope_type",
+          "type": "varchar(20)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": "platform/office/branch"
+        },
+        {
+          "name": "name_ar",
+          "type": "varchar(120)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "is_system",
+          "type": "boolean",
+          "constraint": "NOT NULL",
+          "default": "true",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "CHECK (scope_type IN ('platform','office','branch'))"
+      ]
+    },
+    {
+      "table": "permissions",
+      "description_ar": "الصلاحيات الذرية",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "code",
+          "type": "varchar(120)",
+          "constraint": "UNIQUE NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "name_ar",
+          "type": "varchar(160)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "risk_level",
+          "type": "varchar(12)",
+          "constraint": "NOT NULL",
+          "default": "normal",
+          "description_ar": "normal/sensitive/critical"
+        }
+      ],
+      "constraints": [
+        "CHECK (risk_level IN ('normal','sensitive','critical'))"
+      ]
+    },
+    {
+      "table": "role_permissions",
+      "description_ar": "ربط الدور بالصلاحيات",
+      "fields": [
+        {
+          "name": "role_id",
+          "type": "uuid",
+          "constraint": "PK FK roles",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "permission_id",
+          "type": "uuid",
+          "constraint": "PK FK permissions",
+          "default": "",
+          "description_ar": ""
+        }
+      ],
+      "constraints": []
+    },
+    {
+      "table": "transport_operators",
+      "description_ar": "الناقل الفعلي/الشركة",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "public_id",
+          "type": "varchar(26)",
+          "constraint": "UNIQUE NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "legal_name",
+          "type": "varchar(200)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "trade_name",
+          "type": "varchar(160)",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "registration_number",
+          "type": "varchar(100)",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "status",
+          "type": "varchar(24)",
+          "constraint": "NOT NULL",
+          "default": "draft",
+          "description_ar": "draft/under_review/active/restricted/suspended/terminated"
+        },
+        {
+          "name": "country_code",
+          "type": "char(2)",
+          "constraint": "NOT NULL",
+          "default": "SY",
+          "description_ar": ""
+        },
+        {
+          "name": "support_phone",
+          "type": "varchar(20)",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "UNIQUE(country_code, registration_number) WHERE registration_number IS NOT NULL"
+      ]
+    },
+    {
+      "table": "offices",
+      "description_ar": "المكتب البائع المتعاقد",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "public_id",
+          "type": "varchar(26)",
+          "constraint": "UNIQUE NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "operator_id",
+          "type": "uuid",
+          "constraint": "NULL FK transport_operators",
+          "default": "",
+          "description_ar": "قد يكون مكتب وكيل مستقل"
+        },
+        {
+          "name": "legal_name",
+          "type": "varchar(200)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "trade_name",
+          "type": "varchar(160)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "office_type",
+          "type": "varchar(24)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": "carrier/branch/authorized_agent/garage_office"
+        },
+        {
+          "name": "status",
+          "type": "varchar(24)",
+          "constraint": "NOT NULL",
+          "default": "draft",
+          "description_ar": "draft/submitted/under_review/conditional/active/restricted/no_new_bookings/wind_down/suspended/terminated/archived"
+        },
+        {
+          "name": "timezone",
+          "type": "varchar(64)",
+          "constraint": "NOT NULL",
+          "default": "Asia/Damascus",
+          "description_ar": ""
+        },
+        {
+          "name": "default_currency",
+          "type": "char(3)",
+          "constraint": "NOT NULL",
+          "default": "SYP",
+          "description_ar": ""
+        },
+        {
+          "name": "support_phone",
+          "type": "varchar(20)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "support_email",
+          "type": "citext",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "commission_profile_id",
+          "type": "uuid",
+          "constraint": "NULL FK commission_profiles",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "activated_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "CHECK (office_type IN ('carrier','branch','authorized_agent','garage_office'))"
+      ]
+    },
+    {
+      "table": "office_branches",
+      "description_ar": "فروع المكتب ونقاط التشغيل",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "office_id",
+          "type": "uuid",
+          "constraint": "FK offices NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "public_id",
+          "type": "varchar(26)",
+          "constraint": "UNIQUE NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "name",
+          "type": "varchar(160)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "location_id",
+          "type": "uuid",
+          "constraint": "FK locations NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "phone",
+          "type": "varchar(20)",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "status",
+          "type": "varchar(20)",
+          "constraint": "NOT NULL",
+          "default": "active",
+          "description_ar": "active/inactive/suspended"
+        },
+        {
+          "name": "is_primary",
+          "type": "boolean",
+          "constraint": "NOT NULL",
+          "default": "false",
+          "description_ar": ""
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "UNIQUE(office_id, name)",
+        "UNIQUE(office_id) WHERE is_primary=true"
+      ]
+    },
+    {
+      "table": "office_memberships",
+      "description_ar": "عضوية موظف في مكتب/فرع",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "user_id",
+          "type": "uuid",
+          "constraint": "FK users NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "office_id",
+          "type": "uuid",
+          "constraint": "FK offices NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "branch_id",
+          "type": "uuid",
+          "constraint": "NULL FK office_branches",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "role_id",
+          "type": "uuid",
+          "constraint": "FK roles NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "status",
+          "type": "varchar(20)",
+          "constraint": "NOT NULL",
+          "default": "active",
+          "description_ar": "invited/active/suspended/revoked"
+        },
+        {
+          "name": "can_approve_own_actions",
+          "type": "boolean",
+          "constraint": "NOT NULL",
+          "default": "false",
+          "description_ar": "يجب أن يبقى false للحساس"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        },
+        {
+          "name": "revoked_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "UNIQUE(user_id, office_id, branch_id, role_id)"
+      ]
+    },
+    {
+      "table": "verification_cases",
+      "description_ar": "ملف تحقق المكتب",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "office_id",
+          "type": "uuid",
+          "constraint": "FK offices NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "status",
+          "type": "varchar(24)",
+          "constraint": "NOT NULL",
+          "default": "draft",
+          "description_ar": "draft/submitted/under_review/info_required/external_verification/conditional/approved/rejected/expired"
+        },
+        {
+          "name": "risk_level",
+          "type": "varchar(12)",
+          "constraint": "NOT NULL",
+          "default": "basic",
+          "description_ar": "basic/documented/enhanced"
+        },
+        {
+          "name": "submitted_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "decided_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "reviewer_user_id",
+          "type": "uuid",
+          "constraint": "NULL FK users",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "decision_reason",
+          "type": "text",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "version",
+          "type": "integer",
+          "constraint": "NOT NULL",
+          "default": "1",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "UNIQUE(office_id, version)"
+      ]
+    },
+    {
+      "table": "office_documents",
+      "description_ar": "وثائق المكتب/الناقل",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "office_id",
+          "type": "uuid",
+          "constraint": "FK offices NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "verification_case_id",
+          "type": "uuid",
+          "constraint": "NULL FK verification_cases",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "document_type",
+          "type": "varchar(64)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "storage_object_key",
+          "type": "text",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": "خاص"
+        },
+        {
+          "name": "sha256",
+          "type": "char(64)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "status",
+          "type": "varchar(20)",
+          "constraint": "NOT NULL",
+          "default": "pending",
+          "description_ar": "pending/verified/rejected/expired"
+        },
+        {
+          "name": "issued_at",
+          "type": "date",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "expires_at",
+          "type": "date",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "reviewed_by",
+          "type": "uuid",
+          "constraint": "NULL FK users",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "reviewed_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "UNIQUE(office_id, document_type, sha256)"
+      ]
+    },
+    {
+      "table": "office_payout_accounts",
+      "description_ar": "حسابات تسوية المكتب",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "office_id",
+          "type": "uuid",
+          "constraint": "FK offices NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "method_type",
+          "type": "varchar(30)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": "bank/wallet/cash_clearing"
+        },
+        {
+          "name": "account_holder_name",
+          "type": "varchar(200)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "account_reference_ciphertext",
+          "type": "bytea",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "account_reference_last4",
+          "type": "varchar(8)",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "status",
+          "type": "varchar(24)",
+          "constraint": "NOT NULL",
+          "default": "pending",
+          "description_ar": "pending/verified/active/suspended/replaced"
+        },
+        {
+          "name": "verified_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "effective_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "created_by",
+          "type": "uuid",
+          "constraint": "FK users NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "approved_by",
+          "type": "uuid",
+          "constraint": "NULL FK users",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "CHECK (approved_by IS NULL OR approved_by <> created_by)",
+        "UNIQUE(office_id) WHERE status='active'"
+      ]
+    },
+    {
+      "table": "locations",
+      "description_ar": "المدن والكراجات والنقاط",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "public_id",
+          "type": "varchar(26)",
+          "constraint": "UNIQUE NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "location_type",
+          "type": "varchar(20)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": "city/garage/boarding_point/dropoff_point"
+        },
+        {
+          "name": "parent_id",
+          "type": "uuid",
+          "constraint": "NULL FK locations",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "name_ar",
+          "type": "varchar(160)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "name_en",
+          "type": "varchar(160)",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "address_text",
+          "type": "text",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "latitude",
+          "type": "numeric(9,6)",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "longitude",
+          "type": "numeric(9,6)",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "status",
+          "type": "varchar(20)",
+          "constraint": "NOT NULL",
+          "default": "active",
+          "description_ar": "active/inactive"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "CHECK (location_type IN ('city','garage','boarding_point','dropoff_point'))",
+        "CHECK (latitude IS NULL OR latitude BETWEEN -90 AND 90)",
+        "CHECK (longitude IS NULL OR longitude BETWEEN -180 AND 180)"
+      ]
+    },
+    {
+      "table": "routes",
+      "description_ar": "الخط التجاري",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "public_id",
+          "type": "varchar(26)",
+          "constraint": "UNIQUE NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "origin_location_id",
+          "type": "uuid",
+          "constraint": "FK locations NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "destination_location_id",
+          "type": "uuid",
+          "constraint": "FK locations NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "name_ar",
+          "type": "varchar(200)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "status",
+          "type": "varchar(20)",
+          "constraint": "NOT NULL",
+          "default": "active",
+          "description_ar": "active/inactive"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "CHECK (origin_location_id <> destination_location_id)",
+        "UNIQUE(origin_location_id,destination_location_id)"
+      ]
+    },
+    {
+      "table": "route_stops",
+      "description_ar": "النقاط الافتراضية لمسار",
+      "fields": [
+        {
+          "name": "route_id",
+          "type": "uuid",
+          "constraint": "PK FK routes",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "sequence_no",
+          "type": "smallint",
+          "constraint": "PK NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "location_id",
+          "type": "uuid",
+          "constraint": "FK locations NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "stop_type",
+          "type": "varchar(20)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": "boarding/dropoff/both"
+        },
+        {
+          "name": "offset_minutes",
+          "type": "integer",
+          "constraint": "NOT NULL",
+          "default": "0",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "CHECK(sequence_no>0)",
+        "UNIQUE(route_id,location_id)"
+      ]
+    },
+    {
+      "table": "seat_layouts",
+      "description_ar": "قالب مخطط البولمان",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "office_id",
+          "type": "uuid",
+          "constraint": "FK offices NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "name",
+          "type": "varchar(160)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "layout_type",
+          "type": "varchar(20)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": "2+2/2+1/custom"
+        },
+        {
+          "name": "seat_count",
+          "type": "smallint",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "version",
+          "type": "integer",
+          "constraint": "NOT NULL",
+          "default": "1",
+          "description_ar": ""
+        },
+        {
+          "name": "status",
+          "type": "varchar(20)",
+          "constraint": "NOT NULL",
+          "default": "active",
+          "description_ar": "draft/active/retired"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "CHECK(seat_count>0)",
+        "UNIQUE(office_id,name,version)"
+      ]
+    },
+    {
+      "table": "seat_layout_seats",
+      "description_ar": "مقاعد المخطط",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "layout_id",
+          "type": "uuid",
+          "constraint": "FK seat_layouts NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "seat_code",
+          "type": "varchar(12)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "row_no",
+          "type": "smallint",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "column_no",
+          "type": "smallint",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "seat_type",
+          "type": "varchar(20)",
+          "constraint": "NOT NULL",
+          "default": "standard",
+          "description_ar": "standard/vip/single/accessible/crew/blocked"
+        },
+        {
+          "name": "is_sellable",
+          "type": "boolean",
+          "constraint": "NOT NULL",
+          "default": "true",
+          "description_ar": ""
+        },
+        {
+          "name": "metadata",
+          "type": "jsonb",
+          "constraint": "NOT NULL",
+          "default": "{}",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "UNIQUE(layout_id,seat_code)",
+        "UNIQUE(layout_id,row_no,column_no)",
+        "CHECK(row_no>0 AND column_no>0)"
+      ]
+    },
+    {
+      "table": "seat_adjacencies",
+      "description_ar": "تعريف المجاورة المنطقي",
+      "fields": [
+        {
+          "name": "layout_id",
+          "type": "uuid",
+          "constraint": "PK FK seat_layouts",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "seat_a_id",
+          "type": "uuid",
+          "constraint": "PK FK seat_layout_seats",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "seat_b_id",
+          "type": "uuid",
+          "constraint": "PK FK seat_layout_seats",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "adjacency_type",
+          "type": "varchar(20)",
+          "constraint": "NOT NULL",
+          "default": "same_unit",
+          "description_ar": "same_unit/aisle/nearby"
+        }
+      ],
+      "constraints": [
+        "CHECK(seat_a_id < seat_b_id)"
+      ]
+    },
+    {
+      "table": "vehicles",
+      "description_ar": "البولمانات",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "office_id",
+          "type": "uuid",
+          "constraint": "FK offices NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "operator_id",
+          "type": "uuid",
+          "constraint": "NULL FK transport_operators",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "public_id",
+          "type": "varchar(26)",
+          "constraint": "UNIQUE NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "plate_number",
+          "type": "varchar(40)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "fleet_number",
+          "type": "varchar(40)",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "seat_layout_id",
+          "type": "uuid",
+          "constraint": "FK seat_layouts NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "status",
+          "type": "varchar(20)",
+          "constraint": "NOT NULL",
+          "default": "active",
+          "description_ar": "active/maintenance/out_of_service/retired"
+        },
+        {
+          "name": "make_model",
+          "type": "varchar(160)",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "year",
+          "type": "smallint",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "UNIQUE(office_id,plate_number)",
+        "CHECK(year IS NULL OR year BETWEEN 1980 AND 2100)"
+      ]
+    },
+    {
+      "table": "drivers",
+      "description_ar": "السائقون",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "operator_id",
+          "type": "uuid",
+          "constraint": "FK transport_operators NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "full_name",
+          "type": "varchar(160)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "phone",
+          "type": "varchar(20)",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "license_number_ciphertext",
+          "type": "bytea",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "license_last4",
+          "type": "varchar(8)",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "license_expires_at",
+          "type": "date",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "status",
+          "type": "varchar(20)",
+          "constraint": "NOT NULL",
+          "default": "active",
+          "description_ar": "active/suspended/expired"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        }
+      ],
+      "constraints": []
+    },
+    {
+      "table": "policy_templates",
+      "description_ar": "قوالب السياسات",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "code",
+          "type": "varchar(80)",
+          "constraint": "UNIQUE NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "policy_type",
+          "type": "varchar(40)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": "cancellation/payment/boarding/baggage/terms/privacy"
+        },
+        {
+          "name": "owner_scope",
+          "type": "varchar(20)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": "platform/office"
+        },
+        {
+          "name": "status",
+          "type": "varchar(20)",
+          "constraint": "NOT NULL",
+          "default": "active",
+          "description_ar": "draft/active/retired"
+        }
+      ],
+      "constraints": []
+    },
+    {
+      "table": "policy_versions",
+      "description_ar": "إصدارات السياسات",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "template_id",
+          "type": "uuid",
+          "constraint": "FK policy_templates NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "office_id",
+          "type": "uuid",
+          "constraint": "NULL FK offices",
+          "default": "",
+          "description_ar": "NULL لسياسة منصة"
+        },
+        {
+          "name": "version_no",
+          "type": "integer",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "language",
+          "type": "varchar(5)",
+          "constraint": "NOT NULL",
+          "default": "ar",
+          "description_ar": ""
+        },
+        {
+          "name": "title",
+          "type": "varchar(200)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "content_markdown",
+          "type": "text",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "rules_json",
+          "type": "jsonb",
+          "constraint": "NOT NULL",
+          "default": "{}",
+          "description_ar": "نسخة آلة قابلة للتطبيق"
+        },
+        {
+          "name": "effective_from",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "effective_to",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "published_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "content_sha256",
+          "type": "char(64)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "UNIQUE(template_id,office_id,version_no,language)",
+        "CHECK(effective_to IS NULL OR effective_to>effective_from)"
+      ]
+    },
+    {
+      "table": "policy_acceptances",
+      "description_ar": "الموافقات على السياسات",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "policy_version_id",
+          "type": "uuid",
+          "constraint": "FK policy_versions NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "subject_type",
+          "type": "varchar(20)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": "user/office/booking"
+        },
+        {
+          "name": "subject_id",
+          "type": "uuid",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "accepted_by_user_id",
+          "type": "uuid",
+          "constraint": "NULL FK users",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "accepted_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        },
+        {
+          "name": "ip_hash",
+          "type": "bytea",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "user_agent_hash",
+          "type": "bytea",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "UNIQUE(policy_version_id,subject_type,subject_id)"
+      ]
+    },
+    {
+      "table": "configuration_values",
+      "description_ar": "إعدادات قابلة للتغيير",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "scope_type",
+          "type": "varchar(20)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": "platform/office/branch/route/trip"
+        },
+        {
+          "name": "scope_id",
+          "type": "uuid",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": "NULL للمنصة"
+        },
+        {
+          "name": "key",
+          "type": "varchar(120)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "value_json",
+          "type": "jsonb",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "value_type",
+          "type": "varchar(20)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": "boolean/integer/decimal/string/duration/object"
+        },
+        {
+          "name": "effective_from",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        },
+        {
+          "name": "effective_to",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "created_by",
+          "type": "uuid",
+          "constraint": "FK users NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "approved_by",
+          "type": "uuid",
+          "constraint": "NULL FK users",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "UNIQUE(scope_type,scope_id,key,effective_from)",
+        "CHECK(effective_to IS NULL OR effective_to>effective_from)"
+      ]
+    },
+    {
+      "table": "trips",
+      "description_ar": "نسخة تشغيلية لرحلة",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "public_id",
+          "type": "varchar(26)",
+          "constraint": "UNIQUE NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "office_id",
+          "type": "uuid",
+          "constraint": "FK offices NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "branch_id",
+          "type": "uuid",
+          "constraint": "FK office_branches NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "operator_id",
+          "type": "uuid",
+          "constraint": "FK transport_operators NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "route_id",
+          "type": "uuid",
+          "constraint": "FK routes NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "vehicle_id",
+          "type": "uuid",
+          "constraint": "FK vehicles NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "seat_layout_id",
+          "type": "uuid",
+          "constraint": "FK seat_layouts NOT NULL",
+          "default": "",
+          "description_ar": "Snapshot مرجعي"
+        },
+        {
+          "name": "status",
+          "type": "varchar(24)",
+          "constraint": "NOT NULL",
+          "default": "draft",
+          "description_ar": "draft/scheduled/published/booking_open/boarding_open/boarding_closed/departed/arrived/completed/cancelled/interrupted"
+        },
+        {
+          "name": "scheduled_departure_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "scheduled_arrival_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "actual_departure_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "actual_arrival_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "currency",
+          "type": "char(3)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "base_price",
+          "type": "numeric(18,2)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "booking_open_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "booking_close_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "boarding_open_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "boarding_close_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "policy_snapshot",
+          "type": "jsonb",
+          "constraint": "NOT NULL",
+          "default": "{}",
+          "description_ar": ""
+        },
+        {
+          "name": "pricing_snapshot",
+          "type": "jsonb",
+          "constraint": "NOT NULL",
+          "default": "{}",
+          "description_ar": ""
+        },
+        {
+          "name": "version",
+          "type": "integer",
+          "constraint": "NOT NULL",
+          "default": "1",
+          "description_ar": "Optimistic lock"
+        },
+        {
+          "name": "created_by",
+          "type": "uuid",
+          "constraint": "FK users NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "CHECK(scheduled_arrival_at IS NULL OR scheduled_arrival_at>scheduled_departure_at)",
+        "CHECK(base_price>=0)",
+        "CHECK(booking_close_at IS NULL OR booking_close_at<=scheduled_departure_at)"
+      ]
+    },
+    {
+      "table": "trip_stops",
+      "description_ar": "نقاط الرحلة الفعلية",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "trip_id",
+          "type": "uuid",
+          "constraint": "FK trips NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "sequence_no",
+          "type": "smallint",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "location_id",
+          "type": "uuid",
+          "constraint": "FK locations NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "scheduled_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "actual_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "stop_type",
+          "type": "varchar(20)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": "boarding/dropoff/both"
+        }
+      ],
+      "constraints": [
+        "UNIQUE(trip_id,sequence_no)",
+        "UNIQUE(trip_id,location_id)",
+        "CHECK(sequence_no>0)"
+      ]
+    },
+    {
+      "table": "trip_seats",
+      "description_ar": "مخزون المقاعد لكل رحلة",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "trip_id",
+          "type": "uuid",
+          "constraint": "FK trips NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "layout_seat_id",
+          "type": "uuid",
+          "constraint": "FK seat_layout_seats NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "seat_code",
+          "type": "varchar(12)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": "Snapshot"
+        },
+        {
+          "name": "seat_type",
+          "type": "varchar(20)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "sellable",
+          "type": "boolean",
+          "constraint": "NOT NULL",
+          "default": "true",
+          "description_ar": ""
+        },
+        {
+          "name": "blocked_reason",
+          "type": "varchar(160)",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "version",
+          "type": "integer",
+          "constraint": "NOT NULL",
+          "default": "1",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "UNIQUE(trip_id,layout_seat_id)",
+        "UNIQUE(trip_id,seat_code)"
+      ]
+    },
+    {
+      "table": "seat_holds",
+      "description_ar": "حجز مؤقت للمقعد",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "trip_id",
+          "type": "uuid",
+          "constraint": "FK trips NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "trip_seat_id",
+          "type": "uuid",
+          "constraint": "FK trip_seats NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "hold_token_hash",
+          "type": "bytea",
+          "constraint": "UNIQUE NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "owner_session_id",
+          "type": "uuid",
+          "constraint": "NULL FK user_sessions",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "owner_booking_draft_id",
+          "type": "uuid",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "status",
+          "type": "varchar(16)",
+          "constraint": "NOT NULL",
+          "default": "active",
+          "description_ar": "active/consumed/expired/released"
+        },
+        {
+          "name": "expires_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        },
+        {
+          "name": "released_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "UNIQUE(trip_seat_id) WHERE status='active'",
+        "CHECK(expires_at>created_at)"
+      ]
+    },
+    {
+      "table": "bookings",
+      "description_ar": "الحجز الرئيسي",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "public_id",
+          "type": "varchar(26)",
+          "constraint": "UNIQUE NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "pnr",
+          "type": "varchar(12)",
+          "constraint": "UNIQUE NOT NULL",
+          "default": "",
+          "description_ar": "غير متسلسل وعشوائي"
+        },
+        {
+          "name": "office_id",
+          "type": "uuid",
+          "constraint": "FK offices NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "branch_id",
+          "type": "uuid",
+          "constraint": "FK office_branches NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "trip_id",
+          "type": "uuid",
+          "constraint": "FK trips NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "customer_user_id",
+          "type": "uuid",
+          "constraint": "NULL FK users",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "source",
+          "type": "varchar(24)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": "public_web/office/phone/import"
+        },
+        {
+          "name": "status",
+          "type": "varchar(32)",
+          "constraint": "NOT NULL",
+          "default": "draft",
+          "description_ar": "draft/awaiting_payment/confirmed/cancellation_pending/cancelled/completed/no_show/denied_boarding_review"
+        },
+        {
+          "name": "payment_status",
+          "type": "varchar(24)",
+          "constraint": "NOT NULL",
+          "default": "unpaid",
+          "description_ar": "unpaid/pending_verification/partially_paid/paid/partially_refunded/refunded/disputed"
+        },
+        {
+          "name": "contact_name",
+          "type": "varchar(160)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "contact_phone",
+          "type": "varchar(20)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "contact_email",
+          "type": "citext",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "currency",
+          "type": "char(3)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "subtotal_amount",
+          "type": "numeric(18,2)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "discount_amount",
+          "type": "numeric(18,2)",
+          "constraint": "NOT NULL",
+          "default": "0",
+          "description_ar": ""
+        },
+        {
+          "name": "fee_amount",
+          "type": "numeric(18,2)",
+          "constraint": "NOT NULL",
+          "default": "0",
+          "description_ar": ""
+        },
+        {
+          "name": "total_amount",
+          "type": "numeric(18,2)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "paid_amount",
+          "type": "numeric(18,2)",
+          "constraint": "NOT NULL",
+          "default": "0",
+          "description_ar": ""
+        },
+        {
+          "name": "refunded_amount",
+          "type": "numeric(18,2)",
+          "constraint": "NOT NULL",
+          "default": "0",
+          "description_ar": ""
+        },
+        {
+          "name": "payment_deadline_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "policy_snapshot",
+          "type": "jsonb",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "pricing_snapshot",
+          "type": "jsonb",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "commission_snapshot",
+          "type": "jsonb",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "terms_version_ids",
+          "type": "uuid[]",
+          "constraint": "NOT NULL",
+          "default": "{}",
+          "description_ar": ""
+        },
+        {
+          "name": "manage_token_hash",
+          "type": "bytea",
+          "constraint": "UNIQUE NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "version",
+          "type": "integer",
+          "constraint": "NOT NULL",
+          "default": "1",
+          "description_ar": ""
+        },
+        {
+          "name": "confirmed_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "cancelled_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "created_by_user_id",
+          "type": "uuid",
+          "constraint": "NULL FK users",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "CHECK(subtotal_amount>=0 AND discount_amount>=0 AND fee_amount>=0 AND total_amount>=0)",
+        "CHECK(total_amount=subtotal_amount-discount_amount+fee_amount)",
+        "CHECK(paid_amount>=0 AND refunded_amount>=0 AND refunded_amount<=paid_amount)"
+      ]
+    },
+    {
+      "table": "booking_passengers",
+      "description_ar": "ركاب الحجز",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "booking_id",
+          "type": "uuid",
+          "constraint": "FK bookings NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "sequence_no",
+          "type": "smallint",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "full_name",
+          "type": "varchar(160)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "gender",
+          "type": "varchar(12)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": "male/female"
+        },
+        {
+          "name": "passenger_type",
+          "type": "varchar(16)",
+          "constraint": "NOT NULL",
+          "default": "adult",
+          "description_ar": "adult/child/infant"
+        },
+        {
+          "name": "date_of_birth",
+          "type": "date",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "nationality_code",
+          "type": "char(2)",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "identity_type",
+          "type": "varchar(24)",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "identity_number_normalized",
+          "type": "varchar(80)",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": "يفضل مشفر/هاش حسب الحاجة"
+        },
+        {
+          "name": "boarding_status",
+          "type": "varchar(28)",
+          "constraint": "NOT NULL",
+          "default": "not_arrived",
+          "description_ar": "not_arrived/arrived/verified/boarded/boarded_reversed/denied/no_show"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "UNIQUE(booking_id,sequence_no)",
+        "CHECK(gender IN ('male','female'))",
+        "CHECK(passenger_type IN ('adult','child','infant'))"
+      ]
+    },
+    {
+      "table": "seat_assignments",
+      "description_ar": "تخصيص المقعد النهائي",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "trip_id",
+          "type": "uuid",
+          "constraint": "FK trips NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "booking_id",
+          "type": "uuid",
+          "constraint": "FK bookings NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "passenger_id",
+          "type": "uuid",
+          "constraint": "FK booking_passengers NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "trip_seat_id",
+          "type": "uuid",
+          "constraint": "FK trip_seats NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "status",
+          "type": "varchar(20)",
+          "constraint": "NOT NULL",
+          "default": "active",
+          "description_ar": "active/released/moved/cancelled"
+        },
+        {
+          "name": "price_amount",
+          "type": "numeric(18,2)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "assigned_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        },
+        {
+          "name": "released_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "superseded_by_id",
+          "type": "uuid",
+          "constraint": "NULL FK seat_assignments",
+          "default": "",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "UNIQUE(trip_id,trip_seat_id) WHERE status='active'",
+        "UNIQUE(passenger_id) WHERE status='active'",
+        "CHECK(price_amount>=0)"
+      ]
+    },
+    {
+      "table": "tickets",
+      "description_ar": "إصدارات التذاكر",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "booking_id",
+          "type": "uuid",
+          "constraint": "FK bookings NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "passenger_id",
+          "type": "uuid",
+          "constraint": "FK booking_passengers NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "seat_assignment_id",
+          "type": "uuid",
+          "constraint": "FK seat_assignments NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "version_no",
+          "type": "integer",
+          "constraint": "NOT NULL",
+          "default": "1",
+          "description_ar": ""
+        },
+        {
+          "name": "status",
+          "type": "varchar(20)",
+          "constraint": "NOT NULL",
+          "default": "active",
+          "description_ar": "active/revoked/used/expired"
+        },
+        {
+          "name": "qr_token_hash",
+          "type": "bytea",
+          "constraint": "UNIQUE NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "qr_payload_signature",
+          "type": "bytea",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "issued_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        },
+        {
+          "name": "revoked_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "used_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "UNIQUE(passenger_id,version_no)",
+        "UNIQUE(passenger_id) WHERE status='active'"
+      ]
+    },
+    {
+      "table": "boarding_events",
+      "description_ar": "أحداث الصعود غير القابلة للتعديل",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "trip_id",
+          "type": "uuid",
+          "constraint": "FK trips NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "passenger_id",
+          "type": "uuid",
+          "constraint": "FK booking_passengers NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "ticket_id",
+          "type": "uuid",
+          "constraint": "NULL FK tickets",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "event_type",
+          "type": "varchar(24)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": "arrived/verified/boarded/reversed/denied/no_show/manual_check"
+        },
+        {
+          "name": "occurred_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        },
+        {
+          "name": "actor_user_id",
+          "type": "uuid",
+          "constraint": "NULL FK users",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "device_id",
+          "type": "uuid",
+          "constraint": "NULL FK user_devices",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "offline_event_id",
+          "type": "varchar(80)",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "reason_code",
+          "type": "varchar(80)",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "metadata",
+          "type": "jsonb",
+          "constraint": "NOT NULL",
+          "default": "{}",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "UNIQUE(device_id,offline_event_id) WHERE offline_event_id IS NOT NULL"
+      ]
+    },
+    {
+      "table": "trip_manifests",
+      "description_ar": "إصدارات قائمة الركاب",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "trip_id",
+          "type": "uuid",
+          "constraint": "FK trips NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "version_no",
+          "type": "integer",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "status",
+          "type": "varchar(20)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": "draft/boarding_closed/final"
+        },
+        {
+          "name": "manifest_json",
+          "type": "jsonb",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "sha256",
+          "type": "char(64)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "generated_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        },
+        {
+          "name": "generated_by",
+          "type": "uuid",
+          "constraint": "NULL FK users",
+          "default": "",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "UNIQUE(trip_id,version_no)"
+      ]
+    },
+    {
+      "table": "payment_intents",
+      "description_ar": "نية دفع",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "booking_id",
+          "type": "uuid",
+          "constraint": "FK bookings NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "method_type",
+          "type": "varchar(30)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": "office_cash/manual_transfer/electronic"
+        },
+        {
+          "name": "status",
+          "type": "varchar(24)",
+          "constraint": "NOT NULL",
+          "default": "created",
+          "description_ar": "created/requires_action/pending_verification/succeeded/failed/cancelled/expired"
+        },
+        {
+          "name": "amount",
+          "type": "numeric(18,2)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "currency",
+          "type": "char(3)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "provider_code",
+          "type": "varchar(60)",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "provider_reference",
+          "type": "varchar(160)",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "idempotency_key",
+          "type": "varchar(120)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "expires_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "created_by",
+          "type": "uuid",
+          "constraint": "NULL FK users",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "UNIQUE(booking_id,idempotency_key)",
+        "UNIQUE(provider_code,provider_reference) WHERE provider_reference IS NOT NULL",
+        "CHECK(amount>0)"
+      ]
+    },
+    {
+      "table": "payment_transactions",
+      "description_ar": "الحركات المالية الخارجية/النقدية",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "payment_intent_id",
+          "type": "uuid",
+          "constraint": "FK payment_intents NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "transaction_type",
+          "type": "varchar(20)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": "authorize/capture/payment/reversal"
+        },
+        {
+          "name": "status",
+          "type": "varchar(20)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": "pending/succeeded/failed/reversed"
+        },
+        {
+          "name": "amount",
+          "type": "numeric(18,2)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "currency",
+          "type": "char(3)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "provider_event_id",
+          "type": "varchar(160)",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "occurred_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": "وقت الحركة الحقيقي"
+        },
+        {
+          "name": "recorded_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        },
+        {
+          "name": "raw_reference_hash",
+          "type": "bytea",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "UNIQUE(provider_event_id) WHERE provider_event_id IS NOT NULL",
+        "CHECK(amount>0)"
+      ]
+    },
+    {
+      "table": "manual_payment_submissions",
+      "description_ar": "إثبات التحويل اليدوي",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "payment_intent_id",
+          "type": "uuid",
+          "constraint": "FK payment_intents NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "sender_reference",
+          "type": "varchar(160)",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "transfer_reference",
+          "type": "varchar(160)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "transferred_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "amount",
+          "type": "numeric(18,2)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "proof_object_key",
+          "type": "text",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "proof_sha256",
+          "type": "char(64)",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "status",
+          "type": "varchar(20)",
+          "constraint": "NOT NULL",
+          "default": "submitted",
+          "description_ar": "submitted/verified/rejected/duplicate"
+        },
+        {
+          "name": "submitted_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        },
+        {
+          "name": "reviewed_by",
+          "type": "uuid",
+          "constraint": "NULL FK users",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "reviewed_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "rejection_reason",
+          "type": "text",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "UNIQUE(transfer_reference)",
+        "UNIQUE(proof_sha256) WHERE proof_sha256 IS NOT NULL",
+        "CHECK(amount>0)"
+      ]
+    },
+    {
+      "table": "refunds",
+      "description_ar": "طلبات ونتائج الاسترداد",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "booking_id",
+          "type": "uuid",
+          "constraint": "FK bookings NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "payment_intent_id",
+          "type": "uuid",
+          "constraint": "NULL FK payment_intents",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "status",
+          "type": "varchar(24)",
+          "constraint": "NOT NULL",
+          "default": "requested",
+          "description_ar": "requested/under_review/approved/processing/succeeded/failed/rejected/cancelled"
+        },
+        {
+          "name": "reason_code",
+          "type": "varchar(80)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "requested_amount",
+          "type": "numeric(18,2)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "approved_amount",
+          "type": "numeric(18,2)",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "currency",
+          "type": "char(3)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "requested_by",
+          "type": "uuid",
+          "constraint": "NULL FK users",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "approved_by",
+          "type": "uuid",
+          "constraint": "NULL FK users",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "provider_reference",
+          "type": "varchar(160)",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        },
+        {
+          "name": "completed_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "CHECK(requested_amount>0)",
+        "CHECK(approved_amount IS NULL OR approved_amount BETWEEN 0 AND requested_amount)",
+        "CHECK(approved_by IS NULL OR approved_by<>requested_by)"
+      ]
+    },
+    {
+      "table": "disputes",
+      "description_ar": "نزاع داخلي",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "booking_id",
+          "type": "uuid",
+          "constraint": "FK bookings NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "status",
+          "type": "varchar(24)",
+          "constraint": "NOT NULL",
+          "default": "open",
+          "description_ar": "open/awaiting_office/under_review/decided/appealed/closed"
+        },
+        {
+          "name": "category",
+          "type": "varchar(60)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "disputed_amount",
+          "type": "numeric(18,2)",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "opened_by_type",
+          "type": "varchar(20)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": "customer/office/platform"
+        },
+        {
+          "name": "opened_by_id",
+          "type": "uuid",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "assigned_to",
+          "type": "uuid",
+          "constraint": "NULL FK users",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "decision_code",
+          "type": "varchar(80)",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "decision_summary",
+          "type": "text",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "opened_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        },
+        {
+          "name": "decided_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "closed_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "CHECK(disputed_amount IS NULL OR disputed_amount>=0)"
+      ]
+    },
+    {
+      "table": "chargebacks",
+      "description_ar": "اعتراض مزود الدفع",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "payment_transaction_id",
+          "type": "uuid",
+          "constraint": "FK payment_transactions NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "provider_case_id",
+          "type": "varchar(160)",
+          "constraint": "UNIQUE NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "status",
+          "type": "varchar(24)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": "open/evidence_submitted/won/lost/accepted/closed"
+        },
+        {
+          "name": "amount",
+          "type": "numeric(18,2)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "currency",
+          "type": "char(3)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "deadline_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "opened_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "closed_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "CHECK(amount>0)"
+      ]
+    },
+    {
+      "table": "ledger_accounts",
+      "description_ar": "دليل حسابات داخلي",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "office_id",
+          "type": "uuid",
+          "constraint": "NULL FK offices",
+          "default": "",
+          "description_ar": "NULL لحسابات المنصة العامة"
+        },
+        {
+          "name": "code",
+          "type": "varchar(80)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "account_type",
+          "type": "varchar(20)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": "asset/liability/equity/revenue/expense/contra"
+        },
+        {
+          "name": "currency",
+          "type": "char(3)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "status",
+          "type": "varchar(20)",
+          "constraint": "NOT NULL",
+          "default": "active",
+          "description_ar": "active/closed"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "UNIQUE(office_id,code,currency)"
+      ]
+    },
+    {
+      "table": "ledger_entries",
+      "description_ar": "رأس القيد المحاسبي",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "event_type",
+          "type": "varchar(80)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "event_id",
+          "type": "uuid",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": "معرف الحدث التجاري"
+        },
+        {
+          "name": "booking_id",
+          "type": "uuid",
+          "constraint": "NULL FK bookings",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "trip_id",
+          "type": "uuid",
+          "constraint": "NULL FK trips",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "office_id",
+          "type": "uuid",
+          "constraint": "NULL FK offices",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "currency",
+          "type": "char(3)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "status",
+          "type": "varchar(16)",
+          "constraint": "NOT NULL",
+          "default": "posted",
+          "description_ar": "posted/reversed"
+        },
+        {
+          "name": "occurred_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "posted_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        },
+        {
+          "name": "reversal_of_id",
+          "type": "uuid",
+          "constraint": "NULL FK ledger_entries",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "UNIQUE(event_type,event_id,currency)",
+        "CHECK(reversal_of_id IS NULL OR status='reversed')"
+      ]
+    },
+    {
+      "table": "ledger_postings",
+      "description_ar": "طرفا القيد",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "entry_id",
+          "type": "uuid",
+          "constraint": "FK ledger_entries NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "account_id",
+          "type": "uuid",
+          "constraint": "FK ledger_accounts NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "direction",
+          "type": "char(1)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": "D/C"
+        },
+        {
+          "name": "amount",
+          "type": "numeric(18,2)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "memo",
+          "type": "varchar(240)",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "CHECK(direction IN ('D','C'))",
+        "CHECK(amount>0)"
+      ]
+    },
+    {
+      "table": "commissions",
+      "description_ar": "استحقاق عمولة الحجز",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "booking_id",
+          "type": "uuid",
+          "constraint": "FK bookings NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "office_id",
+          "type": "uuid",
+          "constraint": "FK offices NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "status",
+          "type": "varchar(24)",
+          "constraint": "NOT NULL",
+          "default": "expected",
+          "description_ar": "expected/pending/earned/in_settlement/paid/reversed/adjusted"
+        },
+        {
+          "name": "basis_amount",
+          "type": "numeric(18,2)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "rate",
+          "type": "numeric(9,6)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "fixed_amount",
+          "type": "numeric(18,2)",
+          "constraint": "NOT NULL",
+          "default": "0",
+          "description_ar": ""
+        },
+        {
+          "name": "commission_amount",
+          "type": "numeric(18,2)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "currency",
+          "type": "char(3)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "earned_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "UNIQUE(booking_id)",
+        "CHECK(basis_amount>=0 AND rate>=0 AND fixed_amount>=0 AND commission_amount>=0)"
+      ]
+    },
+    {
+      "table": "settlements",
+      "description_ar": "دفعة تسوية لمكتب",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "public_id",
+          "type": "varchar(26)",
+          "constraint": "UNIQUE NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "office_id",
+          "type": "uuid",
+          "constraint": "FK offices NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "period_start",
+          "type": "date",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "period_end",
+          "type": "date",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "currency",
+          "type": "char(3)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "status",
+          "type": "varchar(24)",
+          "constraint": "NOT NULL",
+          "default": "draft",
+          "description_ar": "draft/calculated/under_review/approved/processing/paid/failed/closed"
+        },
+        {
+          "name": "gross_amount",
+          "type": "numeric(18,2)",
+          "constraint": "NOT NULL",
+          "default": "0",
+          "description_ar": ""
+        },
+        {
+          "name": "commission_amount",
+          "type": "numeric(18,2)",
+          "constraint": "NOT NULL",
+          "default": "0",
+          "description_ar": ""
+        },
+        {
+          "name": "refund_amount",
+          "type": "numeric(18,2)",
+          "constraint": "NOT NULL",
+          "default": "0",
+          "description_ar": ""
+        },
+        {
+          "name": "reserve_amount",
+          "type": "numeric(18,2)",
+          "constraint": "NOT NULL",
+          "default": "0",
+          "description_ar": ""
+        },
+        {
+          "name": "adjustment_amount",
+          "type": "numeric(18,2)",
+          "constraint": "NOT NULL",
+          "default": "0",
+          "description_ar": ""
+        },
+        {
+          "name": "net_amount",
+          "type": "numeric(18,2)",
+          "constraint": "NOT NULL",
+          "default": "0",
+          "description_ar": ""
+        },
+        {
+          "name": "created_by",
+          "type": "uuid",
+          "constraint": "FK users NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "approved_by",
+          "type": "uuid",
+          "constraint": "NULL FK users",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        },
+        {
+          "name": "paid_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "UNIQUE(office_id,period_start,period_end,currency)",
+        "CHECK(period_end>=period_start)",
+        "CHECK(approved_by IS NULL OR approved_by<>created_by)"
+      ]
+    },
+    {
+      "table": "settlement_items",
+      "description_ar": "تفاصيل التسوية",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "settlement_id",
+          "type": "uuid",
+          "constraint": "FK settlements NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "item_type",
+          "type": "varchar(40)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": "booking_proceeds/commission/refund/reserve/adjustment/direct_payment_commission"
+        },
+        {
+          "name": "source_type",
+          "type": "varchar(40)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "source_id",
+          "type": "uuid",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "amount",
+          "type": "numeric(18,2)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": "موجب/سالب بحسب النوع"
+        },
+        {
+          "name": "description",
+          "type": "varchar(240)",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "UNIQUE(settlement_id,item_type,source_type,source_id)"
+      ]
+    },
+    {
+      "table": "support_cases",
+      "description_ar": "حالات الدعم",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "public_id",
+          "type": "varchar(26)",
+          "constraint": "UNIQUE NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "booking_id",
+          "type": "uuid",
+          "constraint": "NULL FK bookings",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "trip_id",
+          "type": "uuid",
+          "constraint": "NULL FK trips",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "office_id",
+          "type": "uuid",
+          "constraint": "NULL FK offices",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "opened_by_user_id",
+          "type": "uuid",
+          "constraint": "NULL FK users",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "priority",
+          "type": "varchar(8)",
+          "constraint": "NOT NULL",
+          "default": "P3",
+          "description_ar": "P0-P4"
+        },
+        {
+          "name": "category",
+          "type": "varchar(60)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "status",
+          "type": "varchar(24)",
+          "constraint": "NOT NULL",
+          "default": "open",
+          "description_ar": "open/assigned/awaiting_customer/awaiting_office/escalated/resolved/closed/reopened"
+        },
+        {
+          "name": "owner_user_id",
+          "type": "uuid",
+          "constraint": "NULL FK users",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "sla_due_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "resolution_code",
+          "type": "varchar(80)",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "opened_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        },
+        {
+          "name": "resolved_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "closed_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "CHECK(priority IN ('P0','P1','P2','P3','P4'))"
+      ]
+    },
+    {
+      "table": "support_messages",
+      "description_ar": "رسائل الحالة",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "case_id",
+          "type": "uuid",
+          "constraint": "FK support_cases NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "sender_type",
+          "type": "varchar(20)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": "customer/office/platform/system"
+        },
+        {
+          "name": "sender_user_id",
+          "type": "uuid",
+          "constraint": "NULL FK users",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "body",
+          "type": "text",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "visibility",
+          "type": "varchar(20)",
+          "constraint": "NOT NULL",
+          "default": "shared",
+          "description_ar": "shared/internal"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        }
+      ],
+      "constraints": []
+    },
+    {
+      "table": "notifications",
+      "description_ar": "الإشعار المنطقي",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "event_type",
+          "type": "varchar(80)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "recipient_type",
+          "type": "varchar(20)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": "user/office/booking_contact"
+        },
+        {
+          "name": "recipient_id",
+          "type": "uuid",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "booking_id",
+          "type": "uuid",
+          "constraint": "NULL FK bookings",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "template_code",
+          "type": "varchar(80)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "language",
+          "type": "varchar(5)",
+          "constraint": "NOT NULL",
+          "default": "ar",
+          "description_ar": ""
+        },
+        {
+          "name": "payload",
+          "type": "jsonb",
+          "constraint": "NOT NULL",
+          "default": "{}",
+          "description_ar": ""
+        },
+        {
+          "name": "status",
+          "type": "varchar(20)",
+          "constraint": "NOT NULL",
+          "default": "queued",
+          "description_ar": "queued/partially_sent/sent/failed/cancelled"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        }
+      ],
+      "constraints": []
+    },
+    {
+      "table": "notification_deliveries",
+      "description_ar": "محاولات القنوات",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "notification_id",
+          "type": "uuid",
+          "constraint": "FK notifications NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "channel",
+          "type": "varchar(20)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": "in_app/email/sms/push"
+        },
+        {
+          "name": "destination_hash",
+          "type": "bytea",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "provider_message_id",
+          "type": "varchar(160)",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "status",
+          "type": "varchar(20)",
+          "constraint": "NOT NULL",
+          "default": "queued",
+          "description_ar": "queued/sending/sent/delivered/failed/bounced"
+        },
+        {
+          "name": "attempt_no",
+          "type": "smallint",
+          "constraint": "NOT NULL",
+          "default": "1",
+          "description_ar": ""
+        },
+        {
+          "name": "next_attempt_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "sent_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "delivered_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "error_code",
+          "type": "varchar(80)",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "UNIQUE(notification_id,channel,attempt_no)"
+      ]
+    },
+    {
+      "table": "risk_assessments",
+      "description_ar": "تقييم خطر",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "subject_type",
+          "type": "varchar(30)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": "booking/payment/user/office/employee/device"
+        },
+        {
+          "name": "subject_id",
+          "type": "uuid",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "score",
+          "type": "numeric(6,3)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": "0-100"
+        },
+        {
+          "name": "decision",
+          "type": "varchar(24)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": "allow/step_up/manual_review/restrict/block"
+        },
+        {
+          "name": "model_version",
+          "type": "varchar(40)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "signals",
+          "type": "jsonb",
+          "constraint": "NOT NULL",
+          "default": "{}",
+          "description_ar": ""
+        },
+        {
+          "name": "review_status",
+          "type": "varchar(20)",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "CHECK(score BETWEEN 0 AND 100)"
+      ]
+    },
+    {
+      "table": "audit_logs",
+      "description_ar": "سجل التدقيق",
+      "fields": [
+        {
+          "name": "id",
+          "type": "bigserial",
+          "constraint": "PK",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "occurred_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        },
+        {
+          "name": "actor_user_id",
+          "type": "uuid",
+          "constraint": "NULL FK users",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "actor_type",
+          "type": "varchar(20)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": "user/system/provider"
+        },
+        {
+          "name": "office_id",
+          "type": "uuid",
+          "constraint": "NULL FK offices",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "action",
+          "type": "varchar(120)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "object_type",
+          "type": "varchar(80)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "object_id",
+          "type": "uuid",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "request_id",
+          "type": "uuid",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "ip_hash",
+          "type": "bytea",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "before_json",
+          "type": "jsonb",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": "منقح"
+        },
+        {
+          "name": "after_json",
+          "type": "jsonb",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": "منقح"
+        },
+        {
+          "name": "reason_code",
+          "type": "varchar(80)",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "metadata",
+          "type": "jsonb",
+          "constraint": "NOT NULL",
+          "default": "{}",
+          "description_ar": ""
+        }
+      ],
+      "constraints": []
+    },
+    {
+      "table": "idempotency_keys",
+      "description_ar": "منع تكرار أوامر API",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "scope_type",
+          "type": "varchar(30)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "scope_id",
+          "type": "uuid",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "key",
+          "type": "varchar(120)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "request_hash",
+          "type": "char(64)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "response_status",
+          "type": "integer",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "response_body",
+          "type": "jsonb",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "locked_until",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "expires_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "UNIQUE(scope_type,scope_id,key)"
+      ]
+    },
+    {
+      "table": "outbox_events",
+      "description_ar": "Transactional outbox",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "aggregate_type",
+          "type": "varchar(80)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "aggregate_id",
+          "type": "uuid",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "event_type",
+          "type": "varchar(120)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "payload",
+          "type": "jsonb",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "occurred_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        },
+        {
+          "name": "published_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "attempt_count",
+          "type": "integer",
+          "constraint": "NOT NULL",
+          "default": "0",
+          "description_ar": ""
+        },
+        {
+          "name": "next_attempt_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        }
+      ],
+      "constraints": []
+    },
+    {
+      "table": "webhook_deliveries",
+      "description_ar": "أحداث مزودي الدفع",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "provider_code",
+          "type": "varchar(60)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "provider_event_id",
+          "type": "varchar(160)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "event_type",
+          "type": "varchar(120)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "signature_valid",
+          "type": "boolean",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "payload_hash",
+          "type": "char(64)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "status",
+          "type": "varchar(20)",
+          "constraint": "NOT NULL",
+          "default": "received",
+          "description_ar": "received/processed/ignored/failed"
+        },
+        {
+          "name": "received_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        },
+        {
+          "name": "processed_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "error_code",
+          "type": "varchar(80)",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "UNIQUE(provider_code,provider_event_id)"
+      ]
+    },
+    {
+      "table": "data_subject_requests",
+      "description_ar": "طلبات الخصوصية",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "user_id",
+          "type": "uuid",
+          "constraint": "NULL FK users",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "contact_phone",
+          "type": "varchar(20)",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "request_type",
+          "type": "varchar(24)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": "access/export/correct/delete/restrict/object"
+        },
+        {
+          "name": "status",
+          "type": "varchar(24)",
+          "constraint": "NOT NULL",
+          "default": "submitted",
+          "description_ar": "submitted/identity_verification/in_progress/fulfilled/rejected/cancelled"
+        },
+        {
+          "name": "submitted_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        },
+        {
+          "name": "due_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "completed_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "decision_reason",
+          "type": "text",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        }
+      ],
+      "constraints": []
+    },
+    {
+      "table": "legal_holds",
+      "description_ar": "الحجز القانوني",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "subject_type",
+          "type": "varchar(40)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": "booking/user/payment/dispute/office"
+        },
+        {
+          "name": "subject_id",
+          "type": "uuid",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "reason",
+          "type": "text",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "active",
+          "type": "boolean",
+          "constraint": "NOT NULL",
+          "default": "true",
+          "description_ar": ""
+        },
+        {
+          "name": "placed_by",
+          "type": "uuid",
+          "constraint": "FK users NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "placed_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        },
+        {
+          "name": "released_by",
+          "type": "uuid",
+          "constraint": "NULL FK users",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "released_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "UNIQUE(subject_type,subject_id) WHERE active=true"
+      ]
+    },
+    {
+      "table": "commission_profiles",
+      "description_ar": "ملفات العمولة القابلة للإصدار",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "code",
+          "type": "varchar(80)",
+          "constraint": "UNIQUE NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "name_ar",
+          "type": "varchar(160)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "calculation_type",
+          "type": "varchar(20)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": "percentage/fixed/hybrid"
+        },
+        {
+          "name": "percentage_rate",
+          "type": "numeric(9,6)",
+          "constraint": "NOT NULL",
+          "default": "0",
+          "description_ar": ""
+        },
+        {
+          "name": "fixed_amount",
+          "type": "numeric(18,2)",
+          "constraint": "NOT NULL",
+          "default": "0",
+          "description_ar": ""
+        },
+        {
+          "name": "currency",
+          "type": "char(3)",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": "للجزء الثابت"
+        },
+        {
+          "name": "status",
+          "type": "varchar(20)",
+          "constraint": "NOT NULL",
+          "default": "active",
+          "description_ar": "draft/active/retired"
+        },
+        {
+          "name": "effective_from",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        },
+        {
+          "name": "effective_to",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "created_by",
+          "type": "uuid",
+          "constraint": "FK users NOT NULL",
+          "default": "",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "CHECK(percentage_rate>=0 AND fixed_amount>=0)",
+        "CHECK(effective_to IS NULL OR effective_to>effective_from)"
+      ]
+    },
+    {
+      "table": "subscription_plans",
+      "description_ar": "باقات اشتراك المكاتب",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "code",
+          "type": "varchar(80)",
+          "constraint": "UNIQUE NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "name_ar",
+          "type": "varchar(160)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "billing_period",
+          "type": "varchar(20)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": "monthly/quarterly/yearly/custom"
+        },
+        {
+          "name": "price_amount",
+          "type": "numeric(18,2)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "currency",
+          "type": "char(3)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "features_json",
+          "type": "jsonb",
+          "constraint": "NOT NULL",
+          "default": "{}",
+          "description_ar": ""
+        },
+        {
+          "name": "limits_json",
+          "type": "jsonb",
+          "constraint": "NOT NULL",
+          "default": "{}",
+          "description_ar": ""
+        },
+        {
+          "name": "status",
+          "type": "varchar(20)",
+          "constraint": "NOT NULL",
+          "default": "active",
+          "description_ar": "draft/active/retired"
+        },
+        {
+          "name": "effective_from",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        },
+        {
+          "name": "effective_to",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "CHECK(price_amount>=0)",
+        "CHECK(effective_to IS NULL OR effective_to>effective_from)"
+      ]
+    },
+    {
+      "table": "office_subscriptions",
+      "description_ar": "اشتراك مكتب في باقة",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "office_id",
+          "type": "uuid",
+          "constraint": "FK offices NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "plan_id",
+          "type": "uuid",
+          "constraint": "FK subscription_plans NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "status",
+          "type": "varchar(24)",
+          "constraint": "NOT NULL",
+          "default": "active",
+          "description_ar": "trial/active/past_due/grace/suspended/cancelled/expired"
+        },
+        {
+          "name": "period_start",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "period_end",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "price_snapshot",
+          "type": "jsonb",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "features_snapshot",
+          "type": "jsonb",
+          "constraint": "NOT NULL",
+          "default": "{}",
+          "description_ar": ""
+        },
+        {
+          "name": "auto_renew",
+          "type": "boolean",
+          "constraint": "NOT NULL",
+          "default": "false",
+          "description_ar": ""
+        },
+        {
+          "name": "cancel_at_period_end",
+          "type": "boolean",
+          "constraint": "NOT NULL",
+          "default": "false",
+          "description_ar": ""
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "CHECK(period_end>period_start)",
+        "UNIQUE(office_id) WHERE status IN ('trial','active','past_due','grace')"
+      ]
+    },
+    {
+      "table": "subscription_invoices",
+      "description_ar": "فواتير اشتراك المكتب",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "public_id",
+          "type": "varchar(26)",
+          "constraint": "UNIQUE NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "office_subscription_id",
+          "type": "uuid",
+          "constraint": "FK office_subscriptions NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "office_id",
+          "type": "uuid",
+          "constraint": "FK offices NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "status",
+          "type": "varchar(20)",
+          "constraint": "NOT NULL",
+          "default": "open",
+          "description_ar": "draft/open/paid/void/uncollectible"
+        },
+        {
+          "name": "currency",
+          "type": "char(3)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "subtotal_amount",
+          "type": "numeric(18,2)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "tax_amount",
+          "type": "numeric(18,2)",
+          "constraint": "NOT NULL",
+          "default": "0",
+          "description_ar": ""
+        },
+        {
+          "name": "total_amount",
+          "type": "numeric(18,2)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "due_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "paid_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "ledger_entry_id",
+          "type": "uuid",
+          "constraint": "NULL FK ledger_entries",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "CHECK(subtotal_amount>=0 AND tax_amount>=0 AND total_amount=subtotal_amount+tax_amount)"
+      ]
+    },
+    {
+      "table": "stored_files",
+      "description_ar": "سجل الملفات الخاصة",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "owner_scope",
+          "type": "varchar(30)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": "platform/office/user/booking/support"
+        },
+        {
+          "name": "owner_id",
+          "type": "uuid",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "purpose",
+          "type": "varchar(60)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "object_key",
+          "type": "text",
+          "constraint": "UNIQUE NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "original_filename",
+          "type": "varchar(255)",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "mime_type",
+          "type": "varchar(120)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "size_bytes",
+          "type": "bigint",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "sha256",
+          "type": "char(64)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "scan_status",
+          "type": "varchar(20)",
+          "constraint": "NOT NULL",
+          "default": "pending",
+          "description_ar": "pending/clean/rejected/error"
+        },
+        {
+          "name": "retention_until",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "created_by",
+          "type": "uuid",
+          "constraint": "NULL FK users",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        },
+        {
+          "name": "deleted_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "CHECK(size_bytes>0)",
+        "UNIQUE(owner_scope,owner_id,purpose,sha256)"
+      ]
+    },
+    {
+      "table": "support_attachments",
+      "description_ar": "مرفقات حالات الدعم",
+      "fields": [
+        {
+          "name": "case_id",
+          "type": "uuid",
+          "constraint": "PK FK support_cases",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "file_id",
+          "type": "uuid",
+          "constraint": "PK FK stored_files",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "uploaded_by",
+          "type": "uuid",
+          "constraint": "NULL FK users",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        }
+      ],
+      "constraints": []
+    },
+    {
+      "table": "trip_incidents",
+      "description_ar": "حوادث وتوقفات الرحلات",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "trip_id",
+          "type": "uuid",
+          "constraint": "FK trips NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "severity",
+          "type": "varchar(12)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": "SEV1/SEV2/SEV3"
+        },
+        {
+          "name": "incident_type",
+          "type": "varchar(60)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "status",
+          "type": "varchar(24)",
+          "constraint": "NOT NULL",
+          "default": "open",
+          "description_ar": "open/contained/investigating/resolved/closed"
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "occurred_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "opened_by",
+          "type": "uuid",
+          "constraint": "NULL FK users",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "resolved_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "resolution_summary",
+          "type": "text",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "CHECK(severity IN ('SEV1','SEV2','SEV3'))"
+      ]
+    },
+    {
+      "table": "office_violations",
+      "description_ar": "مخالفات المكتب",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraint": "PK",
+          "default": "gen_random_uuid()",
+          "description_ar": ""
+        },
+        {
+          "name": "office_id",
+          "type": "uuid",
+          "constraint": "FK offices NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "booking_id",
+          "type": "uuid",
+          "constraint": "NULL FK bookings",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "trip_id",
+          "type": "uuid",
+          "constraint": "NULL FK trips",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "severity",
+          "type": "varchar(16)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": "minor/major/critical"
+        },
+        {
+          "name": "code",
+          "type": "varchar(80)",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "status",
+          "type": "varchar(24)",
+          "constraint": "NOT NULL",
+          "default": "open",
+          "description_ar": "open/under_review/confirmed/dismissed/remediated/appealed/closed"
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "constraint": "NOT NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "financial_penalty",
+          "type": "numeric(18,2)",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "currency",
+          "type": "char(3)",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "constraint": "NOT NULL",
+          "default": "now()",
+          "description_ar": ""
+        },
+        {
+          "name": "decided_at",
+          "type": "timestamptz",
+          "constraint": "NULL",
+          "default": "",
+          "description_ar": ""
+        }
+      ],
+      "constraints": [
+        "CHECK(financial_penalty IS NULL OR financial_penalty>=0)"
+      ]
+    }
+  ]
+}

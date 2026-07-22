@@ -1,0 +1,11 @@
+npm warn audit 503 Service Temporarily Unavailable - POST https://packages.applied-caas-gateway1.internal.api.openai.org/artifactory/api/npm/npm-public/-/npm/v1/security/audits/quick
+<html>
+<head><title>503 Service Temporarily Unavailable</title></head>
+<body>
+<center><h1>503 Service Temporarily Unavailable</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+npm error audit endpoint returned an error
+npm error A complete log of this run can be found in: /home/oai/.npm/_logs/2026-07-21T22_46_11_460Z-debug-0.log

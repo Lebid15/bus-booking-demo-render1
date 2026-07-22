@@ -1,0 +1,118 @@
+services:
+  - type: keyvalue
+    name: bus-booking-demo-cache
+    plan: free
+    region: frankfurt
+    ipAllowList: []
+    maxmemoryPolicy: allkeys-lru
+    persistenceMode: off
+
+  - type: web
+    name: bus-booking-demo-api
+    runtime: docker
+    plan: free
+    region: frankfurt
+    dockerfilePath: ./apps/api/Dockerfile
+    dockerContext: ./apps/api
+    dockerCommand: sh /app/scripts/render_start.sh
+    healthCheckPath: /health/ready
+    autoDeployTrigger: off
+    envVars:
+      - key: APP_ENV
+        value: demo
+      - key: DEMO_MODE
+        value: "true"
+      - key: DJANGO_DEBUG
+        value: "false"
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_ALLOWED_HOSTS
+        fromService:
+          type: web
+          name: bus-booking-demo-api
+          envVarKey: RENDER_EXTERNAL_HOSTNAME
+      - key: DATABASE_URL
+        fromDatabase:
+          name: bus-booking-demo-db
+          property: connectionString
+      - key: DATABASE_CONN_MAX_AGE
+        value: "0"
+      - key: DATABASE_CONN_HEALTH_CHECKS
+        value: "true"
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: bus-booking-demo-cache
+          property: connectionString
+      - key: CELERY_BROKER_URL
+        fromService:
+          type: keyvalue
+          name: bus-booking-demo-cache
+          property: connectionString
+      - key: CELERY_RESULT_BACKEND
+        fromService:
+          type: keyvalue
+          name: bus-booking-demo-cache
+          property: connectionString
+      - key: CELERY_TASK_ALWAYS_EAGER
+        value: "true"
+      - key: WEB_CONCURRENCY
+        value: "1"
+      - key: PLATFORM_RBAC_LEGACY_ADMIN_FALLBACK
+        value: "false"
+      - key: CORS_ALLOWED_ORIGINS
+        fromService:
+          type: web
+          name: bus-booking-demo-web
+          envVarKey: RENDER_EXTERNAL_URL
+      - key: SECURE_SSL_REDIRECT
+        value: "true"
+      - key: SECURE_HSTS_SECONDS
+        value: "0"
+      - key: ELECTRONIC_PAYMENT_ENABLED
+        value: "false"
+      - key: DEFAULT_PAYMENT_PROVIDER_CODE
+        value: mock
+      - key: PAYMENT_WEBHOOK_SECRET
+        generateValue: true
+      - key: DEV_VERIFICATION_CODE
+        value: "123456"
+      - key: RISK_STEP_UP_CODE
+        value: "123456"
+      - key: FILE_SCAN_MOCK_RESULT
+        value: clean
+      - key: SUBSCRIPTION_ENFORCEMENT_ENABLED
+        value: "true"
+
+  - type: web
+    name: bus-booking-demo-web
+    runtime: docker
+    plan: free
+    region: frankfurt
+    dockerfilePath: ./apps/web/Dockerfile
+    dockerContext: ./apps/web
+    dockerCommand: sh -c 'npm run start -- --port "${PORT:-10000}"'
+    healthCheckPath: /
+    autoDeployTrigger: off
+    envVars:
+      - key: NEXT_TELEMETRY_DISABLED
+        value: "1"
+      - key: NEXT_PUBLIC_API_BASE_URL
+        fromService:
+          type: web
+          name: bus-booking-demo-api
+          envVarKey: RENDER_EXTERNAL_URL
+      - key: INTERNAL_API_BASE_URL
+        fromService:
+          type: web
+          name: bus-booking-demo-api
+          envVarKey: RENDER_EXTERNAL_URL
+
+databases:
+  - name: bus-booking-demo-db
+    plan: free
+    region: frankfurt
+    postgresMajorVersion: "18"
+    databaseName: bus_booking_demo
+    user: bus_booking_demo
+    ipAllowList: []

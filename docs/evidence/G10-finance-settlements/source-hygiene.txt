@@ -1,0 +1,6 @@
+Worktree forbidden artifact scan:
+PASS: no forbidden worktree artifacts
+Source secret marker scan:
+PASS: no private-key or AWS access-key markers
+Conflict marker scan:
+PASS: no merge conflict markers

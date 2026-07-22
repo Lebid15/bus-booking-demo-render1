@@ -1,0 +1,1 @@
+{"package": "bus-booking-final-spec", "version": "4.0", "status": "READY_FOR_CONTROLLED_IMPLEMENTATION", "checksums_verified": 119, "stats": {"tables": 68, "acceptance": 103, "api_paths": 87, "api_operations": 108, "screens": 90}, "result": "PASS"}
