@@ -1,11 +1,15 @@
 FROM node:22-alpine AS deps
 WORKDIR /app
+ENV NPM_CONFIG_UPDATE_NOTIFIER=false \
+    NPM_CONFIG_FUND=false \
+    NPM_CONFIG_AUDIT=false
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN npm ci --no-audit --no-fund --maxsockets 1
 
 FROM node:22-alpine AS builder
 WORKDIR /app
-ENV NEXT_TELEMETRY_DISABLED=1
+ENV NEXT_TELEMETRY_DISABLED=1 \
+    NODE_OPTIONS=--max-old-space-size=1024
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npm run build
